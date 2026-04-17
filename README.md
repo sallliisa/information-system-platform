@@ -1,4 +1,4 @@
-# company-profile-hk-admin-frontend
+# Base Frontend
 
 Admin frontend built with Vue 3 + Vite + TypeScript.  
 This project uses dynamic module routing, Pinia state management, Tailwind CSS, and integrations like Google Maps, charts, and rich text editing.
