@@ -63,7 +63,7 @@ watch(
 </script>
 
 <template>
-  <BaseInput v-bind="props" :label="''" :error="error">
+  <BaseInput v-bind="props" :label="''">
     <div @click="handleClick" class="group/checkbox flex cursor-default flex-row items-center gap-2">
       <input type="checkbox" class="h-4 w-4 cursor-pointer rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" :checked="inputValue || checked" @change="handleClick" @click.stop />
       <div v-if="label || description">{{ label || description }}</div>

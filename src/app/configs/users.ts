@@ -34,7 +34,7 @@ export default {
           status_code: {
             type: 'radio',
             props: {
-              required: true,
+              validation: ['required'],
               data: [
                 { id: 'user_active', name: 'Aktif' },
                 { id: 'user_inactive', name: 'Nonaktif' },
@@ -81,10 +81,10 @@ export default {
   transaction: {
     fields: ['fullname', 'gender', 'login_method', 'username', 'password', 'role_id', 'email', 'department_id', 'telephone', 'institution', 'img_photo_user', 'status_code'],
     inputConfig: {
-      fullname: { type: 'text', props: { required: true } },
+      fullname: { type: 'text', props: { validation: ['required'] } },
       username: {
         type: 'text',
-        props: { required: true },
+        props: { validation: ['required'] },
         dependency: {
           fields: ['login_method'],
           visibility: {
@@ -95,7 +95,7 @@ export default {
       },
       password: {
         type: 'password',
-        props: { required: true, minLength: 6 },
+        props: { validation: ['required'], minLength: 6 },
         dependency: {
           fields: ['login_method'],
           visibility: {
@@ -107,7 +107,7 @@ export default {
       gender: {
         type: 'radio',
         props: {
-          required: true,
+          validation: ['required'],
           defaultValue: true,
           data: [
             { name: 'Laki-Laki', id: 'L' },
@@ -115,11 +115,11 @@ export default {
           ],
         },
       },
-      email: { type: 'text', props: { required: true } },
+      email: { type: 'text', props: { validation: ['required'] } },
       login_method: {
         type: 'radio',
         props: {
-          required: true,
+          validation: ['required'],
           defaultValue: 'local',
           data: [
             { id: 'local', name: 'Non-SSO' },
@@ -127,14 +127,14 @@ export default {
           ],
         },
       },
-      department_id: { type: 'lookup', props: { required: true, getAPI: 'departments', view: 'name' } },
-      role_id: { type: 'select', props: { required: true, getAPI: 'roles', view: 'role_name' } },
-      institution: { type: 'text', props: { required: true } },
-      img_photo_user: { type: 'image', props: { required: false } },
+      department_id: { type: 'lookup', props: { validation: ['required'], getAPI: 'departments', view: 'name' } },
+      role_id: { type: 'select', props: { validation: ['required'], getAPI: 'roles', view: 'role_name' } },
+      institution: { type: 'text', props: { validation: ['required'] } },
+      img_photo_user: { type: 'image', props: {} },
       status_code: {
         type: 'radio',
         props: {
-          required: true,
+          validation: ['required'],
           data: [
             { id: 'user_active', name: 'Aktif' },
             { id: 'user_inactive', name: 'Nonaktif' },
@@ -145,10 +145,10 @@ export default {
     update: {
       fields: ['fullname', 'gender', 'login_method', 'username', 'role_id', 'email', 'department_id', 'telephone', 'institution', 'img_photo_user', 'status_code'],
       inputConfig: {
-        fullname: { type: 'text', props: { required: true } },
+        fullname: { type: 'text', props: { validation: ['required'] } },
         username: {
           type: 'text',
-          props: { required: true },
+          props: { validation: ['required'] },
           dependency: {
             fields: ['login_method'],
             visibility: {
@@ -160,7 +160,7 @@ export default {
         gender: {
           type: 'radio',
           props: {
-            required: true,
+            validation: ['required'],
             defaultValue: true,
             data: [
               { name: 'Laki-Laki', id: 'L' },
@@ -168,11 +168,11 @@ export default {
             ],
           },
         },
-        email: { type: 'text', props: { required: true } },
+        email: { type: 'text', props: { validation: ['required'] } },
         login_method: {
           type: 'radio',
           props: {
-            required: true,
+            validation: ['required'],
             defaultValue: 'local',
             data: [
               { id: 'local', name: 'Non-SSO' },
@@ -180,14 +180,14 @@ export default {
             ],
           },
         },
-        department_id: { type: 'lookup', props: { required: true, getAPI: 'departments', view: 'name' } },
-        role_id: { type: 'select', props: { required: true, getAPI: 'roles', view: 'role_name' } },
-        institution: { type: 'text', props: { required: true } },
-        img_photo_user: { type: 'image', props: { required: false } },
+        department_id: { type: 'lookup', props: { validation: ['required'], getAPI: 'departments', view: 'name' } },
+        role_id: { type: 'select', props: { validation: ['required'], getAPI: 'roles', view: 'role_name' } },
+        institution: { type: 'text', props: { validation: ['required'] } },
+        img_photo_user: { type: 'image', props: {} },
         status_code: {
           type: 'radio',
           props: {
-            required: true,
+            validation: ['required'],
             data: [
               { id: 'user_active', name: 'Aktif' },
               { id: 'user_inactive', name: 'Nonaktif' },

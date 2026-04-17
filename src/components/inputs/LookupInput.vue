@@ -112,6 +112,9 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<any>()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 const inputValue = ref<Array<Record<string, any>>>([])
 const stagedInputValue = ref<Array<Record<string, any>>>([])
 const committedInputValue = ref<Array<Record<string, any>>>([])
@@ -235,6 +238,7 @@ async function commitFromSelection(selection: Array<Record<string, any>>) {
   try {
     await props.onCommit(nextSelection)
     syncModelAndSelectHook(nextSelection)
+    emit('validation:touch')
   } finally {
     isLoading.value = false
   }

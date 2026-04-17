@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
 import { computed, ref, watch } from 'vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
@@ -18,15 +17,6 @@ const props = defineProps({
     type: Number,
     default: '',
   },
-  validator: {
-    type: Function as PropType<(value: string, formData?: Record<string, any>) => boolean>,
-    default: () => true,
-  },
-  formData: {
-    type: Object,
-    required: false,
-    default: () => ({}),
-  },
   currency: {
     type: String,
     required: false,
@@ -40,7 +30,6 @@ const props = defineProps({
   ...commonProps,
 })
 
-const error = ref('')
 const modelValue = defineModel<number>()
 const inputValue = ref(modelValue.value)
 
@@ -54,18 +43,8 @@ watch(inputValue, (val) => {
 })
 
 watch(modelValue, (val) => {
-  if (!modelValue.value && props.required) error.value = 'Harus diisi!'
-  else if (!props.validator(String(modelValue.value), props.formData)) error.value = props.errorMessage
-  else error.value = ''
   inputValue.value = modelValue.value
 })
-
-watch(
-  () => props.error,
-  (val) => {
-    error.value = props.error
-  }
-)
 
 function deformat(value: string) {
   if (value[0] === '0') value = value.slice(1)
@@ -85,12 +64,12 @@ const currencyValue = computed(() => {
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <template #label v-if="$slots.label">
       <slot name="label"></slot>
     </template>
     <div
-      :class="twMerge(`flex flex-row items-center gap-4 rounded-lg py-3 pl-4 outline  outline-1 outline-outline/[24%] transition-all ease-linear focus-within:outline-2 ${error ? 'outline-error ' : ''} ${disabled ? 'pointer-events-none cursor-not-allowed !bg-surface-variant/50 ' : ''}`, ($attrs.class as string))"
+      :class="twMerge(`flex flex-row items-center gap-4 rounded-lg py-3 pl-4 outline  outline-1 outline-outline/[24%] transition-all ease-linear focus-within:outline-2 ${disabled ? 'pointer-events-none cursor-not-allowed !bg-surface-variant/50 ' : ''}`, ($attrs.class as string))"
     >
       <Icon v-if="props.icon" :name="(props.icon as any)" />
       <p>

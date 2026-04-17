@@ -30,19 +30,20 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<Coordinate>()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 
 const selectedLocation = ref()
 const query = ref('')
 const zoom = ref(5)
 const center = ref<Coordinate>(modelValue.value ? { lat: Number(modelValue.value?.lat), lng: Number(modelValue.value?.lng) } : { lat: -1.2100164677737193, lng: 117.56306695042623 })
 const autocompletePredictions = ref<Record<string, any>[]>([])
-const error = ref('')
 const loading = ref(false)
 
 watch(modelValue, () => {
   if (modelValue.value) center.value = modelValue.value
   else center.value = { lat: -1.2100164677737193, lng: 117.56306695042623 }
-  if (props.required) error.value = !modelValue.value ? 'Harus diisi!' : ''
 })
 
 async function getLocationDetail(place_id: any) {
@@ -55,6 +56,7 @@ async function getLocationDetail(place_id: any) {
     lng: result.geometry.location.lng,
     formatted_address: result.formatted_address,
   }
+  emit('validation:touch')
 }
 
 async function getPlacesAutocomplete() {
@@ -68,6 +70,7 @@ function getCurrentLocation() {
       lat: position.coords.latitude,
       lng: position.coords.longitude,
     }
+    emit('validation:touch')
   })
 }
 
@@ -80,6 +83,7 @@ function handlePinDragEnd(event: any) {
     lat: event.latLng.lat(),
     lng: event.latLng.lng(),
   }
+  emit('validation:touch')
 }
 
 // const GOOGLE_MAP_API_KEY = config.maps_api_key[mode]
@@ -151,6 +155,7 @@ const GOOGLE_MAP_API_KEY = data.gmaps.web
           @click="
             (e) => {
               modelValue = { lat: e.latLng?.lat(), lng: e.latLng?.lng() }
+              emit('validation:touch')
             }
           "
         >

@@ -20,25 +20,25 @@ export default {
       task_code: {
         type: 'text',
         props: {
-          required: true,
+          validation: ['required'],
         },
       },
       task_name: {
         type: 'text',
         props: {
-          required: true,
+          validation: ['required'],
         },
       },
       task_group: {
         type: 'text',
         props: {
-          required: true,
+          validation: ['required'],
         },
       },
       table_name: {
         type: 'text',
         props: {
-          required: true,
+          validation: ['required'],
         },
       },
     },

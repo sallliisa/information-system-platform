@@ -33,6 +33,9 @@ const props = defineProps({
   },
   ...commonProps,
 })
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 
 // Computed properties that fall back to appConfig values
 const acceptTypes = computed(() => props.accept ?? configStore.config.allowed_mime_types ?? [])
@@ -42,7 +45,6 @@ const acceptTypesPretty = computed(() => acceptTypes.value.map((type: string) =>
 const uploadPercentage = ref(0)
 const uploadDetail = ref()
 const loading = ref(false)
-const error = ref<string>()
 const items = ref<Array<Record<string, any>>>([])
 const isUploading = ref(false)
 
@@ -86,6 +88,7 @@ const handleFileUpload = (files: File | File[]) => {
         uploadPercentage.value = 0
         isUploading.value = false
         emitChanges()
+        emit('validation:touch')
       })
       .catch((err) => {
         toast.error(`Gagal mengunggah berkas: ${err}`)
@@ -98,6 +101,7 @@ function handleFileDelete(index: number) {
   items.value.splice(index, 1)
   emitChanges()
   if (!props.multi) items.value = []
+  emit('validation:touch')
 }
 
 watch(modelValue, () => {
@@ -105,13 +109,11 @@ watch(modelValue, () => {
   else if (modelValue.value) items.value = [modelValue.value]
   else items.value = []
 
-  if (modelValue.value == null && props.required) error.value = 'Harus diisi!'
-  else error.value = ''
 })
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div class="mb-4" v-if="uploadPercentage != 0 && uploadPercentage != 100">
       <div class="relative flex h-6 items-center rounded-full border border-gray-200">
         <div class="absolute ml-2 text-sm text-blue-200">{{ uploadPercentage }}%</div>

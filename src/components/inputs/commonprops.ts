@@ -1,4 +1,8 @@
 export const commonProps = {
+  field: {
+    type: String,
+    default: '',
+  },
   enableHelperMessage: {
     type: Boolean,
     default: false,
@@ -11,17 +15,9 @@ export const commonProps = {
     type: String,
     default: '',
   },
-  required: {
-    type: Boolean,
-    default: false,
-  },
   disabled: {
     type: Boolean,
     default: false,
-  },
-  errorMessage: {
-    type: String,
-    default: 'Masukan tidak valid!',
   },
   error: {
     type: String,

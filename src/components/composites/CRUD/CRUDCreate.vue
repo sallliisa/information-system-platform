@@ -23,7 +23,6 @@ const createFormConfig: CreateConfig = {
   inputConfig: props.config.transaction?.create?.inputConfig || props.config.transaction?.inputConfig,
   extraData: props.config.transaction?.create?.extraData || props.config.transaction?.extraData,
   getInitialData: props.config.transaction?.create?.getInitialData || props.config.transaction?.getInitialData,
-  validation: props.config.transaction?.create?.validation || props.config.transaction?.validation,
   onSuccess: props.config.transaction?.create?.onSuccess,
 }
 </script>

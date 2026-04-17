@@ -50,20 +50,18 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<Record<string, string> | Array<Record<string, string>>>()
+const emit = defineEmits(['update:modelValue', 'update:uploadState', 'validation:touch'])
 
 const uploadPercentage = ref(0)
 const uploadDetail = ref()
 const loading = ref(false)
 const images = ref<Array<any>>([])
-const error = ref('')
 const isUploading = ref(false)
 
 if (modelValue.value) {
   if (Array.isArray(modelValue.value)) images.value = modelValue.value
   else images.value = [modelValue.value]
 }
-
-const emit = defineEmits(['update:modelValue', 'update:uploadState'])
 
 const emitData = () => {
   if (props.multi) {
@@ -87,7 +85,6 @@ const handleFileUpload = (e: Event) => {
   services
     .fileUpload(file, props.uploadPath, (event: any) => {
       uploadDetail.value = file
-      error.value = ''
       uploadPercentage.value = Math.round((100 * event.loaded) / event.total)
     })
     .then((res) => {
@@ -101,6 +98,7 @@ const handleFileUpload = (e: Event) => {
       emitData()
       loading.value = false
       isUploading.value = false
+      emit('validation:touch')
     })
     .catch((err) => {})
 }
@@ -108,25 +106,13 @@ const handleFileUpload = (e: Event) => {
 const removeItem = (index: number) => {
   images.value.splice(index, 1)
   emitData()
+  emit('validation:touch')
 }
 
 watch(modelValue, () => {
   if (Array.isArray(modelValue.value)) images.value = [...modelValue.value]
   else if (modelValue.value) images.value = [modelValue.value]
   else images.value = []
-
-  if (props.multi) {
-    if (!(modelValue.value as any[]).length) {
-      error.value = 'Harus diisi!'
-      return
-    }
-  } else {
-    if (!modelValue.value) {
-      error.value = 'Harus diisi!'
-      return
-    }
-  }
-  error.value = ''
 })
 
 function handleChange(event: any) {
@@ -136,7 +122,7 @@ function handleChange(event: any) {
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <div class="flex flex-col gap-2">
