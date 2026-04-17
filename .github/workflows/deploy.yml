@@ -1,0 +1,47 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_HOST: pttas.net
+      SSH_USER: zidan
+      REMOTE_DIR: /home/zidan/iso-adhi.pttas.net/public/
+      MOVE_CMD: mv /home/zidan/iso-adhi.pttas.net/public/index.html /home/zidan/iso-adhi.pttas.net/resources/views/home.blade.php
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add remote host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync
+        run: |
+          rsync -rav --delete ./dist/ ${SSH_USER}@${SSH_HOST}:${REMOTE_DIR} \
+            --exclude=index.php --exclude=.htaccess --exclude=favicon.ico --exclude=system-assets
+          
+          ssh ${SSH_USER}@${SSH_HOST} "${MOVE_CMD}"
