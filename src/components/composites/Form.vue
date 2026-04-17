@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, type PropType, watch, provide, onMounted } from 'vue'
 import { componentTypeMap, defaultBeforeSubmit, defaultFormGetData, defaultOnError, defaultOnSubmit, defaultOnSuccess } from '@/app/actions/Form'
+import { executeValidationRules, type ValidationRule } from '@/app/actions/validations'
 import { toast } from 'vue-sonner'
 import { useRoute } from 'vue-router'
 import { componentTypeMap as typeConfigMap } from './common/properties'
@@ -24,7 +25,6 @@ const props = defineProps({
   onSuccess: { type: Function as PropType<({ formData, res }: { formData: object; res: Record<string, any> }) => void>, default: defaultOnSuccess },
   onError: { type: Function as PropType<({ formData, error }: { formData: object; error: Record<string, any> }) => void>, default: defaultOnError },
   targetAPI: { type: String, default: '' },
-  validation: { type: Object as PropType<Record<string, Array<{ message: string; validator: (formData: object) => boolean }>>>, default: () => ({}) },
   getAPI: { type: String },
   dataID: { type: String },
   formType: { type: String as PropType<'create' | 'update'>, default: 'create' },
@@ -48,15 +48,85 @@ const formData = ref<Record<string, any>>({
   ...(route.query['sys_form_initial_data'] ? JSON.parse(String(route.query['sys_form_initial_data'])) : {}),
 })
 
-provide('formData', formData)
-
-const formError = ref<Record<string, string>>({})
+const fieldErrors = ref<Record<string, string>>({})
+const fieldTouched = ref<Record<string, boolean>>({})
+const submitAttempted = ref(false)
 
 const loading = ref({
   get: true,
   post: false,
 })
+
 const fieldDependencyData = ref<{ [key: string]: FieldDependency }>({})
+
+function isFieldVisible(field: string) {
+  const visibility = fieldDependencyData.value[field]?.visibility
+  if (!visibility) return true
+  return visibility.value !== false
+}
+
+function clearFieldValidation(field: string) {
+  delete fieldErrors.value[field]
+  delete fieldTouched.value[field]
+}
+
+function validateField(field: string) {
+  const activeInputConfig = inputConfig.value[field]
+  if (!activeInputConfig || !isFieldVisible(field)) {
+    clearFieldValidation(field)
+    return ''
+  }
+
+  const error = executeValidationRules(
+    formData.value[field],
+    {
+      field,
+      formData: formData.value,
+      inputConfig: activeInputConfig,
+    },
+    activeInputConfig.props?.validation as ValidationRule[] | undefined
+  )
+
+  if (error) fieldErrors.value[field] = error
+  else delete fieldErrors.value[field]
+
+  return error
+}
+
+function validateVisibleFields() {
+  let hasError = false
+
+  for (const field of props.fields) {
+    if (!inputConfig.value[field]) continue
+
+    if (!isFieldVisible(field)) {
+      clearFieldValidation(field)
+      continue
+    }
+
+    if (validateField(field)) hasError = true
+  }
+
+  return hasError
+}
+
+function handleFieldTouch(field: string) {
+  fieldTouched.value[field] = true
+  validateField(field)
+}
+
+provide('formData', formData)
+provide('formInputConfig', inputConfig)
+provide('formValidation', {
+  formData,
+  fieldErrors,
+  fieldTouched,
+  submitAttempted,
+  validateField,
+  validateVisibleFields,
+  clearFieldValidation,
+  touchField: handleFieldTouch,
+})
 
 function buildInputConfig() {
   props.fields.forEach((field) => {
@@ -117,6 +187,7 @@ async function preflight() {
   loading.value.get = true
   formData.value = (await props.getInitialData()) || {}
   if (props.formType === 'update') formData.value = (await props.getDetailData({ getAPI: props.getAPI || '', id: props.dataID, searchParameters: props.searchParameters })) || {}
+
   if (props.static) {
     watch(
       () => formData.value,
@@ -134,14 +205,14 @@ async function preflight() {
     )
     formData.value = modelValue.value
   }
+
   buildInputConfig()
   loading.value.get = false
 }
 
 async function submitForm() {
-  formError.value = validate()
-
-  if (Object.values(formError.value).some((error) => error)) {
+  submitAttempted.value = true
+  if (validateVisibleFields()) {
     toast.error('Masih terdapat data yang kosong atau tidak valid!')
     return
   }
@@ -149,10 +220,11 @@ async function submitForm() {
   Object.keys(formData.value).forEach((field) => {
     if (fieldDependencyData.value[field]?.visibility?.value === false) formData.value[field] = null
   })
+
   const payload = props.beforeSubmit({ formData: { ...formData.value, ...props.extraData } })
   loading.value.post = true
   try {
-    const res = await props.onSubmit({ payload, method: props.method || props.formType === 'update' ? 'put' : 'post', targetAPI: props.targetAPI, type: props.formType })
+    const res = await props.onSubmit({ payload, method: props.method || (props.formType === 'update' ? 'put' : 'post'), targetAPI: props.targetAPI, type: props.formType })
     props.onSuccess({ formData: payload, res: res || {} })
   } catch (error: any) {
     props.onError({ formData: payload, error })
@@ -160,36 +232,10 @@ async function submitForm() {
   loading.value.post = false
 }
 
-function validate() {
-  const formError: Record<string, string> = {}
-  for (const field of props.fields) {
-    if (fieldDependencyData.value[field]?.visibility?.value === false) {
-      continue
-    }
-
-    if (inputConfig.value[field]?.props?.required) {
-      const fieldValue = formData.value[field]
-      if (fieldValue == null || fieldValue === '' || (Array.isArray(fieldValue) && fieldValue.length === 0)) {
-        formError[field] = 'Harus diisi!'
-        continue
-      }
-    }
-
-    if (props.validation[field]) {
-      for (const validator of props.validation[field]) {
-        if (!validator.validator(formData.value)) {
-          formError[field] = validator.message
-          break
-        }
-      }
-    }
-  }
-  return formError
-}
-
 function revalidateFieldDependency(field: string) {
   const fieldData = fieldDependencyData.value[field]
   if (!fieldData) return
+
   const currentInputConfig = inputConfig.value[field]
   if (!currentInputConfig) return
 
@@ -199,6 +245,12 @@ function revalidateFieldDependency(field: string) {
 
   if (fieldData.visibility) {
     fieldData.visibility.value = fieldData.visibility.validator?.(Object.fromEntries((fieldData.fields ?? []).map((field) => [field, formData.value[field]]))) ?? fieldData.visibility.default
+
+    if (fieldData.visibility.value === false) {
+      clearFieldValidation(field)
+    } else if (fieldTouched.value[field]) {
+      validateField(field)
+    }
   }
 
   if (fieldData.disabled) {
@@ -225,18 +277,19 @@ function revalidateFieldDependency(field: string) {
     const nextFieldConfig = inputConfig.value[field]
     if (nextFieldConfig) nextFieldConfig.props ??= {}
   }
+
   keyManager().triggerChange(field)
 }
-
-onMounted(() => {
-  preflight()
-})
 
 function setFormData(newData: any) {
   formData.value = newData
 }
 
 provide('setFormData', setFormData)
+
+onMounted(() => {
+  preflight()
+})
 </script>
 
 <template>
@@ -268,12 +321,13 @@ provide('setFormData', setFormData)
                 <Suspense :timeout="500">
                   <component
                     enableHelperMessage
+                    :field="field"
                     :key="keyManager().value[field]"
                     :is="inputConfig[field].component"
                     v-model="formData[field]"
                     :formData="formData"
                     :formType="formType"
-                    :error="formError[field]"
+                    @validation:touch="() => handleFieldTouch(field)"
                     v-bind="{ label: fieldsAlias[field] ?? field, ...inputConfig[field].props, ...fieldDependencyData[field]?.props?.value }"
                   />
                   <template #fallback>
@@ -285,13 +339,14 @@ provide('setFormData', setFormData)
                 <Suspense :timeout="500">
                   <component
                     enableHelperMessage
+                    :field="field"
                     :class="inputConfig[field].props?.class"
                     :key="keyManager().value[field]"
                     :formData="formData"
                     :is="componentTypeMap[inputConfig[field].type]"
+                    @validation:touch="() => handleFieldTouch(field)"
                     v-bind="{ label: fieldsAlias[field] ?? field, ...inputConfig[field].props, ...fieldDependencyData[field]?.props?.value }"
                     v-model="formData[field]"
-                    :error="formError[field]"
                   />
                   <template #fallback>
                     <Spinner />

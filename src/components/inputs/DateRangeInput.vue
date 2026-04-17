@@ -23,17 +23,21 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<string[]>()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 const internalValue = ref()
-const error = ref('')
 
 if (modelValue.value) internalValue.value = [new Date(modelValue.value[0]), new Date(modelValue.value[1])]
 
 watch(internalValue, () => {
   if (!internalValue.value || !internalValue.value[0] || !internalValue.value[1]) {
     modelValue.value = []
+    emit('validation:touch')
     return
   }
   modelValue.value = [lightFormat(internalValue.value[0], 'yyyy-MM-dd'), lightFormat(internalValue.value[1], 'yyyy-MM-dd')]
+  emit('validation:touch')
 })
 
 function displayFormatter(date: any) {
@@ -63,11 +67,6 @@ function displayFormatter(date: any) {
   }
 }
 
-watch(modelValue, () => {
-  if ((!modelValue.value || !modelValue.value.length) && props.required) error.value = 'Harus diisi!'
-  else error.value = ''
-})
-
 watch(
   () => modelValue.value,
   (newValue) => {
@@ -90,7 +89,7 @@ const testRef = ref()
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <Datepicker :range="unit === 'arbitrary'" :week-picker="unit === 'week'" :inline="inline" v-model="internalValue" :format="displayFormatter" :dark="useColorPreference().value === 'dark'" />
   </BaseInput>
 </template>

@@ -67,7 +67,7 @@ function handleItemClick(item: any) {
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div v-if="!loading" class="grid gap-4 grid-dynamic-[250px]">
       <template v-for="item in data">
         <Checkbox :label="item[view]" :onToggle="() => handleItemClick(item)" :checked="!!modelValue.find((mvItem) => mvItem[pick] === item[pick])" />

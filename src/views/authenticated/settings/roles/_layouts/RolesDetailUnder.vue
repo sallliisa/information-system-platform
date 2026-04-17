@@ -64,7 +64,7 @@ const data = inject<any>('data', {})
                 role_code: 'Kode Role',
                 description: 'Deskripsi',
               },
-              required: true,
+              validation: ['required'],
               getAPI: 'roles',
             },
           },

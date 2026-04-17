@@ -44,9 +44,11 @@ const props = defineProps({
 })
 
 const modelValue = defineModel()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 const loading = ref(false)
 const data = ref()
-const error = ref()
 
 async function preflight() {
   loading.value = true
@@ -63,14 +65,13 @@ const directionClass = {
 
 preflight()
 
-watch(modelValue, (_) => {
-  if (modelValue.value == null && props.required) error.value = 'Harus diisi!'
-  else error.value = ''
+watch(modelValue, () => {
+  emit('validation:touch')
 })
 </script>
 
 <template>
-  <BaseInput v-if="!loading" v-bind="props" :error="error">
+  <BaseInput v-if="!loading" v-bind="props">
     <div v-if="data?.length" :class="`${directionClass[direction]} ${$attrs.class as string} flex-wrap`">
       <Radio v-for="item in data" @click="modelValue = item[pick]" :description="item[view]" :checked="modelValue === item[pick]">
         <template v-if="$slots['label']" #label>

@@ -22,7 +22,6 @@ const props = defineProps({
   onSuccess: { type: Function as PropType<({ formData, res }: { formData: object; res: Record<string, any> }) => void>, default: defaultOnSuccess },
   onError: { type: Function as PropType<({ formData, error }: { formData: object; error: Record<string, any> }) => void>, default: defaultOnError },
   targetAPI: { type: String, default: '' },
-  validation: { type: Object as PropType<Record<string, Array<{ message: string; validator: (formData: object) => boolean }>>>, default: () => ({}) },
   getAPI: { type: String },
   dataID: { type: String },
   formType: { type: String as PropType<'create' | 'update'>, default: 'create' },

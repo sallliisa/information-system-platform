@@ -9,9 +9,9 @@ export default {
   transaction: {
     fields: ['role_name', 'role_code', 'role_scope_id', 'description'],
     inputConfig: {
-      role_name: { type: 'text', props: { required: true } },
-      role_code: { type: 'text', props: { required: true } },
-      role_scope_id: { type: 'select', props: { required: true, getAPI: 'role-scopes' } },
+      role_name: { type: 'text', props: { validation: ['required'] } },
+      role_code: { type: 'text', props: { validation: ['required'] } },
+      role_scope_id: { type: 'select', props: { validation: ['required'], getAPI: 'role-scopes' } },
       description: { type: 'textarea' },
     },
   },

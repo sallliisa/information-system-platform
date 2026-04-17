@@ -15,12 +15,15 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<any>()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 
 const open = ref(false)
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div class="flex flex-col gap-4">
       <div class="flex flex-row items-center gap-2 rounded-lg outline outline-1 outline-outline/[24%]">
         <Dialog v-model:open="open">
@@ -43,6 +46,7 @@ const open = ref(false)
                     @click="
                       () => {
                         modelValue = data
+                        emit('validation:touch')
                         open = false
                       }
                     "

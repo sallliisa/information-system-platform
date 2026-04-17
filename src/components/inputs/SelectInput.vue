@@ -78,11 +78,13 @@ const props = defineProps({
 })
 
 const modelValue = defineModel<any[] | Record<string, string> | null | string>()
+const emit = defineEmits<{
+  (event: 'validation:touch'): void
+}>()
 
 const loading = ref(true)
 const data = ref<Array<any>>([])
 const query = ref('')
-const error = ref('')
 const selected = ref<any[] | Record<string, string> | null>()
 
 onMounted(() => {
@@ -222,6 +224,7 @@ function handleItemClick(item: any, setOpen: Function) {
     }
     // updateModelValue()
     modelValue.value = null
+    emit('validation:touch')
     return
   }
   if (!props.multi) {
@@ -237,6 +240,7 @@ function handleItemClick(item: any, setOpen: Function) {
     }
   }
   updateModelValue()
+  emit('validation:touch')
 }
 
 preflight()
@@ -244,16 +248,12 @@ preflight()
 onMounted(() => {
   watch(modelValue, () => {
     pickSelected()
-    if (props.required) {
-      if (props.multi) error.value = !(modelValue.value as any[]).length ? 'Harus diisi!' : ''
-      else error.value = modelValue.value == null ? 'Harus diisi!' : ''
-    }
   })
 })
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div class="w-full min-w-0 max-w-full">
       <Popover :class="$attrs.class" :disabled="disabled">
         <template #trigger>

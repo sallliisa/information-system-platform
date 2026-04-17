@@ -10,10 +10,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  required: {
-    type: Boolean,
-    default: false,
-  },
 })
 </script>
 
@@ -24,6 +20,5 @@ const props = defineProps({
     class="w-full rounded-md border border-outline-variant bg-surface px-3 py-2 text-sm"
     :placeholder="props.placeholder || 'Masukkan klausul ISO'"
     :disabled="props.disabled"
-    :required="props.required"
   />
 </template>

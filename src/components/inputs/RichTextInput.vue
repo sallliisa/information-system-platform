@@ -116,7 +116,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <Editor v-if="shouldMount" :id="id" api-key="no-api-key" v-model="modelValue" :init="init" />
     <div v-else class="editor-placeholder" :style="{ height: `${props.height}px` }">
       <span>Loading editor...</span>

@@ -29,7 +29,7 @@ const iconList = [
 </script>
 
 <template>
-  <BaseInput v-bind="props" :error="error">
+  <BaseInput v-bind="props">
     <div class="grid w-fit grid-cols-4 gap-2">
       <Button v-for="icon in iconList" @click="() => (modelValue = icon)" :variant="modelValue === icon ? 'tonal' : 'icon'" size="square" class="max-w-fit"
         ><i :class="icon" class="text-xl text-on-surface"

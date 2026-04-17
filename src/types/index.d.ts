@@ -67,7 +67,6 @@ declare global {
     // inputConfig?: InputConfig,
     // defaultValue?: Record<string, any>
     getInitialData?: () => Promise<Record<string, any>>
-    validation?: Record<string, Array<{ message: string; validator: (formData: Record<string, any>) => boolean }>>
     onSuccess?: (params: { formData: Record<string, any>; res: Record<string, any> }) => void
   }
 
