@@ -5,24 +5,44 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 export const AUTHENTICATED_NAVBAR_HEIGHT = 72
 export const AUTHENTICATED_NAVBAR_BOTTOM_PADDING = 8
 export const AUTHENTICATED_CONTENT_BREATHING_ROOM = 12
+export const DEFAULT_ACCESSORY_STACK_GAP = 10
 
 type RouteExtraOffsets = Record<string, number>
-type RouteBottomAccessories = Record<string, RegisteredBottomAccessory>
+type RouteAccessories = Record<string, Record<string, AccessoryRegistryItem>>
 
-export type RegisteredBottomAccessory = {
+type AccessoryRegistryItem = {
   element: ReactNode
-  gapFromNavbar: number
+  explicitHeight?: number
+  measuredHeight: number
+  order: number
+}
+
+type UpsertAccessoryPayload = {
+  element: ReactNode
+  explicitHeight?: number
+  order: number
+}
+
+export type RegisteredRouteAccessory = {
+  accessoryId: string
+  element: ReactNode
+  explicitHeight?: number
+  measuredHeight: number
+  resolvedHeight: number
+  order: number
 }
 
 type BottomOffsetContextValue = {
   baseOffset: number
-  extraOffset: number
-  totalOffset: number
+  stackGap: number
   setRouteExtraOffset: (routeKey: string, offset: number) => void
   clearRouteExtraOffset: (routeKey: string) => void
-  setRouteBottomAccessory: (routeKey: string, accessory: RegisteredBottomAccessory) => void
-  clearRouteBottomAccessory: (routeKey: string) => void
-  getRouteBottomAccessory: (routeKey: string) => RegisteredBottomAccessory | null
+  upsertRouteAccessory: (routeKey: string, accessoryId: string, payload: UpsertAccessoryPayload) => void
+  unregisterRouteAccessory: (routeKey: string, accessoryId: string) => void
+  updateRouteAccessoryMeasuredHeight: (routeKey: string, accessoryId: string, measuredHeight: number) => void
+  getRouteAccessories: (routeKey: string) => RegisteredRouteAccessory[]
+  getRouteAccessoryExtraOffset: (routeKey: string) => number
+  getRouteManualExtraOffset: (routeKey: string) => number
 }
 
 const BottomOffsetContext = createContext<BottomOffsetContextValue | null>(null)
@@ -32,10 +52,17 @@ function normalizeOffset(value: number): number {
   return value
 }
 
-export function BottomOffsetProvider({ children }: { children: ReactNode }) {
+export function AccessoryProvider({
+  children,
+  stackGap = DEFAULT_ACCESSORY_STACK_GAP,
+}: {
+  children: ReactNode
+  stackGap?: number
+}) {
   const insets = useSafeAreaInsets()
+  const normalizedStackGap = normalizeOffset(stackGap)
   const [routeExtraOffsets, setRouteExtraOffsets] = useState<RouteExtraOffsets>({})
-  const [routeBottomAccessories, setRouteBottomAccessories] = useState<RouteBottomAccessories>({})
+  const [routeAccessories, setRouteAccessories] = useState<RouteAccessories>({})
 
   const baseOffset = AUTHENTICATED_NAVBAR_HEIGHT + AUTHENTICATED_NAVBAR_BOTTOM_PADDING + insets.bottom
 
@@ -56,63 +83,138 @@ export function BottomOffsetProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
-  const setRouteBottomAccessory = useCallback((routeKey: string, accessory: RegisteredBottomAccessory) => {
-    const normalizedAccessory = {
-      ...accessory,
-      gapFromNavbar: normalizeOffset(accessory.gapFromNavbar),
-    }
+  const upsertRouteAccessory = useCallback((routeKey: string, accessoryId: string, payload: UpsertAccessoryPayload) => {
+    const normalizedExplicitHeight =
+      payload.explicitHeight === undefined ? undefined : normalizeOffset(payload.explicitHeight)
 
-    setRouteBottomAccessories((current) => {
-      const existingAccessory = current[routeKey]
+    setRouteAccessories((current) => {
+      const currentRouteAccessories = current[routeKey] ?? {}
+      const existingAccessory = currentRouteAccessories[accessoryId]
+      const nextAccessory: AccessoryRegistryItem = {
+        element: payload.element,
+        explicitHeight: normalizedExplicitHeight,
+        measuredHeight: existingAccessory?.measuredHeight ?? 0,
+        order: existingAccessory?.order ?? payload.order,
+      }
+
       if (
-        existingAccessory?.element === normalizedAccessory.element &&
-        existingAccessory.gapFromNavbar === normalizedAccessory.gapFromNavbar
+        existingAccessory &&
+        existingAccessory.element === nextAccessory.element &&
+        existingAccessory.explicitHeight === nextAccessory.explicitHeight &&
+        existingAccessory.measuredHeight === nextAccessory.measuredHeight &&
+        existingAccessory.order === nextAccessory.order
       ) {
         return current
       }
 
-      return { ...current, [routeKey]: normalizedAccessory }
+      return {
+        ...current,
+        [routeKey]: {
+          ...currentRouteAccessories,
+          [accessoryId]: nextAccessory,
+        },
+      }
     })
   }, [])
 
-  const clearRouteBottomAccessory = useCallback((routeKey: string) => {
-    setRouteBottomAccessories((current) => {
-      if (!(routeKey in current)) return current
+  const unregisterRouteAccessory = useCallback((routeKey: string, accessoryId: string) => {
+    setRouteAccessories((current) => {
+      const currentRouteAccessories = current[routeKey]
+      if (!currentRouteAccessories || !(accessoryId in currentRouteAccessories)) return current
+
+      const nextRouteAccessories = { ...currentRouteAccessories }
+      delete nextRouteAccessories[accessoryId]
+
       const next = { ...current }
-      delete next[routeKey]
+      if (Object.keys(nextRouteAccessories).length > 0) {
+        next[routeKey] = nextRouteAccessories
+      } else {
+        delete next[routeKey]
+      }
       return next
     })
   }, [])
 
-  const getRouteBottomAccessory = useCallback(
-    (routeKey: string) => routeBottomAccessories[routeKey] ?? null,
-    [routeBottomAccessories]
+  const updateRouteAccessoryMeasuredHeight = useCallback((routeKey: string, accessoryId: string, measuredHeight: number) => {
+    const normalizedMeasuredHeight = normalizeOffset(measuredHeight)
+
+    setRouteAccessories((current) => {
+      const currentRouteAccessories = current[routeKey]
+      if (!currentRouteAccessories) return current
+
+      const existingAccessory = currentRouteAccessories[accessoryId]
+      if (!existingAccessory || existingAccessory.measuredHeight === normalizedMeasuredHeight) return current
+
+      return {
+        ...current,
+        [routeKey]: {
+          ...currentRouteAccessories,
+          [accessoryId]: {
+            ...existingAccessory,
+            measuredHeight: normalizedMeasuredHeight,
+          },
+        },
+      }
+    })
+  }, [])
+
+  const getRouteAccessories = useCallback(
+    (routeKey: string) => {
+      const currentRouteAccessories = routeAccessories[routeKey]
+      if (!currentRouteAccessories) return []
+
+      return Object.entries(currentRouteAccessories)
+        .map(([accessoryId, accessory]) => ({
+          accessoryId,
+          element: accessory.element,
+          explicitHeight: accessory.explicitHeight,
+          measuredHeight: accessory.measuredHeight,
+          resolvedHeight: accessory.explicitHeight ?? accessory.measuredHeight,
+          order: accessory.order,
+        }))
+        .sort((left, right) => left.order - right.order)
+    },
+    [routeAccessories]
   )
 
-  const extraOffset = useMemo(
-    () => Object.values(routeExtraOffsets).reduce((sum, value) => sum + value, 0),
+  const getRouteAccessoryExtraOffset = useCallback(
+    (routeKey: string) => {
+      const accessories = getRouteAccessories(routeKey)
+      if (accessories.length === 0) return 0
+      return accessories.reduce((sum, accessory) => sum + accessory.resolvedHeight + normalizedStackGap, 0)
+    },
+    [getRouteAccessories, normalizedStackGap]
+  )
+
+  const getRouteManualExtraOffset = useCallback(
+    (routeKey: string) => routeExtraOffsets[routeKey] ?? 0,
     [routeExtraOffsets]
   )
 
   const value = useMemo(
     () => ({
       baseOffset,
-      extraOffset,
-      totalOffset: baseOffset + extraOffset + AUTHENTICATED_CONTENT_BREATHING_ROOM,
+      stackGap: normalizedStackGap,
       setRouteExtraOffset,
       clearRouteExtraOffset,
-      setRouteBottomAccessory,
-      clearRouteBottomAccessory,
-      getRouteBottomAccessory,
+      upsertRouteAccessory,
+      unregisterRouteAccessory,
+      updateRouteAccessoryMeasuredHeight,
+      getRouteAccessories,
+      getRouteAccessoryExtraOffset,
+      getRouteManualExtraOffset,
     }),
     [
       baseOffset,
-      clearRouteBottomAccessory,
       clearRouteExtraOffset,
-      extraOffset,
-      getRouteBottomAccessory,
-      setRouteBottomAccessory,
+      getRouteAccessoryExtraOffset,
+      getRouteAccessories,
+      getRouteManualExtraOffset,
+      normalizedStackGap,
       setRouteExtraOffset,
+      unregisterRouteAccessory,
+      updateRouteAccessoryMeasuredHeight,
+      upsertRouteAccessory,
     ]
   )
 

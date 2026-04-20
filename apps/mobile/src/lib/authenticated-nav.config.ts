@@ -7,23 +7,16 @@ import {
   type MobileRouteId,
 } from './route-manifest'
 
-type AuthenticatedNavRegularItem = {
-  kind: 'regular'
-  routeId: MobileRouteId
-  label: string
-  icon: string
-}
-
-type AuthenticatedNavSpecialItem = {
-  kind: 'special'
+type AuthenticatedNavItem = {
+  kind: 'regular' | 'special'
   routeId: MobileRouteId
   label: string
   icon: string
 }
 
 export type AuthenticatedNavConfig = {
-  regular: readonly AuthenticatedNavRegularItem[]
-  special: AuthenticatedNavSpecialItem
+  regular: readonly AuthenticatedNavItem[]
+  special: AuthenticatedNavItem
 }
 
 function assertAuthenticatedNavConfig(config: AuthenticatedNavConfig): AuthenticatedNavConfig {

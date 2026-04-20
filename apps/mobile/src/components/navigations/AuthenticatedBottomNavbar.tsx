@@ -4,7 +4,12 @@ import { usePathname, useRouter } from 'expo-router'
 import { Pressable, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AUTHENTICATED_NAV_CONFIG } from '../../lib/authenticated-nav.config'
-import { AUTHENTICATED_NAVBAR_BOTTOM_PADDING, AUTHENTICATED_NAVBAR_HEIGHT } from '../../lib/bottom-offset'
+import {
+  AUTHENTICATED_NAVBAR_BOTTOM_PADDING,
+  AUTHENTICATED_NAVBAR_HEIGHT,
+  DEFAULT_ACCESSORY_STACK_GAP,
+  useBottomOffsetContext,
+} from '../../lib/bottom-offset'
 import { hasPrivateRoutePermission } from '../../lib/route-access'
 import { getRouteById, normalizeRoutePath } from '../../lib/route-manifest'
 import { getPermissions } from '../../lib/storage'
@@ -13,6 +18,7 @@ import { materialColors } from '../../theme/material'
 export function AuthenticatedBottomNavbar() {
   const router = useRouter()
   const pathname = normalizeRoutePath(usePathname())
+  const bottomOffsetContext = useBottomOffsetContext()
   const [permissionPayload, setPermissionPayload] = useState<unknown>([])
 
   useEffect(() => {
@@ -36,9 +42,32 @@ export function AuthenticatedBottomNavbar() {
   }, [permissionPayload])
 
   const navItems = useMemo(() => [...regularItems, AUTHENTICATED_NAV_CONFIG.special], [regularItems])
+  const routeAccessories = bottomOffsetContext?.getRouteAccessories(pathname) ?? []
+  const stackGap = bottomOffsetContext?.stackGap ?? DEFAULT_ACCESSORY_STACK_GAP
 
   return (
     <View pointerEvents="box-none" className="absolute bottom-0 left-0 right-0 bg-transparent" style={{ backgroundColor: 'transparent' }}>
+      {routeAccessories.length > 0 ? (
+        <View pointerEvents="box-none" className="px-4" style={{ marginBottom: stackGap }}>
+          <View pointerEvents="box-none" style={{ rowGap: stackGap, flexDirection: 'column-reverse' }}>
+            {routeAccessories.map((accessory) => (
+              <View
+                key={accessory.accessoryId}
+                pointerEvents="box-none"
+                onLayout={(event) => {
+                  bottomOffsetContext?.updateRouteAccessoryMeasuredHeight(
+                    pathname,
+                    accessory.accessoryId,
+                    event.nativeEvent.layout.height
+                  )
+                }}
+              >
+                {accessory.element}
+              </View>
+            ))}
+          </View>
+        </View>
+      ) : null}
       <SafeAreaView
         edges={['bottom']}
         className="bg-transparent px-4"

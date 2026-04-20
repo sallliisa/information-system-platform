@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { ScrollView, View } from 'react-native'
 import { AuthenticatedBottomNavbar } from '../components/navigations/AuthenticatedBottomNavbar'
-import { BottomOffsetProvider } from '../lib/bottom-offset'
-import { useBottomAccessory, useBottomOffset } from '../hooks/useBottomOffset'
+import { AccessoryProvider } from '../lib/bottom-offset'
+import { useBottomOffset } from '../hooks/useBottomOffset'
 import { materialColors } from '../theme/material'
 
 type AuthenticatedAppShellProps = {
@@ -11,15 +11,14 @@ type AuthenticatedAppShellProps = {
 
 export function AuthenticatedAppShell({ children }: AuthenticatedAppShellProps) {
   return (
-    <BottomOffsetProvider>
+    <AccessoryProvider>
       <AuthenticatedAppShellContent>{children}</AuthenticatedAppShellContent>
-    </BottomOffsetProvider>
+    </AccessoryProvider>
   )
 }
 
 function AuthenticatedAppShellContent({ children }: AuthenticatedAppShellProps) {
   const totalBottomOffset = useBottomOffset()
-  const bottomAccessory = useBottomAccessory()
 
   return (
     <View style={{ flex: 1, backgroundColor: materialColors.background }}>
@@ -35,15 +34,6 @@ function AuthenticatedAppShellContent({ children }: AuthenticatedAppShellProps) 
       >
         {children}
       </ScrollView>
-      {bottomAccessory ? (
-        <View
-          pointerEvents="box-none"
-          className="absolute left-4 right-4"
-          style={{ bottom: bottomAccessory.bottom }}
-        >
-          {bottomAccessory.element}
-        </View>
-      ) : null}
       <AuthenticatedBottomNavbar />
     </View>
   )

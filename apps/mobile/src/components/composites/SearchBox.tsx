@@ -1,5 +1,14 @@
 import Icon from 'react-native-remix-icon'
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState, type ComponentProps, type MutableRefObject } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type MutableRefObject,
+} from 'react'
 import { Keyboard, Pressable, TextInput, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native'
 import { materialColors } from '../../theme/material'
 
@@ -77,6 +86,15 @@ export const SearchBox = forwardRef<TextInput, SearchBoxProps>(function SearchBo
     Keyboard.dismiss()
   }, [])
 
+  const clearDraft = useCallback(() => {
+    setDraft('')
+
+    // Keep focus on the input so the first tap clears text instead of just dismissing focus.
+    requestAnimationFrame(() => {
+      inputRef.current?.focus()
+    })
+  }, [])
+
   return (
     <View className={resolvedClassName} style={{ columnGap: 8 }}>
       <View
@@ -109,7 +127,7 @@ export const SearchBox = forwardRef<TextInput, SearchBoxProps>(function SearchBo
           }}
         />
         {draft ? (
-          <Pressable onPress={() => setDraft('')}>
+          <Pressable hitSlop={8} onPressIn={clearDraft}>
             <Icon name="close-line" size={18} color={materialColors.onSurfaceVariant} fallback={null} />
           </Pressable>
         ) : null}
