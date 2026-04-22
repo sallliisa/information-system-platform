@@ -16,8 +16,10 @@ dist-ssr
 coverage
 *.local
 .env
+.expo/
 /cypress/videos/
 /cypress/screenshots/
+apps/mobile/.expo/
 
 # Editor directories and files
 .vscode/*

@@ -79,9 +79,7 @@ export function isAppPublicRoute(route: MobileRouteItem | null | undefined): rou
   return route?.routeType === 'appPublic'
 }
 
-export function hasPrivateRoutePermission(route: MobileRouteItem, permissionPayload: unknown): boolean {
-  if (!isAppPrivateRoute(route)) return false
-  const permissionKeyValue = 'permissionKey' in route ? route.permissionKey : undefined
+export function hasPermissionKey(permissionKeyValue: unknown, permissionPayload: unknown): boolean {
   if (!permissionKeyValue) return true
 
   const permissions = normalizePermissions(permissionPayload)
@@ -94,6 +92,12 @@ export function hasPrivateRoutePermission(route: MobileRouteItem, permissionPayl
   if (!permissionKey) return true
 
   return permissions.has(permissionKey) || permissions.has(`${VIEW_PREFIX}${permissionKey}`)
+}
+
+export function hasPrivateRoutePermission(route: MobileRouteItem, permissionPayload: unknown): boolean {
+  if (!isAppPrivateRoute(route)) return false
+  const permissionKeyValue = 'permissionKey' in route ? route.permissionKey : undefined
+  return hasPermissionKey(permissionKeyValue, permissionPayload)
 }
 
 export function filterPrivateMenuRoutes(routes: readonly MobileRouteItem[], permissionPayload: unknown): MobileRouteItem[] {

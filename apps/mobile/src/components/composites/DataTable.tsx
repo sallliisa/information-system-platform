@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from 'react'
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { formatValue } from '../../lib/format'
+import { Card } from '../base'
 
 type DataTableProps = {
   fields: string[]
@@ -31,19 +32,19 @@ export const DataTable = memo(function DataTable({
 }: DataTableProps) {
   if (!data.length) {
     return (
-      <View className="rounded-xl border border-border bg-white p-4">
+      <Card>
         <Text className="text-center text-slate-500">{emptyText}</Text>
-      </View>
+      </Card>
     )
   }
 
   return (
     <View style={contentContainerStyle} className="gap-2.5">
       {data.map((item, index) => (
-        <Pressable
+        <Card
           key={String(item[keyField] ?? index)}
-          className="rounded-xl border border-border bg-white p-4"
-          onPress={() => onPressRow?.(item)}
+          onPress={onPressRow ? () => onPressRow(item) : undefined}
+          type='outlined'
         >
           <View className="gap-2">
             {fields.map((field) => {
@@ -66,7 +67,7 @@ export const DataTable = memo(function DataTable({
             })}
             {rowActions ? <View className="mt-2 border-t border-border pt-2">{rowActions(item)}</View> : null}
           </View>
-        </Pressable>
+        </Card>
       ))}
     </View>
   )

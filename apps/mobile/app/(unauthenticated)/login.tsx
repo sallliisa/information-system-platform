@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { login } from '../../src/lib/auth'
+import { mobileTextInputContentStyle } from '../../src/theme/textInput'
 
 function extractErrorMessage(error: any): string {
   return String(error?.message?.message || error?.message || error?.error || error?.statusText || 'Terjadi kesalahan')
@@ -48,6 +49,7 @@ export default function LoginScreen() {
             value={username}
             onChangeText={setUsername}
             placeholder="Email"
+            style={mobileTextInputContentStyle}
           />
         </View>
 
@@ -59,6 +61,7 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             placeholder="Password"
+            style={mobileTextInputContentStyle}
           />
         </View>
 

@@ -1,40 +1,27 @@
 import type { ReactNode } from 'react'
-import { ScrollView, View } from 'react-native'
+import { View } from 'react-native'
 import { AuthenticatedBottomNavbar } from '../components/navigations/AuthenticatedBottomNavbar'
-import { AccessoryProvider } from '../lib/bottom-offset'
-import { useBottomOffset } from '../hooks/useBottomOffset'
 import { materialColors } from '../theme/material'
 
 type AuthenticatedAppShellProps = {
   children: ReactNode
 }
 
-export function AuthenticatedAppShell({ children }: AuthenticatedAppShellProps) {
-  return (
-    <AccessoryProvider>
-      <AuthenticatedAppShellContent>{children}</AuthenticatedAppShellContent>
-    </AccessoryProvider>
-  )
+const ROOT_SURFACE_STYLE = {
+  flex: 1,
+  backgroundColor: materialColors.background,
+  color: materialColors.onSurface,
 }
 
-function AuthenticatedAppShellContent({ children }: AuthenticatedAppShellProps) {
-  const totalBottomOffset = useBottomOffset()
-
+export function AuthenticatedAppShell({ children }: AuthenticatedAppShellProps) {
   return (
-    <View style={{ flex: 1, backgroundColor: materialColors.background }}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingTop: 16,
-          paddingBottom: totalBottomOffset,
-          flexGrow: 1,
-        }}
-        keyboardShouldPersistTaps="handled"
-      >
+    <View style={ROOT_SURFACE_STYLE as any}>
+      <View style={{ flex: 1 }}>
         {children}
-      </ScrollView>
-      <AuthenticatedBottomNavbar />
+      </View>
+      <View pointerEvents="box-none" className="absolute bottom-0 left-0 right-0 bg-transparent" style={{ backgroundColor: 'transparent' }}>
+        <AuthenticatedBottomNavbar />
+      </View>
     </View>
   )
 }

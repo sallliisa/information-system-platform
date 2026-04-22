@@ -1,14 +1,14 @@
 import { useCallback } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import type { ModelConfig } from '@repo/model-meta'
 import { CRUDList } from './CRUD/CRUDList'
 import { CRUDDetail } from './CRUD/CRUDDetail'
 import { CRUDCreate } from './CRUD/CRUDCreate'
 import { CRUDUpdate } from './CRUD/CRUDUpdate'
 import { useCrudPermissions } from '../../hooks/useCrudPermissions'
+import type { MobileModelConfig } from '../../features/routes/catalog.types'
 
 type CRUDCompositeProps = {
-  config: ModelConfig
+  config: MobileModelConfig
 }
 
 type CRUDView = 'list' | 'detail' | 'create' | 'update'
@@ -41,7 +41,9 @@ export function CRUDComposite({ config }: CRUDCompositeProps) {
   if (!permissions.view) return null
 
   if (view === 'create') return <CRUDCreate config={config} onBack={() => setView('list')} />
+
   if (view === 'update') return <CRUDUpdate config={config} dataID={dataID} onBack={() => setView('list')} />
+
   if (view === 'detail') {
     return (
       <CRUDDetail

@@ -1,15 +1,16 @@
 import Icon from 'react-native-remix-icon'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
-import { buildListConfig, type ModelConfig } from '@repo/model-meta'
+import { buildListConfig } from '@repo/model-meta'
 import { api } from '../../../lib/api'
 import { DataTable } from '../DataTable'
 import type { CRUDPermissions } from '../../../hooks/useCrudPermissions'
 import { materialColors } from '../../../theme/material'
-import { Accessory, SearchBox } from '..'
+import { SearchBox } from '..'
+import type { MobileModelConfig } from '../../../features/routes/catalog.types'
 
 type CRUDListProps = {
-  config: ModelConfig
+  config: MobileModelConfig
   permissions: CRUDPermissions
   onCreate: () => void
   onDetail: (id: string | number) => void
@@ -49,66 +50,62 @@ export function CRUDList({ config, permissions, onCreate, onDetail, onUpdate }: 
   const keyField = listConfig.uid || 'id'
 
   return (
-    <>
-      <Accessory height={52}>
-        <View className="flex-row items-center" style={{ columnGap: 8 }}>
-          <SearchBox
-            ref={searchInputRef}
-            className="flex-1"
-            value={search}
-            onChangeText={setSearch}
-            placeholder={`Search ${config.title}...`}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-          />
+    <View className="gap-3">
+      <View className="flex-row items-center" style={{ columnGap: 8 }}>
+        <SearchBox
+          ref={searchInputRef}
+          className="flex-1"
+          value={search}
+          onChangeText={setSearch}
+          placeholder={`Search ${config.title}...`}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+        />
 
-          {canCreate && !isSearchFocused ? (
-            <Pressable
-              className="h-[52px] w-[52px] items-center justify-center rounded-full"
-              style={{ backgroundColor: materialColors.primary }}
-              onPress={onCreate}
-            >
-              <Icon name="add-line" size={24} color={materialColors.onPrimary} fallback={null} />
-            </Pressable>
-          ) : null}
-        </View>
-      </Accessory>
-      <View className="gap-3">
-        <View className="flex-row items-center">
-          <Text className="text-xl font-semibold text-text">{config.title}</Text>
-        </View>
-
-        {loading ? (
-          <View className="items-center py-10">
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <DataTable
-            fields={listConfig.fields || []}
-            data={data}
-            keyField={keyField}
-            fieldsAlias={listConfig.fieldsAlias}
-            fieldsDictionary={listConfig.fieldsDictionary}
-            fieldsParse={listConfig.fieldsParse}
-            fieldsProxy={listConfig.fieldsProxy}
-            onPressRow={(row) => onDetail(row[keyField])}
-            rowActions={(row) => (
-              <View className="flex-row gap-2">
-                {permissions.detail && (config.actions?.detail ?? true) ? (
-                  <Pressable className="rounded-md bg-sky-600 px-3 py-2" onPress={() => onDetail(row[keyField])}>
-                    <Text className="text-xs font-semibold text-white">Detail</Text>
-                  </Pressable>
-                ) : null}
-                {permissions.update && (config.actions?.update ?? true) ? (
-                  <Pressable className="rounded-md bg-amber-500 px-3 py-2" onPress={() => onUpdate(row[keyField])}>
-                    <Text className="text-xs font-semibold text-white">Update</Text>
-                  </Pressable>
-                ) : null}
-              </View>
-            )}
-          />
-        )}
+        {canCreate && !isSearchFocused ? (
+          <Pressable
+            className="h-[52px] w-[52px] items-center justify-center rounded-full"
+            style={{ backgroundColor: materialColors.primary }}
+            onPress={onCreate}
+          >
+            <Icon name="add-line" size={24} color={materialColors.onPrimary} fallback={null} />
+          </Pressable>
+        ) : null}
       </View>
-    </>
+      <View className="flex-row items-center">
+        <Text className="text-xl font-semibold text-text">{config.title}</Text>
+      </View>
+
+      {loading ? (
+        <View className="items-center py-10">
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <DataTable
+          fields={listConfig.fields || []}
+          data={data}
+          keyField={keyField}
+          fieldsAlias={listConfig.fieldsAlias}
+          fieldsDictionary={listConfig.fieldsDictionary}
+          fieldsParse={listConfig.fieldsParse}
+          fieldsProxy={listConfig.fieldsProxy}
+          onPressRow={(row) => onDetail(row[keyField])}
+          rowActions={(row) => (
+            <View className="flex-row gap-2">
+              {permissions.detail && (config.actions?.detail ?? true) ? (
+                <Pressable className="rounded-md bg-sky-600 px-3 py-2" onPress={() => onDetail(row[keyField])}>
+                  <Text className="text-xs font-semibold text-white">Detail</Text>
+                </Pressable>
+              ) : null}
+              {permissions.update && (config.actions?.update ?? true) ? (
+                <Pressable className="rounded-md bg-amber-500 px-3 py-2" onPress={() => onUpdate(row[keyField])}>
+                  <Text className="text-xs font-semibold text-white">Update</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          )}
+        />
+      )}
+    </View>
   )
 }

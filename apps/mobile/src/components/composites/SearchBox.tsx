@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { Keyboard, Pressable, TextInput, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native'
 import { materialColors } from '../../theme/material'
+import { mobileTextInputContentStyle } from '../../theme/textInput'
 
 type SearchBoxProps = {
   value?: string
@@ -111,12 +112,12 @@ export const SearchBox = forwardRef<TextInput, SearchBoxProps>(function SearchBo
         <Icon name="search-line" size={18} color={materialColors.onSurfaceVariant} fallback={null} />
         <TextInput
           ref={setInputRefs}
-          className="flex-1 text-sm"
+          className="flex-1"
           value={draft}
           onChangeText={setDraft}
           placeholder={placeholder}
           placeholderTextColor={materialColors.onSurfaceVariant}
-          style={[{ color: materialColors.onSurface }, inputStyle]}
+          style={[mobileTextInputContentStyle, { color: materialColors.onSurface, fontSize: 14 }, inputStyle]}
           onFocus={(event) => {
             setIsFocused(true)
             onFocus?.(event)

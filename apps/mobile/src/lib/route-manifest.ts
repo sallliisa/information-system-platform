@@ -26,6 +26,9 @@ export type MobileRouteManifest = {
 
 export const SYSTEM_LOGIN_ROUTE_ID = 'system.login' as const
 export const APP_PRIVATE_MENU_ROUTE_ID = 'app.menu' as const
+export const APP_PRIVATE_PROFILE_ROUTE_ID = 'app.profile' as const
+export const APP_PRIVATE_PROFILE_EDIT_ROUTE_ID = 'app.profile.edit' as const
+export const APP_PRIVATE_PROFILE_SETTINGS_ROUTE_ID = 'app.profile.settings' as const
 export const APP_PRIVATE_DUMMY_TAB_1_ROUTE_ID = 'dummy.tab1' as const
 export const APP_PRIVATE_DUMMY_TAB_2_ROUTE_ID = 'dummy.tab2' as const
 export const APP_PRIVATE_DUMMY_TAB_3_ROUTE_ID = 'dummy.tab3' as const
@@ -89,42 +92,39 @@ export const MOBILE_ROUTE_MANIFEST = {
         routeType: 'appPrivate',
       },
       {
+        id: APP_PRIVATE_PROFILE_ROUTE_ID,
+        href: '/profile',
+        title: 'Profile',
+        description: 'User profile summary and quick actions.',
+        group: 'profile',
+        icon: 'user-3-line',
+        routeType: 'appPrivate',
+      },
+      {
+        id: APP_PRIVATE_PROFILE_EDIT_ROUTE_ID,
+        href: '/profile/edit',
+        title: 'Edit Profile',
+        description: 'Manage profile identity and account details.',
+        group: 'profile',
+        icon: 'user-settings-line',
+        routeType: 'appPrivate',
+      },
+      {
+        id: APP_PRIVATE_PROFILE_SETTINGS_ROUTE_ID,
+        href: '/profile/settings',
+        title: 'Settings',
+        description: 'Manage profile-related preferences.',
+        group: 'profile',
+        icon: 'settings-3-line',
+        routeType: 'appPrivate',
+      },
+      {
         id: APP_PRIVATE_MENU_ROUTE_ID,
         href: '/menu',
         title: 'Search',
         description: 'Search authenticated routes and settings.',
         group: 'system',
         icon: 'search-line',
-        routeType: 'appPrivate',
-      },
-      {
-        id: 'settings.users',
-        href: '/settings/users',
-        title: 'Users',
-        description: 'Manage application users.',
-        group: 'settings',
-        icon: 'team-line',
-        permissionKey: 'users',
-        routeType: 'appPrivate',
-      },
-      {
-        id: 'settings.roles',
-        href: '/settings/roles',
-        title: 'Roles',
-        description: 'Manage role configuration.',
-        group: 'settings',
-        icon: 'shield-line',
-        permissionKey: 'roles',
-        routeType: 'appPrivate',
-      },
-      {
-        id: 'settings.tasks',
-        href: '/settings/tasks',
-        title: 'Tasks',
-        description: 'Manage task permissions.',
-        group: 'settings',
-        icon: 'task-line',
-        permissionKey: 'tasks',
         routeType: 'appPrivate',
       },
     ],
@@ -206,10 +206,6 @@ export function getRoutesByType(routeType: MobileRouteType): MobileRouteItem[] {
 
 export function getPrivateMenuRoutes(permissionPayload: unknown): MobileRouteItem[] {
   return filterPrivateMenuRoutes(getRoutesByType('appPrivate'), permissionPayload)
-}
-
-export function getPrivateMenuCatalogRoutes(permissionPayload: unknown): MobileRouteItem[] {
-  return getPrivateMenuRoutes(permissionPayload).filter((route) => route.id !== APP_PRIVATE_MENU_ROUTE_ID)
 }
 
 export function getPublicMenuRoutes(): MobileRouteItem[] {

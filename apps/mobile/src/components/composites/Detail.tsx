@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { api } from '../../lib/api'
 import { formatValue } from '../../lib/format'
+import { Card } from '../base'
 
 type DetailProps = {
   getAPI: string
@@ -87,7 +88,7 @@ export function Detail({
   }
 
   return (
-    <View className="rounded-xl border border-border bg-white p-4">
+    <Card>
       <View className="gap-3">
         {rows.map((row) => (
           <View key={row.field} className="gap-1">
@@ -96,7 +97,7 @@ export function Detail({
           </View>
         ))}
       </View>
-    </View>
+    </Card>
   )
 }
 

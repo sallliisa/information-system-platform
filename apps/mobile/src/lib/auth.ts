@@ -1,7 +1,7 @@
 import { router } from 'expo-router'
 import { api, setUnauthorizedHandler } from './api'
 import { mobileConfig } from './config'
-import { DEFAULT_APP_PRIVATE_ROUTE_ID, SYSTEM_LOGIN_ROUTE_ID, getRouteHref } from './route-manifest'
+import { SYSTEM_LOGIN_ROUTE_ID, getRouteHref } from './route-manifest'
 import {
   clearAuthToken,
   clearPermissions,
@@ -13,6 +13,7 @@ import {
   setPermissions,
   setProfile,
 } from './storage'
+import { getDefaultPrivateRouteHref } from '../features/routes/catalog.index'
 
 type LoginInput = {
   username: string
@@ -40,7 +41,7 @@ type LoginResult =
 
 let signOutPromise: Promise<void> | null = null
 const LOGIN_ROUTE = getRouteHref(SYSTEM_LOGIN_ROUTE_ID)
-const DEFAULT_AUTH_ROUTE = getRouteHref(DEFAULT_APP_PRIVATE_ROUTE_ID)
+const DEFAULT_AUTH_FALLBACK_ROUTE = '/menu'
 
 export function shouldBlockNoAccess({ tasks, mode }: { tasks: any[] | undefined; mode: string }) {
   return mode === 'PRODUCTION' && Array.isArray(tasks) && tasks.length === 0
@@ -93,7 +94,7 @@ export async function login(payload: LoginInput): Promise<LoginResult> {
   }
 
   await Promise.all([setAuthToken(token), setProfile(response?.user || {}), setPermissions(tasks)])
-  const postLoginRoute = (await consumePostLoginRedirect()) || DEFAULT_AUTH_ROUTE
+  const postLoginRoute = (await consumePostLoginRedirect()) || getDefaultPrivateRouteHref(tasks, DEFAULT_AUTH_FALLBACK_ROUTE)
 
   return {
     ok: true,

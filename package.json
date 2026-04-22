@@ -5,11 +5,12 @@
   "packageManager": "pnpm@10.8.0",
   "scripts": {
     "dev": "npm --prefix apps/web run dev",
-    "dev:mobile": "npm --prefix apps/mobile run dev",
+    "dev:mobile": "npm --prefix apps/mobile-v2 run dev",
+    "dev:mobile:legacy": "npm --prefix apps/mobile run dev",
     "build": "npm --prefix apps/web run build",
     "test": "npm --prefix apps/web run test",
     "type-check": "npm --prefix apps/web run type-check",
-    "type-check:mobile": "npm --prefix apps/mobile run type-check",
+    "type-check:mobile": "npm --prefix apps/mobile-v2 run type-check",
     "lint": "npm --prefix apps/web run lint"
   },
   "devDependencies": {

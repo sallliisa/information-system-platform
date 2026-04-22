@@ -6,7 +6,8 @@ Current status:
 
 - `apps/web` is the active Vue 3 + Vite frontend.
 - `apps/api` is a placeholder for the future backend app.
-- `apps/mobile` is now bootstrapped with Expo Router + React Native.
+- `apps/mobile-v2` is the active Expo SDK 54 mobile baseline.
+- `apps/mobile` remains as the legacy mobile implementation.
 - `packages/contracts`, `packages/sdk`, and `packages/domain` are scaffolded package boundaries only.
 - `packages/model-meta` contains shared model config types, merge/runtime utilities, and base models.
 
@@ -15,7 +16,8 @@ Current status:
 ```txt
 apps/
   api/              # backend placeholder
-  mobile/           # Expo mobile app scaffold
+  mobile-v2/        # active Expo mobile app (Phase 1 baseline)
+  mobile/           # legacy Expo mobile app
   web/              # active Vue frontend
 packages/
   contracts/        # future generated API contracts
@@ -29,11 +31,12 @@ packages/
 The repository is standardized on `pnpm`.
 
 - `pnpm dev` - run the web app only
-- `pnpm dev:mobile` - run the mobile app only
+- `pnpm dev:mobile` - run the active mobile app (`apps/mobile-v2`)
+- `pnpm dev:mobile:legacy` - run the legacy mobile app (`apps/mobile`)
 - `pnpm build` - build the web app only
 - `pnpm test` - run the web test suite only
 - `pnpm type-check` - type-check the web app only
-- `pnpm type-check:mobile` - type-check the mobile app only
+- `pnpm type-check:mobile` - type-check the active mobile app (`apps/mobile-v2`)
 - `pnpm lint` - lint the web app only
 
 ## Current Baseline

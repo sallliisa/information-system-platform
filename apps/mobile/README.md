@@ -23,7 +23,7 @@ This workspace contains the mobile metaframework scaffold built on Expo + React 
 ## Current Routes
 
 - `system`: `/login` (guest-only)
-- `appPrivate`: `/dummy/tab-1`, `/dummy/tab-2`, `/dummy/tab-3`, `/dummy/tab-4`, `/menu`, `/settings/users`, `/settings/roles`, `/settings/tasks` (authenticated)
+- `appPrivate`: `/dummy/tab-1`, `/dummy/tab-2`, `/dummy/tab-3`, `/dummy/tab-4`, `/profile`, `/profile/edit`, `/profile/settings`, `/menu`, `/settings/users`, `/settings/roles`, `/settings/tasks` (authenticated)
 - `appPublic`: `/public/about` (guest + authenticated)
 
 ## App Shells
@@ -35,9 +35,10 @@ This workspace contains the mobile metaframework scaffold built on Expo + React 
 ## Authenticated Navigation (Phase 1)
 
 - Static nav configuration source: `src/lib/authenticated-nav.config.ts`
-- V1 regular tabs: `Tab 1` to `Tab 4` (dummy routes under `/dummy/tab-*`)
-- Rightmost special tab: `Search` route (`/menu`)
+- Regular tabs: `Tab 1` to `Tab 3` (dummy routes under `/dummy/tab-*`)
+- Special tabs (ordered): `Profile` (`/profile`) then `Search` (`/menu`)
 - `/menu` renders grouped searchable route cards from private route manifest entries
+- Profile hub route (`/profile`) exposes quick actions to `/profile/edit`, `/profile/settings`, and logout
 
 ## Shared Material Tokens
 

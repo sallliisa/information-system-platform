@@ -3,6 +3,8 @@ import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-nativ
 import { Picker } from '@react-native-picker/picker'
 import { evaluateFieldDependencies, type InputConfig } from '@repo/model-meta'
 import { api } from '../../lib/api'
+import { mobileTextInputContentStyle } from '../../theme/textInput'
+import { Card } from '../base'
 
 type FormProps = {
   fields: string[]
@@ -161,7 +163,7 @@ export function Form({
   }
 
   return (
-    <View className="rounded-xl border border-border bg-white p-4">
+    <Card>
       <View className="gap-4">
         {fields.map((field) => {
           if (field.startsWith('S|') || field.startsWith('S1|')) {
@@ -177,9 +179,11 @@ export function Form({
 
           const label = fieldsAlias[field] || field
           const dependencyProps = dependencies[field]?.props?.value || {}
+          const { style: dependencyInputStyle, ...dependencyInputProps } = dependencyProps as { style?: any }
           const currentValue = formData[field]
           const options = (remoteOptions[field] || config.props?.data || []) as Option[]
           const disabled = dependencies[field]?.disabled?.value || config.props?.disabled
+          const isMultiline = config.type === 'textarea'
 
           return (
             <View key={field} className="gap-1">
@@ -203,11 +207,12 @@ export function Form({
                   editable={!disabled}
                   className="rounded-xl border border-border bg-slate-50 px-3 py-2 text-text"
                   placeholder={label}
-                  multiline={config.type === 'textarea'}
+                  multiline={isMultiline}
                   secureTextEntry={config.type === 'password'}
                   value={currentValue === undefined || currentValue === null ? '' : String(currentValue)}
                   onChangeText={(value) => setFieldValue(field, value)}
-                  {...dependencyProps}
+                  style={isMultiline ? dependencyInputStyle : [mobileTextInputContentStyle, dependencyInputStyle]}
+                  {...dependencyInputProps}
                 />
               )}
 
@@ -224,6 +229,6 @@ export function Form({
           <Text className="font-semibold text-white">{submitting ? 'Menyimpan...' : 'Submit'}</Text>
         </Pressable>
       </View>
-    </View>
+    </Card>
   )
 }

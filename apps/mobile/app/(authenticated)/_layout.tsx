@@ -1,10 +1,13 @@
 import { useEffect, useMemo } from 'react'
-import { Redirect, Slot, useGlobalSearchParams, usePathname } from 'expo-router'
+import { Platform } from 'react-native'
+import { Redirect, Stack, useGlobalSearchParams, usePathname } from 'expo-router'
 import { AuthenticatedAppShell } from '../../src/appshells/AuthenticatedAppShell'
 import { LoadingScreen } from '../../src/appshells/LoadingScreen'
 import { useSessionStatus } from '../../src/hooks/useSessionStatus'
+import { buildRouteRefreshKeyId } from '../../src/lib/route-refresh-key'
 import { SYSTEM_LOGIN_ROUTE_ID, getRouteHref } from '../../src/lib/route-manifest'
 import { savePostLoginRedirect } from '../../src/lib/storage'
+import { RefreshBoundary, removeRefreshKey } from '../../src/stores/keyManager'
 
 function buildInternalRoute(pathname: string, params: Record<string, string | string[] | undefined>) {
   const search = new URLSearchParams()
@@ -16,11 +19,19 @@ function buildInternalRoute(pathname: string, params: Record<string, string | st
   return queryString ? `${pathname}?${queryString}` : pathname
 }
 
+const authenticatedStackScreenOptions = {
+  headerShown: false,
+  gestureEnabled: true,
+  animation: Platform.OS === 'ios' ? ('default' as const) : ('fade' as const),
+  ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: true } : {}),
+}
+
 export default function AuthenticatedLayout() {
   const pathname = usePathname()
   const params = useGlobalSearchParams<Record<string, string | string[] | undefined>>()
   const status = useSessionStatus()
   const loginRoute = getRouteHref(SYSTEM_LOGIN_ROUTE_ID)
+  const routeRefreshKeyId = useMemo(() => buildRouteRefreshKeyId(pathname || '/'), [pathname])
 
   const targetRoute = useMemo(() => buildInternalRoute(pathname || '/', params), [pathname, params])
 
@@ -29,6 +40,12 @@ export default function AuthenticatedLayout() {
       void savePostLoginRedirect(targetRoute)
     }
   }, [status, targetRoute])
+
+  useEffect(() => {
+    return () => {
+      removeRefreshKey(routeRefreshKeyId)
+    }
+  }, [routeRefreshKeyId])
 
   if (status === 'checking') {
     return <LoadingScreen />
@@ -40,7 +57,9 @@ export default function AuthenticatedLayout() {
 
   return (
     <AuthenticatedAppShell>
-      <Slot />
+      <RefreshBoundary keyId={routeRefreshKeyId}>
+        <Stack screenOptions={authenticatedStackScreenOptions} />
+      </RefreshBoundary>
     </AuthenticatedAppShell>
   )
 }
