@@ -1,14 +1,14 @@
 import { useMemo } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { CRUDDetail } from '../../../../../../src/components/composites/CRUD'
+import { CRUDDetail } from '@/src/components/composites/CRUD'
+import { ModelRouteNotFound } from '@/src/features/routes/ModelRouteNotFound'
 import {
-  buildModuleModelKey,
   buildUpdateHref,
+  getCatalogEntry,
   getMobileRouteCatalog,
-} from '../../../../../../src/features/routes/catalog.index'
-import { ModelRouteNotFound } from '../../../../../../src/features/routes/ModelRouteNotFound'
-import { navigateBackOrFallback } from '../../../../../../src/features/routes/navigation.policy'
-import { pickRouteParam } from '../../../../../../src/features/routes/route-params'
+} from '@/src/features/routes/catalog.index'
+import { navigateBackOrFallback } from '@/src/features/routes/navigation.policy'
+import { pickRouteParam } from '@/src/features/routes/route-params'
 
 export default function DynamicCRUDDetailRoute() {
   const router = useRouter()
@@ -16,11 +16,12 @@ export default function DynamicCRUDDetailRoute() {
   const moduleSlug = pickRouteParam(params, 'module')
   const modelSlug = pickRouteParam(params, 'model')
   const dataID = pickRouteParam(params, 'id')
+  const catalog = useMemo(() => getMobileRouteCatalog(), [])
 
   const entry = useMemo(() => {
     if (!moduleSlug || !modelSlug) return undefined
-    return getMobileRouteCatalog().byModuleModel.get(buildModuleModelKey(moduleSlug, modelSlug))
-  }, [moduleSlug, modelSlug])
+    return getCatalogEntry(catalog, moduleSlug, modelSlug)
+  }, [catalog, modelSlug, moduleSlug])
 
   if (!entry) {
     return <ModelRouteNotFound moduleSlug={moduleSlug} modelSlug={modelSlug} />
@@ -29,8 +30,10 @@ export default function DynamicCRUDDetailRoute() {
   return (
     <CRUDDetail
       config={entry.config}
+      moduleSlug={moduleSlug as string}
+      modelSlug={modelSlug as string}
       dataID={dataID}
-      onBack={() => navigateBackOrFallback(router as any, entry.hrefs.list)}
+      onBack={() => navigateBackOrFallback(router, entry.hrefs.list)}
       onUpdate={() => {
         if (!dataID) return
         router.push(buildUpdateHref(entry, dataID) as any)

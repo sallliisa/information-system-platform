@@ -1,4 +1,9 @@
-import type { MobileCatalogEntry, MobileModuleMeta, MobileModelConfig, MobileRouteCatalog } from './catalog.types'
+import type {
+  MobileCatalogEntry,
+  MobileModuleMeta,
+  MobileModelConfig,
+  MobileRouteCatalog,
+} from './catalog.types'
 import { getFallbackCatalogSources } from './catalog.fallback'
 
 export const RESERVED_ROUTE_PATHS = new Set<string>(['/login', '/menu', '/profile', '/dashboard', '/dashboard/details'])
@@ -11,6 +16,7 @@ export type RuntimeContextModule = {
 type RuntimeRequire = {
   context?: (directory: string, useSubdirectories: boolean, regExp: RegExp) => RuntimeContextModule
 }
+
 declare const require: RuntimeRequire | undefined
 
 type ParsedModuleSource = {
@@ -27,8 +33,15 @@ export type CatalogCompilerSources = {
   models: { path: string; config: MobileModelConfig }[]
 }
 
-type IndexedModuleSource = CatalogCompilerSources['modules'][number] & { sourceIndex: number; parsed: ParsedModuleSource }
-type IndexedModelSource = CatalogCompilerSources['models'][number] & { sourceIndex: number; parsed: ParsedModelSource }
+type IndexedModuleSource = CatalogCompilerSources['modules'][number] & {
+  sourceIndex: number
+  parsed: ParsedModuleSource
+}
+
+type IndexedModelSource = CatalogCompilerSources['models'][number] & {
+  sourceIndex: number
+  parsed: ParsedModelSource
+}
 
 function parseModuleSourcePath(path: string): ParsedModuleSource {
   const match = path.match(/^\.\/([^/]+)\/([^/]+)\.module\.ts$/)
@@ -43,9 +56,7 @@ function parseModuleSourcePath(path: string): ParsedModuleSource {
     )
   }
 
-  return {
-    moduleSlug: moduleFolderSlug,
-  }
+  return { moduleSlug: moduleFolderSlug }
 }
 
 function parseModelSourcePath(path: string): ParsedModelSource {
@@ -61,10 +72,7 @@ function parseModelSourcePath(path: string): ParsedModelSource {
     )
   }
 
-  return {
-    moduleSlug,
-    modelSlug: modelFolderSlug,
-  }
+  return { moduleSlug, modelSlug: modelFolderSlug }
 }
 
 function getRuntimeRequire(): RuntimeRequire | null {
@@ -74,7 +82,12 @@ function getRuntimeRequire(): RuntimeRequire | null {
   return null
 }
 
-function buildCatalogEntry(moduleSlug: string, moduleMeta: MobileModuleMeta, modelSlug: string, config: MobileModelConfig): MobileCatalogEntry {
+function buildCatalogEntry(
+  moduleSlug: string,
+  moduleMeta: MobileModuleMeta,
+  modelSlug: string,
+  config: MobileModelConfig
+): MobileCatalogEntry {
   return {
     key: `${moduleSlug}/${modelSlug}`,
     moduleSlug,
@@ -83,20 +96,15 @@ function buildCatalogEntry(moduleSlug: string, moduleMeta: MobileModuleMeta, mod
     config,
     permissionKey: config.permission || modelSlug,
     hrefs: {
-      list: `/${moduleSlug}/${modelSlug}`,
-      create: `/${moduleSlug}/${modelSlug}/create`,
-      detail: `/${moduleSlug}/${modelSlug}/detail/:id`,
-      update: `/${moduleSlug}/${modelSlug}/update/:id`,
+      list: `/menu/${moduleSlug}/${modelSlug}`,
+      create: `/menu/${moduleSlug}/${modelSlug}/create`,
+      detail: `/menu/${moduleSlug}/${modelSlug}/detail/:id`,
+      update: `/menu/${moduleSlug}/${modelSlug}/update/:id`,
     },
   }
 }
 
 function validateReservedCollisions(entry: MobileCatalogEntry) {
-  const modelBasePath = `/${entry.moduleSlug}/${entry.modelSlug}`
-  if (RESERVED_ROUTE_PATHS.has(modelBasePath)) {
-    throw new Error(`Generated model base path "${modelBasePath}" collides with reserved static route path.`)
-  }
-
   const canonicalRoutes = [entry.hrefs.list, entry.hrefs.create, entry.hrefs.detail, entry.hrefs.update]
   for (const route of canonicalRoutes) {
     if (RESERVED_ROUTE_PATHS.has(route)) {
@@ -114,13 +122,15 @@ function sortModules(modules: IndexedModuleSource[]): IndexedModuleSource[] {
   })
 }
 
-function resolveModelsForModule(moduleSlug: string, moduleMeta: MobileModuleMeta, moduleModels: IndexedModelSource[]): IndexedModelSource[] {
+function resolveModelsForModule(
+  moduleSlug: string,
+  moduleMeta: MobileModuleMeta,
+  moduleModels: IndexedModelSource[]
+): IndexedModelSource[] {
   const discovered = [...moduleModels].sort((left, right) => left.sourceIndex - right.sourceIndex)
   const explicitOrder = moduleMeta.models
 
-  if (!explicitOrder || explicitOrder.length === 0) {
-    return discovered
-  }
+  if (!explicitOrder || explicitOrder.length === 0) return discovered
 
   const seen = new Set<string>()
   for (const modelSlug of explicitOrder) {
@@ -164,6 +174,7 @@ export function compileMobileRouteCatalog(sources: CatalogCompilerSources): Mobi
   }
 
   const modelListByModule = new Map<string, IndexedModelSource[]>()
+  const modelsByKey = new Set<string>()
 
   for (const modelSource of indexedModels) {
     const { moduleSlug, modelSlug } = modelSource.parsed
@@ -175,13 +186,14 @@ export function compileMobileRouteCatalog(sources: CatalogCompilerSources): Mobi
     }
 
     const key = `${moduleSlug}/${modelSlug}`
-    const existingEntries = modelListByModule.get(moduleSlug) || []
-    const duplicate = existingEntries.some((entry) => entry.parsed.modelSlug === modelSlug)
-    if (duplicate) {
+    if (modelsByKey.has(key)) {
       throw new Error(`Duplicate model definition for "${key}".`)
     }
+    modelsByKey.add(key)
 
-    modelListByModule.set(moduleSlug, [...existingEntries, modelSource])
+    const current = modelListByModule.get(moduleSlug)
+    if (current) current.push(modelSource)
+    else modelListByModule.set(moduleSlug, [modelSource])
   }
 
   for (const [moduleSlug] of modelListByModule) {
@@ -190,10 +202,10 @@ export function compileMobileRouteCatalog(sources: CatalogCompilerSources): Mobi
     }
   }
 
-  const sortedModules = sortModules(Array.from(modulesBySlug.values()))
   const entries: MobileCatalogEntry[] = []
   const modules: MobileRouteCatalog['modules'] = []
   const byModuleModel = new Map<string, MobileCatalogEntry>()
+  const sortedModules = sortModules(Array.from(modulesBySlug.values()))
 
   for (const moduleSource of sortedModules) {
     const moduleSlug = moduleSource.parsed.moduleSlug

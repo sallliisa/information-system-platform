@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router'
 import { Platform } from 'react-native'
 
-export default function DynamicModelStackLayout() {
+export default function MenuStackLayout() {
   return (
     <Stack
       screenOptions={{
@@ -13,9 +13,10 @@ export default function DynamicModelStackLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ animation: 'none' }} />
-      <Stack.Screen name="create" />
-      <Stack.Screen name="detail/[id]" />
-      <Stack.Screen name="update/[id]" />
+      <Stack.Screen name="[module]/[model]/index" />
+      <Stack.Screen name="[module]/[model]/create" />
+      <Stack.Screen name="[module]/[model]/detail/[id]" />
+      <Stack.Screen name="[module]/[model]/update/[id]" />
     </Stack>
   )
 }

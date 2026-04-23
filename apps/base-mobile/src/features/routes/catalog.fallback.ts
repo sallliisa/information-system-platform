@@ -1,6 +1,6 @@
-import type { CatalogCompilerSources } from './catalog.compiler'
 import settingsModule from './settings/settings.module'
 import usersModel from './settings/users/users.model'
+import type { CatalogCompilerSources } from './catalog.compiler'
 
 export function getFallbackCatalogSources(): CatalogCompilerSources {
   return {

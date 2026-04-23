@@ -1,49 +1,52 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Card } from '../../../../src/components/base'
 import { getMobileRouteCatalog, selectCatalogMenuEntries } from '../../../../src/features/routes/catalog.index'
-import { buildMenuGroups, filterMenuEntries, formatGroupTitle } from '../../../../src/features/routes/menu.selectors'
 import { materialColors } from '../../../../src/theme/material'
 
 export default function MenuScreen() {
   const router = useRouter()
-  const [query, setQuery] = useState('')
-
   const catalog = useMemo(() => getMobileRouteCatalog(), [])
-  const routes = useMemo(() => selectCatalogMenuEntries(catalog), [catalog])
-  const filteredRoutes = useMemo(() => filterMenuEntries(routes, query), [routes, query])
-  const groupedRoutes = useMemo(() => buildMenuGroups(catalog, filteredRoutes), [catalog, filteredRoutes])
+  const entries = useMemo(() => selectCatalogMenuEntries(catalog), [catalog])
+
+  const groupedEntries = useMemo(() => {
+    const visible = new Set(entries.map((entry) => entry.key))
+    return catalog.modules
+      .map((moduleGroup) => ({
+        moduleSlug: moduleGroup.moduleSlug,
+        moduleName: moduleGroup.module.name,
+        moduleDescription: moduleGroup.module.description || '',
+        entries: moduleGroup.entries.filter((entry) => visible.has(entry.key)),
+      }))
+      .filter((moduleGroup) => moduleGroup.entries.length > 0)
+  }, [catalog, entries])
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Menu</Text>
-      <TextInput
-        style={styles.searchInput}
-        value={query}
-        onChangeText={setQuery}
-        placeholder="Search routes..."
-        placeholderTextColor={materialColors.onSurfaceVariant}
-      />
+    <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Menu</Text>
+        <Text style={styles.description}>Choose an available route.</Text>
+      </View>
 
-      {groupedRoutes.length === 0 ? (
-        <Card type="filled" color="surfaceContainerLow" style={styles.emptyCard}>
-          <Text style={styles.emptyTitle}>No routes found</Text>
-          <Text style={styles.emptyDescription}>Try another keyword.</Text>
+      {groupedEntries.length === 0 ? (
+        <Card style={styles.emptyCard} type="filled" color="surfaceContainerLow">
+          <Text style={styles.emptyTitle}>No routes available</Text>
+          <Text style={styles.emptyDescription}>Catalog entries are empty.</Text>
         </Card>
       ) : (
-        groupedRoutes.map((group) => (
-          <View key={group.moduleSlug} style={styles.group}>
-            <Text style={styles.groupTitle}>{formatGroupTitle(group.moduleName || group.moduleSlug)}</Text>
-            {group.moduleDescription ? <Text style={styles.groupDescription}>{group.moduleDescription}</Text> : null}
+        groupedEntries.map((group) => (
+          <View key={group.moduleSlug} style={styles.section}>
+            <Text style={styles.sectionTitle}>{group.moduleName || group.moduleSlug}</Text>
+            {group.moduleDescription ? <Text style={styles.sectionDescription}>{group.moduleDescription}</Text> : null}
 
-            <View style={styles.entryList}>
+            <View style={styles.cards}>
               {group.entries.map((entry) => (
                 <Pressable key={entry.key} onPress={() => router.push(entry.hrefs.list as any)}>
-                  <Card type="filled" color="surfaceContainerLow" style={styles.entryCard}>
-                    <Text style={styles.entryTitle}>{entry.config.title}</Text>
-                    {entry.config.description ? <Text style={styles.entryDescription}>{entry.config.description}</Text> : null}
-                    <Text style={styles.entryPath}>{entry.hrefs.list}</Text>
+                  <Card type="outlined" color="surface" style={styles.routeCard}>
+                    <Text style={styles.routeTitle}>{entry.config.title}</Text>
+                    <Text style={styles.routeDescription}>{entry.config.description || 'Open list route'}</Text>
+                    <Text style={styles.routePath}>{entry.hrefs.list}</Text>
                   </Card>
                 </Pressable>
               ))}
@@ -51,71 +54,67 @@ export default function MenuScreen() {
           </View>
         ))
       )}
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 14,
+  content: {
+    paddingVertical: 4,
+    gap: 18,
+  },
+  header: {
+    gap: 6,
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '700',
     color: materialColors.onSurface,
   },
-  searchInput: {
-    minHeight: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: materialColors.outlineVariant,
-    backgroundColor: materialColors.surfaceContainer,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: materialColors.onSurface,
-  },
-  emptyCard: {
-    gap: 4,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: materialColors.onSurface,
-  },
-  emptyDescription: {
-    fontSize: 13,
+  description: {
+    fontSize: 14,
     color: materialColors.onSurfaceVariant,
   },
-  group: {
+  emptyCard: {
     gap: 8,
   },
-  groupTitle: {
+  emptyTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: materialColors.onSurface,
   },
-  groupDescription: {
-    fontSize: 13,
+  emptyDescription: {
+    fontSize: 14,
     color: materialColors.onSurfaceVariant,
   },
-  entryList: {
+  section: {
     gap: 8,
   },
-  entryCard: {
-    gap: 4,
-  },
-  entryTitle: {
-    fontSize: 15,
-    fontWeight: '600',
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
     color: materialColors.onSurface,
   },
-  entryDescription: {
+  sectionDescription: {
     fontSize: 13,
     color: materialColors.onSurfaceVariant,
   },
-  entryPath: {
-    marginTop: 2,
+  cards: {
+    gap: 10,
+  },
+  routeCard: {
+    gap: 6,
+  },
+  routeTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: materialColors.onSurface,
+  },
+  routeDescription: {
+    fontSize: 13,
+    color: materialColors.onSurfaceVariant,
+  },
+  routePath: {
     fontSize: 12,
     color: materialColors.primary,
   },

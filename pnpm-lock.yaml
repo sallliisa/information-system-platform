@@ -34,9 +34,6 @@ importers:
       '@repo/domain':
         specifier: workspace:*
         version: link:../../packages/domain
-      '@repo/model-meta':
-        specifier: workspace:*
-        version: link:../../packages/model-meta
       '@repo/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk

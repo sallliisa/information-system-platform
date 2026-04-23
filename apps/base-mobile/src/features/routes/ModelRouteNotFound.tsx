@@ -8,15 +8,16 @@ type ModelRouteNotFoundProps = {
 }
 
 export function ModelRouteNotFound({ moduleSlug, modelSlug }: ModelRouteNotFoundProps) {
+  const description =
+    moduleSlug && modelSlug
+      ? `No CRUD configuration found for ${moduleSlug}/${modelSlug}.`
+      : 'Module and model route parameters are required.'
+
   return (
     <View style={styles.container}>
       <Card type="filled" color="surfaceContainerLow" style={styles.card}>
         <Text style={styles.title}>Route not found</Text>
-        <Text style={styles.description}>
-          {moduleSlug && modelSlug
-            ? `No CRUD configuration found for ${moduleSlug}/${modelSlug}.`
-            : 'Module and model parameters are required.'}
-        </Text>
+        <Text style={styles.description}>{description}</Text>
       </Card>
     </View>
   )

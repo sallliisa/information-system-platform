@@ -5,19 +5,12 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "@repo/model-meta": [
-        "../../packages/model-meta/src/index.ts"
-      ],
-      "@repo/model-meta/*": [
-        "../../packages/model-meta/src/*"
       ]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "../../packages/model-meta/src/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]

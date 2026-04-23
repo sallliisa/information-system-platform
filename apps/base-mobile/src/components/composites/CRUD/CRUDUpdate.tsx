@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
-import { Card } from '../../base'
 import { materialColors } from '../../../theme/material'
+import { Card } from '../../base'
 
 type CRUDUpdateProps = {
   config: MobileModelConfig
@@ -12,20 +12,19 @@ type CRUDUpdateProps = {
 export function CRUDUpdate({ config, dataID, onBack }: CRUDUpdateProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.topActions}>
-        <Pressable style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonLabel}>Back</Text>
-        </Pressable>
-      </View>
+      <Pressable style={styles.backButton} onPress={onBack}>
+        <Text style={styles.backLabel}>Back</Text>
+      </Pressable>
 
-      <Text style={styles.title}>Update {config.title}</Text>
-
-      <Card style={styles.card} type="outlined">
-        <Text style={styles.bodyText}>Target record ID: {dataID || '-'}</Text>
-        <Text style={styles.bodyText}>Update form is intentionally dummy in this phase.</Text>
-        <Pressable style={styles.primaryButton} onPress={onBack}>
-          <Text style={styles.primaryButtonLabel}>Done</Text>
-        </Pressable>
+      <Card type="outlined" color="surface">
+        <View style={styles.content}>
+          <Text style={styles.title}>Update {config.title}</Text>
+          <Text style={styles.description}>Dummy form component for now.</Text>
+          <Text style={styles.meta}>Record ID: {dataID || '-'}</Text>
+          <Pressable style={styles.submitButton}>
+            <Text style={styles.submitLabel}>Save (Dummy)</Text>
+          </Pressable>
+        </View>
       </Card>
     </View>
   )
@@ -35,46 +34,46 @@ const styles = StyleSheet.create({
   container: {
     gap: 12,
   },
-  topActions: {
-    flexDirection: 'row',
-  },
   backButton: {
-    minHeight: 42,
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: 10,
     paddingHorizontal: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: materialColors.outlineVariant,
     backgroundColor: materialColors.surfaceContainer,
   },
-  backButtonLabel: {
-    color: materialColors.onSurface,
-    fontWeight: '600',
+  backLabel: {
     fontSize: 13,
-  },
-  title: {
-    fontSize: 22,
     fontWeight: '700',
     color: materialColors.onSurface,
   },
-  card: {
+  content: {
     gap: 10,
   },
-  bodyText: {
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: materialColors.onSurface,
+  },
+  description: {
     fontSize: 14,
     color: materialColors.onSurfaceVariant,
   },
-  primaryButton: {
-    minHeight: 44,
-    borderRadius: 10,
-    backgroundColor: materialColors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+  meta: {
+    fontSize: 13,
+    color: materialColors.onSurface,
   },
-  primaryButtonLabel: {
+  submitButton: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: materialColors.primary,
+  },
+  submitLabel: {
     color: materialColors.onPrimary,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
   },
 })

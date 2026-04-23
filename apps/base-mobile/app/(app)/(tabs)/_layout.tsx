@@ -2,7 +2,6 @@ import { forwardRef, type ComponentRef } from 'react'
 import { TabList, TabSlot, TabTrigger, type TabTriggerSlotProps, Tabs } from 'expo-router/ui'
 import { Pressable, StyleSheet, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { getMobileRouteCatalog } from '../../../src/features/routes/catalog.index'
 import { materialColors } from '../../../src/theme/material'
 
 type CustomTabButtonProps = TabTriggerSlotProps & {
@@ -22,7 +21,6 @@ const CustomTabButton = forwardRef<ComponentRef<typeof Pressable>, CustomTabButt
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets()
-  const catalog = getMobileRouteCatalog()
 
   return (
     <Tabs>
@@ -37,16 +35,6 @@ export default function TabsLayout() {
         <TabTrigger name="menu" href="/menu" asChild>
           <CustomTabButton label="Menu" />
         </TabTrigger>
-        {catalog.entries.map((entry) => (
-          <TabTrigger
-            key={entry.key}
-            name={`model-${entry.moduleSlug}-${entry.modelSlug}`}
-            href={entry.hrefs.list as any}
-            asChild
-          >
-            <Pressable style={styles.hiddenTabTrigger} />
-          </TabTrigger>
-        ))}
       </TabList>
     </Tabs>
   )
@@ -84,10 +72,5 @@ const styles = StyleSheet.create({
   },
   tabButtonLabelActive: {
     color: materialColors.onPrimaryContainer,
-  },
-  hiddenTabTrigger: {
-    display: 'none',
-    width: 0,
-    height: 0,
   },
 })

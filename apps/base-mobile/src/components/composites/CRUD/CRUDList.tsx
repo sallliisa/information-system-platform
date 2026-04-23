@@ -18,7 +18,9 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
 
   const requestParams = useMemo(() => {
     const baseParams = listConfig.searchParameters || {}
-    return { ...baseParams, search }
+    const searchValue = search.trim()
+    if (!searchValue) return baseParams
+    return { ...baseParams, search: searchValue }
   }, [listConfig.searchParameters, search])
 
   const keyField = listConfig.uid || 'id'
@@ -28,7 +30,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
+      <View style={styles.toolbar}>
         <TextInput
           style={styles.searchInput}
           value={search}
@@ -43,7 +45,10 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
         ) : null}
       </View>
 
-      <Text style={styles.title}>{config.title}</Text>
+      <View style={styles.heading}>
+        <Text style={styles.title}>{config.title}</Text>
+        {config.description ? <Text style={styles.description}>{config.description}</Text> : null}
+      </View>
 
       <DataTable
         getAPI={listConfig.getAPI || config.name}
@@ -54,35 +59,24 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
         fieldsDictionary={listConfig.fieldsDictionary}
         fieldsParse={listConfig.fieldsParse}
         fieldsProxy={listConfig.fieldsProxy}
-        onPressRow={
-          canDetail
-            ? (row) => {
-                const id = row[keyField]
-                if (id !== undefined && id !== null) {
-                  onDetail(id)
-                }
-              }
-            : undefined
-        }
-        rowActions={(row) => {
-          const id = row[keyField]
-          if (id === undefined || id === null) return null
-
-          return (
-            <View style={styles.actionsRow}>
-              {canDetail ? (
-                <Pressable style={[styles.actionButton, styles.detailButton]} onPress={() => onDetail(id)}>
-                  <Text style={styles.actionButtonLabel}>Detail</Text>
-                </Pressable>
-              ) : null}
-              {canUpdate ? (
-                <Pressable style={[styles.actionButton, styles.updateButton]} onPress={() => onUpdate(id)}>
-                  <Text style={styles.actionButtonLabel}>Update</Text>
-                </Pressable>
-              ) : null}
-            </View>
-          )
+        onPressRow={(row) => {
+          if (!canDetail) return
+          onDetail(row[keyField])
         }}
+        rowActions={(row) => (
+          <View style={styles.actionsRow}>
+            {canDetail ? (
+              <Pressable style={[styles.actionButton, styles.detailButton]} onPress={() => onDetail(row[keyField])}>
+                <Text style={styles.actionLabel}>Detail</Text>
+              </Pressable>
+            ) : null}
+            {canUpdate ? (
+              <Pressable style={[styles.actionButton, styles.updateButton]} onPress={() => onUpdate(row[keyField])}>
+                <Text style={styles.actionLabel}>Update</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        )}
       />
     </View>
   )
@@ -92,39 +86,44 @@ const styles = StyleSheet.create({
   container: {
     gap: 12,
   },
-  headerRow: {
+  toolbar: {
     flexDirection: 'row',
-    gap: 8,
     alignItems: 'center',
+    gap: 8,
   },
   searchInput: {
     flex: 1,
     minHeight: 44,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: materialColors.outlineVariant,
-    backgroundColor: materialColors.surfaceContainer,
+    backgroundColor: materialColors.surfaceContainerLowest,
     paddingHorizontal: 12,
-    paddingVertical: 10,
     color: materialColors.onSurface,
   },
   createButton: {
     minHeight: 44,
-    borderRadius: 12,
-    backgroundColor: materialColors.primary,
-    paddingHorizontal: 14,
-    alignItems: 'center',
+    borderRadius: 10,
     justifyContent: 'center',
+    paddingHorizontal: 14,
+    backgroundColor: materialColors.primary,
   },
   createButtonLabel: {
     color: materialColors.onPrimary,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  heading: {
+    gap: 2,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     color: materialColors.onSurface,
+  },
+  description: {
+    fontSize: 14,
+    color: materialColors.onSurfaceVariant,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -136,14 +135,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   detailButton: {
-    backgroundColor: materialColors.primaryContainer,
-  },
-  updateButton: {
     backgroundColor: materialColors.secondaryContainer,
   },
-  actionButtonLabel: {
+  updateButton: {
+    backgroundColor: materialColors.tertiaryContainer,
+  },
+  actionLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     color: materialColors.onSurface,
   },
 })
