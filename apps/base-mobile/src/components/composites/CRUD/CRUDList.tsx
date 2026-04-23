@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import { buildListConfig } from '@repo/model-meta'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
+import { buildMobileListConfig } from '../../../features/routes/config/defaults.builders'
+import { sectionGap } from '../../../theme/layout'
 import { materialColors } from '../../../theme/material'
 import { DataTable } from '../DataTable'
 
@@ -10,20 +11,21 @@ type CRUDListProps = {
   onCreate: () => void
   onDetail: (id: string | number) => void
   onUpdate: (id: string | number) => void
+  showHeading?: boolean
 }
 
-export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps) {
-  const listConfig = useMemo(() => buildListConfig(config), [config])
+export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = true }: CRUDListProps) {
+  const listConfig = useMemo(() => buildMobileListConfig(config), [config])
   const [search, setSearch] = useState('')
 
-  const requestParams = useMemo(() => {
+  const searchParameters = useMemo(() => {
     const baseParams = listConfig.searchParameters || {}
     const searchValue = search.trim()
     if (!searchValue) return baseParams
     return { ...baseParams, search: searchValue }
   }, [listConfig.searchParameters, search])
 
-  const keyField = listConfig.uid || 'id'
+  const uidField = listConfig.uid || 'id'
   const canCreate = config.actions?.create ?? true
   const canDetail = config.actions?.detail ?? true
   const canUpdate = config.actions?.update ?? true
@@ -45,33 +47,46 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
         ) : null}
       </View>
 
-      <View style={styles.heading}>
-        <Text style={styles.title}>{config.title}</Text>
-        {config.description ? <Text style={styles.description}>{config.description}</Text> : null}
-      </View>
+      {showHeading ? (
+        <View style={styles.heading}>
+          <Text style={styles.title}>{config.title}</Text>
+          {config.description ? <Text style={styles.description}>{config.description}</Text> : null}
+        </View>
+      ) : null}
 
       <DataTable
+        {...listConfig}
         getAPI={listConfig.getAPI || config.name}
-        requestParams={requestParams}
-        fields={listConfig.fields || []}
-        keyField={keyField}
-        fieldsAlias={listConfig.fieldsAlias}
-        fieldsDictionary={listConfig.fieldsDictionary}
-        fieldsParse={listConfig.fieldsParse}
-        fieldsProxy={listConfig.fieldsProxy}
+        searchParameters={searchParameters}
         onPressRow={(row) => {
           if (!canDetail) return
-          onDetail(row[keyField])
+          const rowID = row[uidField]
+          if (rowID === undefined || rowID === null) return
+          onDetail(rowID)
         }}
         rowActions={(row) => (
           <View style={styles.actionsRow}>
             {canDetail ? (
-              <Pressable style={[styles.actionButton, styles.detailButton]} onPress={() => onDetail(row[keyField])}>
+              <Pressable
+                style={[styles.actionButton, styles.detailButton]}
+                onPress={() => {
+                  const rowID = row[uidField]
+                  if (rowID === undefined || rowID === null) return
+                  onDetail(rowID)
+                }}
+              >
                 <Text style={styles.actionLabel}>Detail</Text>
               </Pressable>
             ) : null}
             {canUpdate ? (
-              <Pressable style={[styles.actionButton, styles.updateButton]} onPress={() => onUpdate(row[keyField])}>
+              <Pressable
+                style={[styles.actionButton, styles.updateButton]}
+                onPress={() => {
+                  const rowID = row[uidField]
+                  if (rowID === undefined || rowID === null) return
+                  onUpdate(rowID)
+                }}
+              >
                 <Text style={styles.actionLabel}>Update</Text>
               </Pressable>
             ) : null}
@@ -84,7 +99,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate }: CRUDListProps
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: sectionGap,
   },
   toolbar: {
     flexDirection: 'row',

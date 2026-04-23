@@ -1,15 +1,68 @@
-import { Stack } from 'expo-router'
-import { Platform } from 'react-native'
+import { Stack, useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Platform, StyleSheet, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { AutoScrollScreen } from '../../../../src/components/base'
+import { CRUDRouteHeader } from '../../../../src/components/composites/CRUD'
+import { getCatalogEntry, getMobileRouteCatalog } from '../../../../src/features/routes/catalog.index'
+import { navigateBackOrFallback } from '../../../../src/features/routes/navigation.policy'
+import { pickRouteParam } from '../../../../src/features/routes/route-params'
+import { MENU_ROUTE } from '../../../../src/lib/routes'
+import { materialColors } from '../../../../src/theme/material'
+
+function resolveMenuHeader(routeName: string, modelTitle?: string, listHref?: string) {
+  const finalModelTitle = modelTitle || 'Model'
+  const fallbackListHref = listHref || MENU_ROUTE
+
+  switch (routeName) {
+    case '[module]/[model]/index': {
+      return { title: finalModelTitle, fallbackHref: MENU_ROUTE, showBack: true }
+    }
+    case '[module]/[model]/create':
+      return { title: `Create ${finalModelTitle}`, fallbackHref: fallbackListHref, showBack: true }
+    case '[module]/[model]/detail/[id]':
+      return { title: `Detail ${finalModelTitle}`, fallbackHref: fallbackListHref, showBack: true }
+    case '[module]/[model]/update/[id]':
+      return { title: `Update ${finalModelTitle}`, fallbackHref: fallbackListHref, showBack: true }
+    default:
+      return { title: 'Menu', fallbackHref: MENU_ROUTE, showBack: false }
+  }
+}
 
 export default function MenuStackLayout() {
+  const router = useRouter()
+  const catalog = useMemo(() => getMobileRouteCatalog(), [])
+  const insets = useSafeAreaInsets()
+
   return (
     <Stack
-      screenOptions={{
-        headerTitleAlign: 'center',
-        headerShown: false,
-        gestureEnabled: true,
-        animation: Platform.OS === 'ios' ? 'default' : 'fade',
-        ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: true } : {}),
+      screenLayout={({ children }) => <AutoScrollScreen includeTopInset={false}>{children}</AutoScrollScreen>}
+      screenOptions={({ route }) => {
+        const routeParams = (route.params || {}) as Record<string, string | string[] | undefined>
+        const moduleSlug = pickRouteParam(routeParams, 'module')
+        const modelSlug = pickRouteParam(routeParams, 'model')
+        const entry = moduleSlug && modelSlug ? getCatalogEntry(catalog, moduleSlug, modelSlug) : undefined
+        const { title, fallbackHref, showBack } = resolveMenuHeader(route.name, entry?.config.title, entry?.hrefs.list)
+
+        return {
+          header: () => (
+            <View style={[styles.headerWrap, { paddingTop: insets.top + 6 }]}>
+              <CRUDRouteHeader
+                title={title}
+                onBack={
+                  showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined
+                }
+              />
+            </View>
+          ),
+          headerStatusBarHeight: 0,
+          headerStyle: styles.header,
+          headerShadowVisible: false,
+          headerTitleAlign: 'center',
+          gestureEnabled: true,
+          animation: Platform.OS === 'ios' ? 'default' : 'fade',
+          ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: true } : {}),
+        }
       }}
     >
       <Stack.Screen name="index" options={{ animation: 'none' }} />
@@ -20,3 +73,14 @@ export default function MenuStackLayout() {
     </Stack>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: materialColors.background,
+  },
+  headerWrap: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    backgroundColor: materialColors.background,
+  },
+})

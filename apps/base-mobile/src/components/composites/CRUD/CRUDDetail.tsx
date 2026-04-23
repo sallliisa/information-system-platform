@@ -1,64 +1,52 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
+import { buildMobileDetailConfig } from '../../../features/routes/config/defaults.builders'
 import { renderDetailUnderSlot } from '../../../features/routes/detail-slot'
+import { sectionGap } from '../../../theme/layout'
 import { materialColors } from '../../../theme/material'
-import { Card } from '../../base'
+import { Detail } from '../Detail'
 
 type CRUDDetailProps = {
   config: MobileModelConfig
-  moduleSlug: string
-  modelSlug: string
   dataID?: string
-  onBack: () => void
   onUpdate: () => void
 }
 
-export function CRUDDetail({ config, moduleSlug, modelSlug, dataID, onBack, onUpdate }: CRUDDetailProps) {
-  const placeholderData = useMemo(
-    () => ({
-      id: dataID || '',
-      moduleSlug,
-      modelSlug,
-      modelName: config.name,
-      title: config.title,
-    }),
-    [config.name, config.title, dataID, modelSlug, moduleSlug]
-  )
+export function CRUDDetail({ config, dataID, onUpdate }: CRUDDetailProps) {
+  const detailConfig = useMemo(() => buildMobileDetailConfig(config), [config])
+  const [detailData, setDetailData] = useState<Record<string, any>>({})
+  const canUpdate = config.actions?.update ?? true
 
   return (
     <View style={styles.container}>
       <View style={styles.actions}>
-        <Pressable style={[styles.button, styles.backButton]} onPress={onBack}>
-          <Text style={styles.backLabel}>Back</Text>
-        </Pressable>
-        <Pressable style={[styles.button, styles.updateButton]} onPress={onUpdate}>
-          <Text style={styles.updateLabel}>Update</Text>
-        </Pressable>
+        {canUpdate ? (
+          <Pressable style={[styles.button, styles.updateButton]} onPress={onUpdate}>
+            <Text style={styles.updateLabel}>Update</Text>
+          </Pressable>
+        ) : null}
       </View>
 
-      <Card type="outlined" color="surface">
-        <View style={styles.content}>
-          <Text style={styles.title}>Detail {config.title}</Text>
-          <Text style={styles.description}>Dummy detail component for now.</Text>
-          <Text style={styles.meta}>ID: {dataID || '-'}</Text>
-          <Text style={styles.meta}>Module: {moduleSlug}</Text>
-          <Text style={styles.meta}>Model: {modelSlug}</Text>
-        </View>
-      </Card>
+      <Detail
+        {...detailConfig}
+        dataID={dataID ?? detailConfig.dataID}
+        getAPI={detailConfig.getAPI || config.name}
+        onDataLoaded={setDetailData}
+      />
 
-      {renderDetailUnderSlot(config, placeholderData)}
+      {renderDetailUnderSlot(config, detailData)}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: sectionGap,
   },
   actions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     gap: 8,
   },
   button: {
@@ -67,36 +55,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 14,
   },
-  backButton: {
-    backgroundColor: materialColors.surfaceContainer,
-  },
   updateButton: {
     backgroundColor: materialColors.secondaryContainer,
-  },
-  backLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: materialColors.onSurface,
   },
   updateLabel: {
     fontSize: 13,
     fontWeight: '700',
     color: materialColors.onSecondaryContainer,
-  },
-  content: {
-    gap: 6,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  description: {
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-  meta: {
-    fontSize: 13,
-    color: materialColors.onSurface,
   },
 })

@@ -1,14 +1,12 @@
-/* @jsxImportSource vue */
-import type { InputConfig } from '@repo/model-meta'
+import type {
+  DefaultDetailConfig,
+  DefaultFormConfig,
+  DefaultGlobalConfig,
+  DefaultsConfigBundle,
+  DefaultTableConfig,
+} from './types'
 
-export const defaultGlobalConfig: {
-  fieldSlots: Record<string, any>
-  fieldsProxy: Record<string, string>
-  inputConfig: InputConfig
-  fieldsParse: Record<string, string>
-  fieldsAlias: Record<string, string>
-  fieldsType: Record<string, { type: string; props?: any }>
-} = {
+export const baseDefaultGlobalConfig: DefaultGlobalConfig = {
   fieldSlots: {},
   fieldsProxy: {
     created_by: 'rel_created_by',
@@ -117,37 +115,15 @@ export const defaultGlobalConfig: {
         },
       },
     },
-    // status_code: {
-    //   type: 'chip',
-    //   props: {
-    //     options: {
-    //       waiting: {color:'neutral', label: 'Menunggu Verifikasi'},
-    //       approved: {color:'success', label: 'Disetujui'},
-    //       rejected: {color:'error', label: 'Ditolak'},
-    //       draft: {color: 'neutral', label: 'Draft'},
-    //       on_verification: {color: 'warning', label: 'Menunggu Verifikasi'},
-    //       verified: {color: 'success', label: 'Diverifikasi'},
-    //     }
-    //   }
-    // }
   },
 }
 
-export const defaultTableConfig: {
-  fieldSlots: Record<string, any>
-  fieldsProxy: Record<string, string>
-  fieldsAlias: Record<string, string>
-  fieldsClass: Record<string, string>
-  fieldsHeaderClass: Record<string, string>
-  fieldsParse: Record<string, string>
-  fieldsType: Record<string, { type: string; props?: any }>
-  fieldsAlign: Record<string, 'start' | 'center' | 'end'>
-} = {
-  fieldSlots: defaultGlobalConfig.fieldSlots,
-  fieldsProxy: defaultGlobalConfig.fieldsProxy,
-  fieldsAlias: defaultGlobalConfig.fieldsAlias,
-  fieldsType: defaultGlobalConfig.fieldsType,
-  fieldsParse: defaultGlobalConfig.fieldsParse,
+export const baseDefaultTableConfig: DefaultTableConfig = {
+  fieldSlots: baseDefaultGlobalConfig.fieldSlots,
+  fieldsProxy: baseDefaultGlobalConfig.fieldsProxy,
+  fieldsAlias: baseDefaultGlobalConfig.fieldsAlias,
+  fieldsType: baseDefaultGlobalConfig.fieldsType,
+  fieldsParse: baseDefaultGlobalConfig.fieldsParse,
   fieldsClass: {
     created_at: 'min-w-max whitespace-nowrap',
     updated_at: 'min-w-max whitespace-nowrap',
@@ -165,29 +141,20 @@ export const defaultTableConfig: {
   },
 }
 
-export const defaultDetailConfig: {
-  fieldSlots: Record<string, any>
-  fieldsProxy: Record<string, string>
-  fieldsAlias: Record<string, string>
-  fieldsParse: Record<string, string>
-  fieldsType: Record<string, { type: string; props?: any }>
-} = {
-  fieldSlots: defaultGlobalConfig.fieldSlots,
-  fieldsProxy: defaultGlobalConfig.fieldsProxy,
-  fieldsAlias: defaultGlobalConfig.fieldsAlias,
-  fieldsParse: defaultGlobalConfig.fieldsParse,
+export const baseDefaultDetailConfig: DefaultDetailConfig = {
+  fieldSlots: baseDefaultGlobalConfig.fieldSlots,
+  fieldsProxy: baseDefaultGlobalConfig.fieldsProxy,
+  fieldsAlias: baseDefaultGlobalConfig.fieldsAlias,
+  fieldsParse: baseDefaultGlobalConfig.fieldsParse,
   fieldsType: {
-    ...defaultGlobalConfig.fieldsType,
+    ...baseDefaultGlobalConfig.fieldsType,
     array_clauses: { type: 'array-clauses' },
   },
 }
 
-export const defaultFormConfig: {
-  inputConfig: InputConfig
-  fieldsAlias: Record<string, string>
-} = {
+export const baseDefaultFormConfig: DefaultFormConfig = {
   inputConfig: {
-    ...defaultGlobalConfig.inputConfig,
+    ...baseDefaultGlobalConfig.inputConfig,
     status_code: {
       type: 'radio',
       props: {
@@ -200,5 +167,12 @@ export const defaultFormConfig: {
       },
     },
   },
-  fieldsAlias: defaultGlobalConfig.fieldsAlias,
+  fieldsAlias: baseDefaultGlobalConfig.fieldsAlias,
+}
+
+export const baseDefaultsConfigBundle: DefaultsConfigBundle = {
+  global: baseDefaultGlobalConfig,
+  table: baseDefaultTableConfig,
+  detail: baseDefaultDetailConfig,
+  form: baseDefaultFormConfig,
 }

@@ -1,78 +1,111 @@
-import { memo, useCallback, useEffect, useState, type ReactNode } from 'react'
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native'
+import type { ListConfig } from '@repo/model-meta'
+import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { api } from '../../lib/api'
 import { formatValue } from '../../lib/format'
 import { materialColors } from '../../theme/material'
 import { Card } from '../base'
 
-type DataTableProps = {
-  getAPI: string
-  requestParams?: Record<string, any>
-  fields: string[]
-  keyField?: string
-  fieldsAlias?: Record<string, string>
-  fieldsProxy?: Record<string, string>
-  fieldsDictionary?: Record<string, Record<string, string>>
-  fieldsParse?: Record<string, string>
+type DataTableProps = ListConfig & {
+  data?: Record<string, any>[]
+  getData?: (getAPI: string, searchParameters?: Record<string, any>) => Promise<Record<string, any>[]>
+  onDataLoaded?: (data: Record<string, any>[]) => void
   onPressRow?: (row: Record<string, any>) => void
   rowActions?: (row: Record<string, any>) => ReactNode
   emptyText?: string
 }
 
+const EMPTY_SEARCH_PARAMETERS: Record<string, any> = {}
+
+function normalizeRows(payload: unknown): Record<string, any>[] {
+  if (Array.isArray(payload)) return payload
+  if (payload && typeof payload === 'object' && Array.isArray((payload as any).data)) {
+    return (payload as any).data
+  }
+  return []
+}
+
+async function defaultListGetData(getAPI: string, searchParameters?: Record<string, any>) {
+  const response = await api.list(getAPI, searchParameters)
+  return normalizeRows(response)
+}
+
 export const DataTable = memo(function DataTable({
+  data,
+  getData = defaultListGetData,
+  onDataLoaded,
   getAPI,
-  requestParams,
-  fields,
-  keyField = 'id',
+  searchParameters,
+  fields = [],
+  uid = 'id',
   fieldsAlias = {},
   fieldsProxy = {},
   fieldsDictionary = {},
   fieldsParse = {},
+  fieldsUnit = {},
   onPressRow,
   rowActions,
   emptyText = 'No data available.',
 }: DataTableProps) {
+  const onDataLoadedRef = useRef(onDataLoaded)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [rows, setRows] = useState<Record<string, any>[]>([])
-
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await api.list(getAPI, requestParams)
-      const nextRows = Array.isArray(response) ? response : (response?.data ?? [])
-      setRows(Array.isArray(nextRows) ? nextRows : [])
-    } catch (err: any) {
-      const message = String(err?.message || err?.error || err?.statusText || 'Failed to load data.')
-      setError(message)
-      setRows([])
-    } finally {
-      setLoading(false)
-    }
-  }, [getAPI, requestParams])
+  const resolvedSearchParameters = useMemo(() => searchParameters ?? EMPTY_SEARCH_PARAMETERS, [searchParameters])
 
   useEffect(() => {
-    void loadData()
-  }, [loadData])
+    onDataLoadedRef.current = onDataLoaded
+  }, [onDataLoaded])
+
+  useEffect(() => {
+    let mounted = true
+
+    async function load() {
+      setLoading(true)
+
+      if (data) {
+        const nextRows = normalizeRows(data)
+        if (!mounted) return
+        setRows(nextRows)
+        onDataLoadedRef.current?.(nextRows)
+        setLoading(false)
+        return
+      }
+
+      if (!getAPI) {
+        if (!mounted) return
+        setRows([])
+        onDataLoadedRef.current?.([])
+        setLoading(false)
+        return
+      }
+
+      try {
+        const fetchedRows = await getData(getAPI, resolvedSearchParameters)
+        if (!mounted) return
+        const nextRows = normalizeRows(fetchedRows)
+        setRows(nextRows)
+        onDataLoadedRef.current?.(nextRows)
+      } catch {
+        if (!mounted) return
+        setRows([])
+        onDataLoadedRef.current?.([])
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    void load()
+
+    return () => {
+      mounted = false
+    }
+  }, [data, getAPI, getData, resolvedSearchParameters])
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="small" color={materialColors.primary} />
       </View>
-    )
-  }
-
-  if (error) {
-    return (
-      <Card type="filled" color="errorContainer" style={styles.feedbackCard}>
-        <Text style={styles.errorTitle}>Could not load table data.</Text>
-        <Text style={styles.errorText}>{error}</Text>
-        <Pressable style={styles.retryButton} onPress={() => void loadData()}>
-          <Text style={styles.retryLabel}>Try Again</Text>
-        </Pressable>
-      </Card>
     )
   }
 
@@ -88,20 +121,22 @@ export const DataTable = memo(function DataTable({
     <View style={styles.table}>
       {rows.map((item, index) => (
         <Card
-          key={String(item[keyField] ?? index)}
+          key={String(item[uid] ?? index)}
           type="outlined"
           color="surface"
           onPress={onPressRow ? () => onPressRow(item) : undefined}
         >
           <View style={styles.rowContent}>
             {fields.map((field) => {
+              if (field.startsWith('S|')) return null
               const sourceField = fieldsProxy[field] || field
               const rawValue = item[sourceField]
               const dictionary = fieldsDictionary[field]
-              const value =
+              const baseValue =
                 dictionary && rawValue !== undefined && rawValue !== null
                   ? dictionary[String(rawValue)] ?? '-'
                   : formatValue(fieldsParse[field], rawValue)
+              const value = baseValue === '-' || !fieldsUnit[field] ? baseValue : `${baseValue}${fieldsUnit[field]}`
 
               return (
                 <View key={field} style={styles.fieldRow}>
@@ -123,31 +158,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 28,
-  },
-  feedbackCard: {
-    gap: 8,
-  },
-  errorTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: materialColors.onErrorContainer,
-  },
-  errorText: {
-    fontSize: 13,
-    color: materialColors.onErrorContainer,
-  },
-  retryButton: {
-    marginTop: 4,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: materialColors.error,
-  },
-  retryLabel: {
-    color: materialColors.onError,
-    fontSize: 13,
-    fontWeight: '600',
   },
   emptyText: {
     textAlign: 'center',

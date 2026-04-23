@@ -1,0 +1,12 @@
+{
+  "name": "@repo/config-meta",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@repo/model-meta": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

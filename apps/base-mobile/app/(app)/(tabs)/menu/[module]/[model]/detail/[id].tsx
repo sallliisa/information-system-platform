@@ -7,7 +7,6 @@ import {
   getCatalogEntry,
   getMobileRouteCatalog,
 } from '@/src/features/routes/catalog.index'
-import { navigateBackOrFallback } from '@/src/features/routes/navigation.policy'
 import { pickRouteParam } from '@/src/features/routes/route-params'
 
 export default function DynamicCRUDDetailRoute() {
@@ -30,10 +29,7 @@ export default function DynamicCRUDDetailRoute() {
   return (
     <CRUDDetail
       config={entry.config}
-      moduleSlug={moduleSlug as string}
-      modelSlug={modelSlug as string}
       dataID={dataID}
-      onBack={() => navigateBackOrFallback(router, entry.hrefs.list)}
       onUpdate={() => {
         if (!dataID) return
         router.push(buildUpdateHref(entry, dataID) as any)

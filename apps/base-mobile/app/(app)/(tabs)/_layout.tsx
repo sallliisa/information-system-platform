@@ -2,18 +2,23 @@ import { forwardRef, type ComponentRef } from 'react'
 import { TabList, TabSlot, TabTrigger, type TabTriggerSlotProps, Tabs } from 'expo-router/ui'
 import { Pressable, StyleSheet, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Icon } from '../../../src/components/base'
 import { materialColors } from '../../../src/theme/material'
 
 type CustomTabButtonProps = TabTriggerSlotProps & {
   label: string
+  icon: string
 }
 
 const CustomTabButton = forwardRef<ComponentRef<typeof Pressable>, CustomTabButtonProps>(function CustomTabButton(
-  { label, isFocused, ...props },
+  { label, icon, isFocused, ...props },
   ref
 ) {
+  const foregroundColor = isFocused ? materialColors.onPrimaryContainer : materialColors.onSurfaceVariant
+
   return (
     <Pressable ref={ref} {...props} style={[styles.tabButton, isFocused ? styles.tabButtonActive : null]}>
+      <Icon name={icon} size={18} color={foregroundColor} />
       <Text style={[styles.tabButtonLabel, isFocused ? styles.tabButtonLabelActive : null]}>{label}</Text>
     </Pressable>
   )
@@ -27,13 +32,13 @@ export default function TabsLayout() {
       <TabSlot style={styles.slot} />
       <TabList style={[styles.tabList, { paddingBottom: Math.max(insets.bottom, 10) }]}>
         <TabTrigger name="dashboard" href="/dashboard" asChild>
-          <CustomTabButton label="Dashboard" />
+          <CustomTabButton label="Dashboard" icon="home-5-line" />
         </TabTrigger>
         <TabTrigger name="profile" href="/profile" asChild>
-          <CustomTabButton label="Profile" />
+          <CustomTabButton label="Profile" icon="user-3-line" />
         </TabTrigger>
         <TabTrigger name="menu" href="/menu" asChild>
-          <CustomTabButton label="Menu" />
+          <CustomTabButton label="Menu" icon="apps-2-line" />
         </TabTrigger>
       </TabList>
     </Tabs>
@@ -56,10 +61,11 @@ const styles = StyleSheet.create({
   },
   tabButton: {
     flex: 1,
-    minHeight: 44,
+    minHeight: 56,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 2,
     backgroundColor: materialColors.surfaceContainerHigh,
   },
   tabButtonActive: {

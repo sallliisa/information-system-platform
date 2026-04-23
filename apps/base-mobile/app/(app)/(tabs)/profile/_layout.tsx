@@ -2,7 +2,7 @@ import { Stack } from 'expo-router'
 import { Platform } from 'react-native'
 import { AutoScrollScreen } from '../../../../src/components/base'
 
-export default function DashboardStackLayout() {
+export default function ProfileStackLayout() {
   return (
     <Stack
       screenLayout={({ children }) => <AutoScrollScreen>{children}</AutoScrollScreen>}
@@ -15,7 +15,6 @@ export default function DashboardStackLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ animation: 'none' }} />
-      <Stack.Screen name="details" />
     </Stack>
   )
 }

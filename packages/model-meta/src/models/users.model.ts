@@ -16,6 +16,7 @@ const statusCodeOptions = [
 const users = {
   name: 'users',
   title: 'Users',
+  permission: 'users',
   fields: ['fullname', 'username', 'email', 'role_type', 'created_at', 'status_code', 'updated_at'],
   fieldsAlias: {
     email: 'Email',

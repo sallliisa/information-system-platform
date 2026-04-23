@@ -29,6 +29,7 @@ export default function DynamicCRUDListRoute() {
   return (
     <CRUDList
       config={entry.config}
+      showHeading={false}
       onCreate={() => router.push(entry.hrefs.create as any)}
       onDetail={(id) => {
         if (id === undefined || id === null) return
