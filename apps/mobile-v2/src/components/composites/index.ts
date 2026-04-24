@@ -1,7 +1,0 @@
-export { CRUDList } from './CRUD/CRUDList'
-export { CRUDDetail } from './CRUD/CRUDDetail'
-export { CRUDCreate } from './CRUD/CRUDCreate'
-export { CRUDUpdate } from './CRUD/CRUDUpdate'
-export { Form } from './Form'
-export { Detail } from './Detail'
-export { DataTable } from './DataTable'
