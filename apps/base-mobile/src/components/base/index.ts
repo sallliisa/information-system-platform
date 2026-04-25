@@ -1,6 +1,8 @@
 export { Card } from './Card'
 export { AppScreen } from './AppScreen'
 export { AppScreenScope, useAppScreenOptions } from './AppScreenScope'
+export { ActionControl } from './ActionControls'
+export type { ActionControlProps } from './ActionControls'
 export { Icon } from './Icon'
 export { Button } from './Button'
 export { Modal, ModalTrigger, ModalHeader, ModalContent, ModalFooter } from './Modal'
