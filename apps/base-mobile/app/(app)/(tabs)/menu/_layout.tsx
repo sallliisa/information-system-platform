@@ -37,7 +37,7 @@ export default function MenuStackLayout() {
   return (
     <Stack
       screenLayout={({ children }) => (
-        <AppScreenScope defaultOptions={{ includeTopInset: false, scrollable: true }}>
+        <AppScreenScope defaultOptions={{ safeArea: { top: false }, layout: { scrollable: true } }}>
           {children}
         </AppScreenScope>
       )}

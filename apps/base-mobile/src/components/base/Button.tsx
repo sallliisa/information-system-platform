@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { Children, cloneElement, isValidElement, type ComponentProps, type ReactElement, type ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import {
   Pressable,
@@ -9,6 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { materialColors } from '../../theme/material'
+import { Icon } from './Icon'
 
 type ButtonVariant = 'filled' | 'outlined' | 'tonal' | 'icon'
 type ButtonColor = 'primary' | 'secondary' | 'tertiary' | 'warning' | 'error' | 'info' | 'success'
@@ -37,8 +38,8 @@ const DISABLED_CONTENT = 'rgba(0, 0, 0, 0.38)'
 
 const SIZE_STYLES: Record<ButtonSize, ViewStyle> = {
   square: {
-    width: 38,
-    height: 38,
+    width: 52,
+    height: 52,
     borderRadius: 999,
     paddingHorizontal: 0,
     paddingVertical: 0,
@@ -148,6 +149,48 @@ function shouldWrapWithText(children: ReactNode): children is string | number {
   return typeof children === 'string' || typeof children === 'number'
 }
 
+function applyContentColor(children: ReactNode, color: string): ReactNode {
+  if (shouldWrapWithText(children)) {
+    return (
+      <Text className="font-semibold" style={{ color }}>
+        {children}
+      </Text>
+    )
+  }
+
+  return Children.map(children, child => {
+    if (!isValidElement(child)) return child
+
+    const childProps = child.props as { children?: ReactNode; style?: unknown; color?: string }
+    const nextChildren =
+      childProps.children != null ? applyContentColor(childProps.children, color) : childProps.children
+
+    if (child.type === Text) {
+      const textChild = child as ReactElement<{ children?: ReactNode; style?: unknown }>
+      return cloneElement(textChild, {
+        style: [{ color }, childProps.style],
+        children: nextChildren,
+      })
+    }
+
+    if (child.type === Icon) {
+      const iconChild = child as ReactElement<ComponentProps<typeof Icon>>
+      return cloneElement(iconChild, {
+        color: childProps.color ?? color,
+      })
+    }
+
+    if (nextChildren !== childProps.children) {
+      const childWithChildren = child as ReactElement<{ children?: ReactNode }>
+      return cloneElement(childWithChildren, {
+        children: nextChildren,
+      })
+    }
+
+    return child
+  })
+}
+
 export function Button({
   variant = 'filled',
   color = 'primary',
@@ -169,11 +212,7 @@ export function Button({
   }, [className])
   const { onPressIn, onPressOut, ...pressableProps } = rest
 
-  const content = shouldWrapWithText(children) ? (
-    <Text className="font-semibold" style={{ color: contentColor }}>{children}</Text>
-  ) : (
-    children
-  )
+  const content = applyContentColor(children, contentColor)
 
   const handlePressIn = (event: GestureResponderEvent) => {
     if (!disabled) setIsPressed(true)

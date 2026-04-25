@@ -194,13 +194,13 @@ describe('ActionControls', () => {
     expect(screen.getByTestId('bottom-inset-value').props.children).toBe('48')
   })
 
-  it('AppScreen includes action-control bottom inset in content padding', () => {
+  it('AppScreen includes action-control bottom inset when insets.actionControlsBottom is enabled', () => {
     render(
       <ActionControlsHarness>
         <ActionControl>
           <Text>Inset AppScreen Control</Text>
         </ActionControl>
-        <AppScreen>
+        <AppScreen options={{ insets: { actionControlsBottom: true } }}>
           <Text>Body</Text>
         </AppScreen>
       </ActionControlsHarness>

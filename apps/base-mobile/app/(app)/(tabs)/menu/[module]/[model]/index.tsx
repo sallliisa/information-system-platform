@@ -10,9 +10,10 @@ import {
   getMobileRouteCatalog,
 } from '@/src/features/routes/catalog.index'
 import { pickRouteParam } from '@/src/features/routes/route-params'
+import { View } from 'react-native'
 
 export default function DynamicCRUDListRoute() {
-  useAppScreenOptions({ scrollable: false })
+  useAppScreenOptions({ layout: { scrollable: false }, padding: {left: 0, right: 0} })
 
   const router = useRouter()
   const params = useLocalSearchParams<Record<string, string | string[]>>()

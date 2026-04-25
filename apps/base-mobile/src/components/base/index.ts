@@ -1,5 +1,6 @@
 export { Card } from './Card'
 export { AppScreen } from './AppScreen'
+export type { AppScreenOptions } from './AppScreen'
 export { AppScreenScope, useAppScreenOptions } from './AppScreenScope'
 export { ActionControl } from './ActionControls'
 export type { ActionControlProps } from './ActionControls'
