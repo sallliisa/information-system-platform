@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { Card, Icon } from '../../../../src/components/base'
 import { getMobileRouteCatalog, selectCatalogMenuEntries } from '../../../../src/features/routes/catalog.index'
 import { materialColors } from '../../../../src/theme/material'
@@ -24,37 +24,37 @@ export default function MenuScreen() {
   }, [catalog, entries])
 
   return (
-    <View style={styles.content}>
+    <View className="py-1 gap-[18px]">
       {groupedEntries.length === 0 ? (
-        <Card style={styles.emptyCard} type="filled" color="surfaceContainerLow">
-          <Text style={styles.emptyTitle}>No routes available</Text>
-          <Text style={styles.emptyDescription}>Catalog entries are empty.</Text>
+        <Card className="gap-2" type="filled" color="surfaceContainerLow">
+          <Text className="text-lg font-bold" style={{ color: materialColors.onSurface }}>No routes available</Text>
+          <Text className="text-sm" style={{ color: materialColors.onSurfaceVariant }}>Catalog entries are empty.</Text>
         </Card>
       ) : (
         groupedEntries.map((group) => (
-          <View key={group.moduleSlug} style={styles.section}>
-            <View style={styles.groupHeader}>
-              <View style={styles.groupIconBox}>
-                <Icon name={group.moduleIcon || 'folder-line'} size={18} color={materialColors.primary} />
+          <View key={group.moduleSlug} className="gap-2">
+            <View className="flex-row items-center gap-2">
+              <View className="w-7 h-7 rounded-full items-center justify-center" style={{ backgroundColor: materialColors.primaryContainer }}>
+                <Icon name={group.moduleIcon || 'folder'} size={18} color={materialColors.primary} />
               </View>
-              <Text style={styles.sectionTitle}>{group.moduleName || group.moduleSlug}</Text>
+              <Text className="text-xl font-bold" style={{ color: materialColors.onSurface }}>{group.moduleName || group.moduleSlug}</Text>
             </View>
-            {group.moduleDescription ? <Text style={styles.sectionDescription}>{group.moduleDescription}</Text> : null}
+            {group.moduleDescription ? <Text className="text-[13px]" style={{ color: materialColors.onSurfaceVariant }}>{group.moduleDescription}</Text> : null}
 
-            <View style={styles.cards}>
+            <View className="gap-2.5">
               {group.entries.map((entry) => (
                 <Pressable key={entry.key} onPress={() => router.push(entry.hrefs.list as any)}>
-                  <Card type="outlined" color="surface" style={styles.routeCard}>
-                    <View style={styles.routeHeader}>
-                      <View style={styles.routeIconBox}>
-                        <Icon name={entry.config.icon || 'apps-line'} size={16} color={materialColors.primary} />
+                  <Card type="outlined" color="surface" className="gap-1.5">
+                    <View className="flex-row items-center gap-2">
+                      <View className="w-6 h-6 rounded-full items-center justify-center" style={{ backgroundColor: materialColors.surfaceContainer }}>
+                        <Icon name={entry.config.icon || 'apps'} size={16} color={materialColors.primary} />
                       </View>
-                      <Text style={styles.routeTitle}>{entry.config.title}</Text>
+                      <Text className="text-base font-bold" style={{ color: materialColors.onSurface }}>{entry.config.title}</Text>
                     </View>
-                    <Text style={styles.routeDescription}>{entry.config.description || 'Open list route'}</Text>
-                    <View style={styles.routeFooter}>
-                      <Text style={styles.routePath}>{entry.hrefs.list}</Text>
-                      <Icon name="arrow-right-line" size={16} color={materialColors.onSurfaceVariant} />
+                    <Text className="text-[13px]" style={{ color: materialColors.onSurfaceVariant }}>{entry.config.description || 'Open list route'}</Text>
+                    <View className="mt-0.5 flex-row justify-between items-center">
+                      <Text className="text-xs" style={{ color: materialColors.primary }}>{entry.hrefs.list}</Text>
+                      <Icon name="arrow-right" size={16} color={materialColors.onSurfaceVariant} />
                     </View>
                   </Card>
                 </Pressable>
@@ -66,85 +66,3 @@ export default function MenuScreen() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  content: {
-    paddingVertical: 4,
-    gap: 18,
-  },
-  emptyCard: {
-    gap: 8,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  emptyDescription: {
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-  section: {
-    gap: 8,
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  groupIconBox: {
-    width: 28,
-    height: 28,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: materialColors.primaryContainer,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  sectionDescription: {
-    fontSize: 13,
-    color: materialColors.onSurfaceVariant,
-  },
-  cards: {
-    gap: 10,
-  },
-  routeCard: {
-    gap: 6,
-  },
-  routeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  routeIconBox: {
-    width: 24,
-    height: 24,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: materialColors.surfaceContainer,
-  },
-  routeTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  routeDescription: {
-    fontSize: 13,
-    color: materialColors.onSurfaceVariant,
-  },
-  routePath: {
-    fontSize: 12,
-    color: materialColors.primary,
-  },
-  routeFooter: {
-    marginTop: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-})

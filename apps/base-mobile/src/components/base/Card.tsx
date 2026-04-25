@@ -30,6 +30,7 @@ type CardProps = Omit<PressableProps, 'children' | 'style'> & {
   disabled?: boolean
   contentPadding?: number
   style?: StyleProp<ViewStyle>
+  className?: string
   children: ReactNode
 }
 
@@ -73,6 +74,7 @@ export function Card({
   disabled = false,
   contentPadding = 16,
   style,
+  className,
   children,
   onPress,
   onPressIn,
@@ -119,12 +121,8 @@ export function Card({
       {isInteractive && isPressed && !disabled ? (
         <View
           pointerEvents="none"
+          className="absolute inset-0"
           style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
             backgroundColor: materialColors.onSurface,
             opacity: 0.1,
           }}
@@ -133,12 +131,8 @@ export function Card({
       {disabled ? (
         <View
           pointerEvents="none"
+          className="absolute inset-0"
           style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
             backgroundColor: materialColors.onSurface,
             opacity: 0.12,
           }}
@@ -149,7 +143,7 @@ export function Card({
 
   if (!isInteractive) {
     return (
-      <View style={[cardStyle, style]}>
+      <View className={className} style={[cardStyle, style]}>
         {content}
       </View>
     )
@@ -161,6 +155,7 @@ export function Card({
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      className={className}
       style={[cardStyle, style]}
       {...rest}
     >

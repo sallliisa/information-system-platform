@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import { TextInput } from '../../inputs'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
 import { buildMobileListConfig } from '../../../features/routes/config/defaults.builders'
 import { sectionGap } from '../../../theme/layout'
@@ -31,26 +32,32 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
   const canUpdate = config.actions?.update ?? true
 
   return (
-    <View style={styles.container}>
-      <View style={styles.toolbar}>
-        <TextInput
-          style={styles.searchInput}
-          value={search}
-          onChangeText={setSearch}
-          placeholder={`Search ${config.title}...`}
-          placeholderTextColor={materialColors.onSurfaceVariant}
-        />
+    <View style={{ gap: sectionGap }}>
+      <View className="flex-row items-center gap-2">
+        <View className="flex-1">
+          <TextInput
+            field="search"
+            label=""
+            icon='search'
+            value={search}
+            onChangeValue={setSearch}
+            placeholder={`Search ${config.title}...`}
+            inputProps={{
+              className: 'min-h-11',
+            }}
+          />
+        </View>
         {canCreate ? (
-          <Pressable style={styles.createButton} onPress={onCreate}>
-            <Text style={styles.createButtonLabel}>Create</Text>
+          <Pressable className="min-h-11 rounded-[10px] justify-center px-[14px]" style={{ backgroundColor: materialColors.primary }} onPress={onCreate}>
+            <Text className="text-[13px] font-bold" style={{ color: materialColors.onPrimary }}>Create</Text>
           </Pressable>
         ) : null}
       </View>
 
       {showHeading ? (
-        <View style={styles.heading}>
-          <Text style={styles.title}>{config.title}</Text>
-          {config.description ? <Text style={styles.description}>{config.description}</Text> : null}
+        <View className="gap-0.5">
+          <Text className="text-2xl font-bold" style={{ color: materialColors.onSurface }}>{config.title}</Text>
+          {config.description ? <Text className="text-sm" style={{ color: materialColors.onSurfaceVariant }}>{config.description}</Text> : null}
         </View>
       ) : null}
 
@@ -65,29 +72,31 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
           onDetail(rowID)
         }}
         rowActions={(row) => (
-          <View style={styles.actionsRow}>
+          <View className="flex-row gap-2">
             {canDetail ? (
               <Pressable
-                style={[styles.actionButton, styles.detailButton]}
+                className="rounded-lg px-2.5 py-2"
+                style={{ backgroundColor: materialColors.secondaryContainer }}
                 onPress={() => {
                   const rowID = row[uidField]
                   if (rowID === undefined || rowID === null) return
                   onDetail(rowID)
                 }}
               >
-                <Text style={styles.actionLabel}>Detail</Text>
+                <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Detail</Text>
               </Pressable>
             ) : null}
             {canUpdate ? (
               <Pressable
-                style={[styles.actionButton, styles.updateButton]}
+                className="rounded-lg px-2.5 py-2"
+                style={{ backgroundColor: materialColors.tertiaryContainer }}
                 onPress={() => {
                   const rowID = row[uidField]
                   if (rowID === undefined || rowID === null) return
                   onUpdate(rowID)
                 }}
               >
-                <Text style={styles.actionLabel}>Update</Text>
+                <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Update</Text>
               </Pressable>
             ) : null}
           </View>
@@ -96,68 +105,3 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: sectionGap,
-  },
-  toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  searchInput: {
-    flex: 1,
-    minHeight: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: materialColors.outlineVariant,
-    backgroundColor: materialColors.surfaceContainerLowest,
-    paddingHorizontal: 12,
-    color: materialColors.onSurface,
-  },
-  createButton: {
-    minHeight: 44,
-    borderRadius: 10,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-    backgroundColor: materialColors.primary,
-  },
-  createButtonLabel: {
-    color: materialColors.onPrimary,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  heading: {
-    gap: 2,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  description: {
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionButton: {
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  detailButton: {
-    backgroundColor: materialColors.secondaryContainer,
-  },
-  updateButton: {
-    backgroundColor: materialColors.tertiaryContainer,
-  },
-  actionLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-})

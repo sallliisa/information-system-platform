@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
 import { buildMobileCreateFormConfig } from '../../../features/routes/config/defaults.builders'
 import { sectionGap } from '../../../theme/layout'
@@ -15,7 +15,7 @@ export function CRUDCreate({ config, onBack }: CRUDCreateProps) {
   const createFormConfig = useMemo(() => buildMobileCreateFormConfig(config), [config])
 
   return (
-    <View style={styles.container}>
+    <View style={{ gap: sectionGap }}>
       <Card type="outlined" color="surface">
         <Form
           {...createFormConfig}
@@ -32,9 +32,3 @@ export function CRUDCreate({ config, onBack }: CRUDCreateProps) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: sectionGap,
-  },
-})

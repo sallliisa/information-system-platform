@@ -1,6 +1,6 @@
 import type { DetailConfig } from '@repo/model-meta'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Text, View } from 'react-native'
 import { api } from '../../lib/api'
 import { formatValue } from '../../lib/format'
 import { materialColors } from '../../theme/material'
@@ -142,7 +142,7 @@ export function Detail({
 
   if (loading) {
     return (
-      <View style={styles.loadingWrap}>
+      <View className="items-center justify-center py-7">
         <ActivityIndicator size="small" color={materialColors.primary} />
       </View>
     )
@@ -150,20 +150,20 @@ export function Detail({
 
   return (
     <Card type="outlined" color="surface">
-      <View style={styles.container}>
+      <View className="gap-2">
         {rows.map((row, index) => {
           if (row.kind === 'section') {
             return (
-              <View key={`${row.field}-${index}`} style={styles.sectionWrap}>
-                <Text style={styles.sectionLabel}>{row.title}</Text>
+              <View key={`${row.field}-${index}`} className="mt-1 pt-1">
+                <Text className="text-xs font-bold uppercase" style={{ color: materialColors.primary }}>{row.title}</Text>
               </View>
             )
           }
 
           return (
-            <View key={`${row.field}-${index}`} style={styles.row}>
-              <Text style={styles.label}>{row.label}</Text>
-              <Text style={styles.value}>{row.value}</Text>
+            <View key={`${row.field}-${index}`} className="flex-row items-start justify-between gap-3">
+              <Text className="flex-1 text-[11px] font-bold uppercase" style={{ color: materialColors.onSurfaceVariant }}>{row.label}</Text>
+              <Text className="flex-[1.2] text-right text-sm" style={{ color: materialColors.onSurface }}>{row.value}</Text>
             </View>
           )
         })}
@@ -171,43 +171,3 @@ export function Detail({
     </Card>
   )
 }
-
-const styles = StyleSheet.create({
-  loadingWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 28,
-  },
-  container: {
-    gap: 8,
-  },
-  sectionWrap: {
-    marginTop: 4,
-    paddingTop: 4,
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    color: materialColors.primary,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  label: {
-    flex: 1,
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    color: materialColors.onSurfaceVariant,
-  },
-  value: {
-    flex: 1.2,
-    textAlign: 'right',
-    fontSize: 14,
-    color: materialColors.onSurface,
-  },
-})

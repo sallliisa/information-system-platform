@@ -162,14 +162,15 @@ export function Button({
   const colorRole = COLOR_ROLES[color]
   const contentColor = disabled ? DISABLED_CONTENT : getContentColor(variant, colorRole)
   const pressableClassName = useMemo(() => {
-    if (!className) return undefined
+    const base = 'items-center justify-center flex-row'
+    if (!className) return base
     const trimmed = className.trim()
-    return trimmed.length > 0 ? trimmed : undefined
+    return trimmed.length > 0 ? `${base} ${trimmed}` : base
   }, [className])
   const { onPressIn, onPressOut, ...pressableProps } = rest
 
   const content = shouldWrapWithText(children) ? (
-    <Text style={{ color: contentColor, fontWeight: '600' }}>{children}</Text>
+    <Text className="font-semibold" style={{ color: contentColor }}>{children}</Text>
   ) : (
     children
   )
@@ -187,15 +188,10 @@ export function Button({
   return (
     <Pressable
       disabled={disabled}
-      {...(pressableClassName ? { className: pressableClassName } : {})}
+      className={pressableClassName}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={[
-        {
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'row',
-        },
         SIZE_STYLES[size],
         getVariantStyle(variant, colorRole, color),
         disabled

@@ -1,6 +1,6 @@
 import { forwardRef, type ComponentRef } from 'react'
 import { TabList, TabSlot, TabTrigger, type TabTriggerSlotProps, Tabs } from 'expo-router/ui'
-import { Pressable, StyleSheet, Text } from 'react-native'
+import { Pressable, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from '../../../src/components/base'
 import { materialColors } from '../../../src/theme/material'
@@ -17,9 +17,16 @@ const CustomTabButton = forwardRef<ComponentRef<typeof Pressable>, CustomTabButt
   const foregroundColor = isFocused ? materialColors.onPrimaryContainer : materialColors.onSurfaceVariant
 
   return (
-    <Pressable ref={ref} {...props} style={[styles.tabButton, isFocused ? styles.tabButtonActive : null]}>
+    <Pressable
+      ref={ref}
+      {...props}
+      className="flex-1 min-h-14 items-center justify-center rounded-[10px] gap-0.5"
+      style={{ backgroundColor: isFocused ? materialColors.primaryContainer : materialColors.surfaceContainerHigh }}
+    >
       <Icon name={icon} size={18} color={foregroundColor} />
-      <Text style={[styles.tabButtonLabel, isFocused ? styles.tabButtonLabelActive : null]}>{label}</Text>
+      <Text className="text-[13px] font-semibold" style={{ color: isFocused ? materialColors.onPrimaryContainer : materialColors.onSurfaceVariant }}>
+        {label}
+      </Text>
     </Pressable>
   )
 })
@@ -29,54 +36,25 @@ export default function TabsLayout() {
 
   return (
     <Tabs>
-      <TabSlot style={styles.slot} />
-      <TabList style={[styles.tabList, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+      <TabSlot className="flex-1" style={{ backgroundColor: materialColors.background }} />
+      <TabList
+        className="flex-row gap-2 px-4 pt-2.5 border-t"
+        style={{
+          paddingBottom: Math.max(insets.bottom, 10),
+          borderTopColor: materialColors.outlineVariant,
+          backgroundColor: materialColors.surface,
+        }}
+      >
         <TabTrigger name="dashboard" href="/dashboard" asChild>
-          <CustomTabButton label="Dashboard" icon="home-5-line" />
+          <CustomTabButton label="Dashboard" icon="home-5" />
         </TabTrigger>
         <TabTrigger name="profile" href="/profile" asChild>
-          <CustomTabButton label="Profile" icon="user-3-line" />
+          <CustomTabButton label="Profile" icon="user-3" />
         </TabTrigger>
         <TabTrigger name="menu" href="/menu" asChild>
-          <CustomTabButton label="Menu" icon="apps-2-line" />
+          <CustomTabButton label="Menu" icon="apps-2" />
         </TabTrigger>
       </TabList>
     </Tabs>
   )
 }
-
-const styles = StyleSheet.create({
-  slot: {
-    flex: 1,
-    backgroundColor: materialColors.background,
-  },
-  tabList: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: materialColors.outlineVariant,
-    backgroundColor: materialColors.surface,
-  },
-  tabButton: {
-    flex: 1,
-    minHeight: 56,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 2,
-    backgroundColor: materialColors.surfaceContainerHigh,
-  },
-  tabButtonActive: {
-    backgroundColor: materialColors.primaryContainer,
-  },
-  tabButtonLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: materialColors.onSurfaceVariant,
-  },
-  tabButtonLabelActive: {
-    color: materialColors.onPrimaryContainer,
-  },
-})

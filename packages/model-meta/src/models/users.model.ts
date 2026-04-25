@@ -158,7 +158,7 @@ const users = {
         type: 'image',
       },
       role_type: {
-        type: 'radio',
+        type: 'select',
         props: {
           validation: ['required'],
           defaultValue: 'internal',

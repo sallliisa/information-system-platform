@@ -3,7 +3,7 @@ import type { MobileModelConfig } from '../../catalog.types'
 
 const usersModel: MobileModelConfig = {
   ...users,
-  icon: 'team-line',
+  icon: 'team',
   description: 'Manage application users.',
 }
 

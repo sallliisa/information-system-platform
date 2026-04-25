@@ -1,7 +1,8 @@
 import type { CreateConfig, InputConfig } from '@repo/model-meta'
 import { defaultFormConfig } from '../../../configs/_defaults'
 import { api } from '../../../lib/api'
-import { TextInput } from '../../inputs'
+import { SelectInput, TextInput } from '../../inputs'
+import type { FormInputComponent } from '../../inputs'
 
 export type FormMode = 'create' | 'update'
 
@@ -73,13 +74,13 @@ export async function defaultFormGetData({ getAPI, id, searchParameters }: FormG
   return normalizeObject((response as any)?.data ?? response)
 }
 
-const fallbackComponentTypeMap = {
+export const componentTypeMap: Record<string, FormInputComponent> = {
   text: TextInput,
   textarea: TextInput,
   password: TextInput,
   file: TextInput,
   image: TextInput,
-  select: TextInput,
+  select: SelectInput,
   radio: TextInput,
   date: TextInput,
   daterange: TextInput,
@@ -106,8 +107,6 @@ const fallbackComponentTypeMap = {
   'iso-clause': TextInput,
   custom: TextInput,
 } as const
-
-export const componentTypeMap: Record<string, typeof TextInput> = fallbackComponentTypeMap
 
 export function createMergedInputConfig(inputConfig?: InputConfig): InputConfig {
   return {

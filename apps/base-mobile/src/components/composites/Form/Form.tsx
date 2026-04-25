@@ -1,10 +1,9 @@
 import type { FieldDependency, InputConfig, ModelFormField } from '@repo/model-meta'
 import { evaluateFieldDependencies } from '@repo/model-meta'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
   View,
   type TextInputProps as RNTextInputProps,
@@ -13,6 +12,8 @@ import { defaultFormConfig } from '../../../configs/_defaults'
 import { materialColors } from '../../../theme/material'
 import { Card } from '../../base'
 import { TextInput } from '../../inputs'
+import type { FormInputComponent } from '../../inputs'
+import type { SelectInputSpecificProps, TextInputConstraint } from '../../inputs'
 import {
   componentTypeMap,
   createMergedInputConfig,
@@ -27,7 +28,14 @@ import {
   type FormOnSubmitParams,
   type FormOnSuccessParams,
 } from './form.defaults'
-import { executeValidationRules, hasRequiredValidation, type ValidationRule } from './validation'
+import { FormValidationContext, type FormValidationContextValue } from './form.context'
+import { executeValidationRules, type ValidationRule } from './validation'
+
+type FormRenderSubmitParams = {
+  loading: boolean
+  submitForm: () => Promise<void>
+  formData: Record<string, any>
+}
 
 type FormProps = {
   inputConfig?: InputConfig
@@ -51,6 +59,7 @@ type FormProps = {
   value?: Record<string, any>
   onChange?: (nextValue: Record<string, any>) => void
   submitLabel?: string
+  renderSubmit?: (params: FormRenderSubmitParams) => ReactNode
 }
 
 type FormStatus = {
@@ -60,6 +69,8 @@ type FormStatus = {
 
 const EMPTY_OBJECT: Record<string, any> = {}
 const DEFAULT_GET_INITIAL_DATA = async () => ({})
+const GRID_COLUMNS = 12
+const GRID_ROW_SPAN_HEIGHT = 56
 
 const TEXT_INPUT_PROP_KEYS: (keyof RNTextInputProps)[] = [
   'autoCapitalize',
@@ -221,10 +232,59 @@ function buildInputProps(fieldType: string, rawProps: Record<string, any>) {
     inputProps.keyboardType = 'numeric'
   }
 
+  const helperMessage = typeof rawProps.helperMessage === 'string' ? rawProps.helperMessage : undefined
+
+  const enableHelperMessage = typeof rawProps.enableHelperMessage === 'boolean' ? rawProps.enableHelperMessage : false
+
+  const type =
+    typeof rawProps.type === 'string'
+      ? rawProps.type
+      : fieldType === 'password'
+        ? 'password'
+        : fieldType === 'email'
+          ? 'email'
+          : 'text'
+
+  const placeholder = typeof rawProps.placeholder === 'string' ? rawProps.placeholder : ''
+  const prefix = typeof rawProps.prefix === 'string' ? rawProps.prefix : ''
+  const suffix = typeof rawProps.suffix === 'string' ? rawProps.suffix : ''
+  const icon = typeof rawProps.icon === 'string' ? rawProps.icon : ''
+
+  const constraint = Array.isArray(rawProps.constraint)
+    ? (rawProps.constraint.filter((item) => typeof item === 'string') as TextInputConstraint[])
+    : (['decimal', 'text'] as TextInputConstraint[])
+
+  const renderAction = typeof rawProps.renderAction === 'function' ? rawProps.renderAction : undefined
+
   return {
     inputProps,
-    helperText: typeof rawProps.helperText === 'string' ? rawProps.helperText : undefined,
-    required: hasRequiredValidation(rawProps.validation as ValidationRule[] | undefined) || Boolean(rawProps.required),
+    helperMessage,
+    enableHelperMessage,
+    type,
+    placeholder,
+    prefix,
+    suffix,
+    icon,
+    constraint,
+    renderAction,
+  }
+}
+
+function buildSelectInputProps(rawProps: Record<string, any>): SelectInputSpecificProps {
+  return {
+    data: Array.isArray(rawProps.data) ? rawProps.data : undefined,
+    getAPI: typeof rawProps.getAPI === 'string' ? rawProps.getAPI : undefined,
+    searchParameters: isPlainObject(rawProps.searchParameters) ? rawProps.searchParameters : undefined,
+    getData: typeof rawProps.getData === 'function' ? rawProps.getData : undefined,
+    defaultToFirst: typeof rawProps.defaultToFirst === 'boolean' ? rawProps.defaultToFirst : undefined,
+    pick: typeof rawProps.pick === 'string' ? rawProps.pick : undefined,
+    view: typeof rawProps.view === 'string' ? rawProps.view : undefined,
+    multi: typeof rawProps.multi === 'boolean' ? rawProps.multi : undefined,
+    asWhole: typeof rawProps.asWhole === 'boolean' ? rawProps.asWhole : undefined,
+    transform: isPlainObject(rawProps.transform) ? rawProps.transform : undefined,
+    onSelect: typeof rawProps.onSelect === 'function' ? rawProps.onSelect : undefined,
+    clearable: typeof rawProps.clearable === 'boolean' ? rawProps.clearable : undefined,
+    placeholder: typeof rawProps.placeholder === 'string' ? rawProps.placeholder : undefined,
   }
 }
 
@@ -259,6 +319,95 @@ function getFieldDisabled(field: string, dependencyMap: Record<string, FieldDepe
   return Boolean(dependencyMap[field]?.disabled?.value) || disabled
 }
 
+type FieldLayoutItem = {
+  kind: 'field'
+  field: string
+  index: number
+  colSpan: number
+  rowSpan: number
+}
+
+type SectionLayoutItem = {
+  kind: 'section'
+  index: number
+  field: string
+  level: 'S' | 'S1'
+  text: string
+}
+
+type FormLayoutRow = {
+  kind: 'fields'
+  items: FieldLayoutItem[]
+} | {
+  kind: 'section'
+  item: SectionLayoutItem
+}
+
+function clampColSpan(value: unknown): number {
+  const normalized = Number(value)
+  if (!Number.isFinite(normalized)) return GRID_COLUMNS
+  if (normalized < 1) return 1
+  if (normalized > GRID_COLUMNS) return GRID_COLUMNS
+  return Math.floor(normalized)
+}
+
+function clampRowSpan(value: unknown): number {
+  const normalized = Number(value)
+  if (!Number.isFinite(normalized) || normalized < 1) return 1
+  return Math.floor(normalized)
+}
+
+function buildFormLayoutRows(fields: string[], inputConfig: InputConfig): FormLayoutRow[] {
+  const rows: FormLayoutRow[] = []
+  let currentFieldsRow: FieldLayoutItem[] = []
+  let occupiedColumns = 0
+
+  const flushFieldRow = () => {
+    if (!currentFieldsRow.length) return
+    rows.push({ kind: 'fields', items: currentFieldsRow })
+    currentFieldsRow = []
+    occupiedColumns = 0
+  }
+
+  for (const [index, field] of fields.entries()) {
+    if (field.startsWith('S|')) {
+      flushFieldRow()
+      rows.push({
+        kind: 'section',
+        item: { kind: 'section', index, field, level: 'S', text: field.slice(2) },
+      })
+      continue
+    }
+
+    if (field.startsWith('S1|')) {
+      flushFieldRow()
+      rows.push({
+        kind: 'section',
+        item: { kind: 'section', index, field, level: 'S1', text: field.slice(3) },
+      })
+      continue
+    }
+
+    const fieldConfig = inputConfig[field]
+    const colSpan = clampColSpan(fieldConfig?.colSpan ?? fieldConfig?.props?.colSpan)
+    const rowSpan = clampRowSpan(fieldConfig?.rowSpan ?? fieldConfig?.props?.rowSpan)
+
+    if (currentFieldsRow.length && occupiedColumns + colSpan > GRID_COLUMNS) {
+      flushFieldRow()
+    }
+
+    currentFieldsRow.push({ kind: 'field', field, index, colSpan, rowSpan })
+    occupiedColumns += colSpan
+
+    if (occupiedColumns >= GRID_COLUMNS) {
+      flushFieldRow()
+    }
+  }
+
+  flushFieldRow()
+  return rows
+}
+
 export function Form({
   inputConfig: inputConfigProp,
   fields = [],
@@ -281,6 +430,7 @@ export function Form({
   value,
   onChange,
   submitLabel = 'Submit',
+  renderSubmit,
 }: FormProps) {
   const [inputConfigState, setInputConfigState] = useState<InputConfig>({})
   const [fieldDependencyData, setFieldDependencyData] = useState<Record<string, FieldDependency>>({})
@@ -602,6 +752,24 @@ export function Form({
     return hasError
   }, [])
 
+  const clearFieldValidation = useCallback((field: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      fieldErrorsRef.current = next
+      return next
+    })
+
+    setFieldTouched((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      fieldTouchedRef.current = next
+      return next
+    })
+  }, [])
+
   const handleFieldTouch = useCallback(
     (field: string) => {
       setFieldTouched((prev) => {
@@ -614,6 +782,31 @@ export function Form({
       validateField(field)
     },
     [validateField]
+  )
+
+  const formValidationContextValue = useMemo<FormValidationContextValue>(
+    () => ({
+      formData,
+      fieldErrors,
+      fieldTouched,
+      submitAttempted,
+      inputConfig: inputConfigState,
+      validateField,
+      validateVisibleFields,
+      clearFieldValidation,
+      touchField: handleFieldTouch,
+    }),
+    [
+      clearFieldValidation,
+      fieldErrors,
+      fieldTouched,
+      formData,
+      handleFieldTouch,
+      inputConfigState,
+      submitAttempted,
+      validateField,
+      validateVisibleFields,
+    ]
   )
 
   useEffect(() => {
@@ -709,6 +902,8 @@ export function Form({
     onChange(formData)
   }, [formData, onChange, staticMode])
 
+  const layoutRows = useMemo(() => buildFormLayoutRows(fields, inputConfigState), [fields, inputConfigState])
+
   async function submitForm() {
     if (loading.post) return
 
@@ -764,7 +959,7 @@ export function Form({
     }
   }
 
-  function handleFieldChange(field: string, nextValue: string) {
+  function handleFieldChange(field: string, nextValue: any) {
     setFormData((prev) => {
       if (prev[field] === nextValue) return prev
       const next = { ...prev, [field]: nextValue }
@@ -775,166 +970,183 @@ export function Form({
 
   if (loading.get) {
     return (
-      <View style={styles.loadingWrap}>
-        <ActivityIndicator size="small" color={materialColors.primary} />
-      </View>
+      <FormValidationContext.Provider value={formValidationContextValue}>
+        <View className="items-center justify-center py-7">
+          <ActivityIndicator size="small" color={materialColors.primary} />
+        </View>
+      </FormValidationContext.Provider>
     )
   }
 
   return (
-    <View style={styles.container}>
-      {fields.map((field, index) => {
-        if (field.startsWith('S|')) {
+    <FormValidationContext.Provider value={formValidationContextValue}>
+      <View className="gap-2.5">
+        {layoutRows.map((row, rowIndex) => {
+          if (row.kind === 'section') {
+            if (row.item.level === 'S') {
+              return (
+                <View key={`${row.item.field}-${row.item.index}`} testID={`form-row-${rowIndex}`} className="gap-1.5 mt-1.5">
+                  <Text className="text-xs italic" style={{ color: materialColors.primary }}>{row.item.text}</Text>
+                  <View className="border-t" style={{ borderTopColor: materialColors.primary }} />
+                </View>
+              )
+            }
+
+            return (
+              <Card key={`${row.item.field}-${row.item.index}`} testID={`form-row-${rowIndex}`} type="filled" color="primaryContainer" className="mt-1.5 rounded-xl">
+                <Text className="text-base font-bold" style={{ color: materialColors.onPrimaryContainer }}>{row.item.text}</Text>
+              </Card>
+            )
+          }
+
           return (
-            <View key={`${field}-${index}`} style={styles.sectionBreak}>
-              <Text style={styles.sectionBreakLabel}>{field.slice(2)}</Text>
-              <View style={styles.sectionBreakLine} />
+            <View key={`row-${rowIndex}`} testID={`form-row-${rowIndex}`} className="-mx-1 flex-row flex-wrap gap-y-2">
+              {row.items.map((item) => {
+                const field = item.field
+                const fieldConfig = inputConfigState[field]
+                if (!fieldConfig) {
+                  return (
+                    <View
+                      key={`${field}-${item.index}`}
+                      testID={`form-row-${rowIndex}-field-${field}`}
+                      className="px-1"
+                      style={{ width: `${(item.colSpan / GRID_COLUMNS) * 100}%` }}
+                    >
+                      <Card type="outlined" color="errorContainer">
+                        <Text className="text-xs" style={{ color: materialColors.onErrorContainer }}>WARN: inputConfig[{field}] is undefined</Text>
+                      </Card>
+                    </View>
+                  )
+                }
+
+                if (!isFieldVisible(field, fieldDependencyData)) {
+                  return null
+                }
+
+                const runtimeProps = fieldDependencyData[field]?.props?.value || {}
+                const mergedFieldProps = {
+                  ...(fieldConfig.props || {}),
+                  ...(runtimeProps || {}),
+                }
+
+                const MappedComponent = (componentTypeMap[fieldConfig.type] || componentTypeMap.custom || TextInput) as FormInputComponent
+                const {
+                  inputProps,
+                  helperMessage,
+                  enableHelperMessage,
+                  type,
+                  placeholder,
+                  prefix,
+                  suffix,
+                  icon,
+                  constraint,
+                  renderAction,
+                } = buildInputProps(fieldConfig.type, mergedFieldProps)
+                const selectInputProps = fieldConfig.type === 'select' ? buildSelectInputProps(mergedFieldProps) : undefined
+                const fieldDisabled = getFieldDisabled(field, fieldDependencyData, disabled)
+
+                const fieldCellStyle: Record<string, any> = {
+                  width: `${(item.colSpan / GRID_COLUMNS) * 100}%`,
+                }
+                if (item.rowSpan > 1) {
+                  fieldCellStyle.minHeight = item.rowSpan * GRID_ROW_SPAN_HEIGHT
+                }
+
+                if (fieldConfig.type === 'custom') {
+                  const CustomComponent = fieldConfig.component as ((props: Record<string, any>) => ReactNode) | undefined
+
+                  if (!CustomComponent) {
+                    return (
+                      <View key={`${field}-${item.index}`} testID={`form-row-${rowIndex}-field-${field}`} className="px-1" style={fieldCellStyle}>
+                        <Card type="outlined" color="errorContainer">
+                          <Text className="text-xs" style={{ color: materialColors.onErrorContainer }}>
+                            WARN: inputConfig[{field}].component is undefined
+                          </Text>
+                        </Card>
+                      </View>
+                    )
+                  }
+
+                  return (
+                    <View key={`${field}-${item.index}`} testID={`form-row-${rowIndex}-field-${field}`} className="px-1" style={fieldCellStyle}>
+                      <View className="rounded-xl" style={{ opacity: fieldDisabled ? 0.7 : 1 }}>
+                        <CustomComponent
+                          {...mergedFieldProps}
+                          field={field}
+                          label={fieldsAlias[field] || field}
+                          value={formData[field]}
+                          onChangeValue={(nextValue: any) => handleFieldChange(field, nextValue)}
+                          onValidationTouch={() => handleFieldTouch(field)}
+                          helperMessage={helperMessage}
+                          enableHelperMessage={enableHelperMessage}
+                          error={fieldErrors[field]}
+                          type={type}
+                          placeholder={placeholder}
+                          prefix={prefix}
+                          suffix={suffix}
+                          icon={icon}
+                          constraint={constraint}
+                          renderAction={renderAction}
+                          disabled={fieldDisabled}
+                          inputProps={inputProps}
+                          {...selectInputProps}
+                        />
+                      </View>
+                    </View>
+                  )
+                }
+
+                return (
+                  <View key={`${field}-${item.index}`} testID={`form-row-${rowIndex}-field-${field}`} className="px-1" style={fieldCellStyle}>
+                    <View className="rounded-xl" style={{ opacity: fieldDisabled ? 0.7 : 1 }}>
+                      <MappedComponent
+                        field={field}
+                        label={fieldsAlias[field] || field}
+                        value={formData[field]}
+                        onChangeValue={(nextValue: any) => handleFieldChange(field, nextValue)}
+                        onValidationTouch={() => handleFieldTouch(field)}
+                        helperMessage={helperMessage}
+                        enableHelperMessage={enableHelperMessage}
+                        error={fieldErrors[field]}
+                        type={type}
+                        placeholder={placeholder}
+                        prefix={prefix}
+                        suffix={suffix}
+                        icon={icon}
+                        constraint={constraint}
+                        renderAction={renderAction}
+                        disabled={fieldDisabled}
+                        inputProps={inputProps}
+                        {...selectInputProps}
+                      />
+                    </View>
+                  </View>
+                )
+              })}
             </View>
           )
-        }
+        })}
 
-        if (field.startsWith('S1|')) {
-          return (
-            <Card key={`${field}-${index}`} type="filled" color="primaryContainer" style={styles.sectionCard}>
-              <Text style={styles.sectionCardLabel}>{field.slice(3)}</Text>
-            </Card>
-          )
-        }
-
-        const fieldConfig = inputConfigState[field]
-        if (!fieldConfig) {
-          return (
-            <Card key={`${field}-${index}`} type="outlined" color="errorContainer">
-              <Text style={styles.warningText}>WARN: inputConfig[{field}] is undefined</Text>
-            </Card>
-          )
-        }
-
-        if (!isFieldVisible(field, fieldDependencyData)) {
-          return null
-        }
-
-        const runtimeProps = fieldDependencyData[field]?.props?.value || {}
-        const mergedFieldProps = {
-          ...(fieldConfig.props || {}),
-          ...(runtimeProps || {}),
-        }
-
-        const MappedComponent = componentTypeMap[fieldConfig.type] || componentTypeMap.custom || TextInput
-        const { inputProps, helperText, required } = buildInputProps(fieldConfig.type, mergedFieldProps)
-        const shouldShowError = submitAttempted || Boolean(fieldTouched[field])
-        const fieldError = shouldShowError ? fieldErrors[field] : undefined
-        const fieldDisabled = getFieldDisabled(field, fieldDependencyData, disabled)
-
-        return (
-          <View key={`${field}-${index}`} style={[styles.inputWrap, fieldDisabled ? styles.inputWrapDisabled : null]}>
-            <MappedComponent
-              field={field}
-              label={fieldsAlias[field] || field}
-              value={formData[field]}
-              onChangeValue={(nextValue: string) => handleFieldChange(field, nextValue)}
-              onValidationTouch={() => handleFieldTouch(field)}
-              helperText={helperText}
-              errorText={fieldError}
-              required={required}
-              disabled={fieldDisabled}
-              inputProps={inputProps}
-            />
+        {statusMessage ? (
+          <View className="mt-1 rounded-[10px] px-2.5 py-2" style={{ backgroundColor: statusMessage.type === 'success' ? materialColors.secondaryContainer : materialColors.errorContainer }}>
+            <Text className="text-[13px]" style={{ color: statusMessage.type === 'success' ? materialColors.onSecondaryContainer : materialColors.onErrorContainer }}>{statusMessage.text}</Text>
           </View>
-        )
-      })}
+        ) : null}
 
-      {statusMessage ? (
-        <View style={[styles.statusWrap, statusMessage.type === 'success' ? styles.statusSuccess : styles.statusError]}>
-          <Text style={[styles.statusText, statusMessage.type === 'success' ? styles.statusSuccessText : styles.statusErrorText]}>{statusMessage.text}</Text>
-        </View>
-      ) : null}
-
-      {!staticMode && !disabled ? (
-        <Pressable style={[styles.submitButton, loading.post ? styles.submitButtonDisabled : null]} onPress={submitForm} disabled={loading.post}>
-          <Text style={styles.submitLabel}>{loading.post ? 'Submitting...' : submitLabel}</Text>
-        </Pressable>
-      ) : null}
-    </View>
+        {!staticMode && !disabled
+          ? renderSubmit
+            ? renderSubmit({
+                loading: loading.get || loading.post,
+                submitForm,
+                formData,
+              })
+            : (
+                <Pressable className="mt-2 rounded-[10px] items-center justify-center min-h-11" style={{ backgroundColor: materialColors.primary, opacity: loading.post ? 0.7 : 1 }} onPress={submitForm} disabled={loading.post}>
+                  <Text className="text-sm font-bold" style={{ color: materialColors.onPrimary }}>{loading.post ? 'Submitting...' : submitLabel}</Text>
+                </Pressable>
+              )
+          : null}
+      </View>
+    </FormValidationContext.Provider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 10,
-  },
-  loadingWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 28,
-  },
-  sectionBreak: {
-    gap: 6,
-    marginTop: 6,
-  },
-  sectionBreakLabel: {
-    fontSize: 12,
-    fontStyle: 'italic',
-    color: materialColors.primary,
-  },
-  sectionBreakLine: {
-    borderTopWidth: 1,
-    borderTopColor: materialColors.primary,
-  },
-  sectionCard: {
-    marginTop: 6,
-    borderRadius: 12,
-  },
-  sectionCardLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: materialColors.onPrimaryContainer,
-  },
-  inputWrap: {
-    borderRadius: 12,
-  },
-  inputWrapDisabled: {
-    opacity: 0.7,
-  },
-  warningText: {
-    fontSize: 12,
-    color: materialColors.onErrorContainer,
-  },
-  statusWrap: {
-    marginTop: 4,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  statusSuccess: {
-    backgroundColor: materialColors.secondaryContainer,
-  },
-  statusError: {
-    backgroundColor: materialColors.errorContainer,
-  },
-  statusText: {
-    fontSize: 13,
-  },
-  statusSuccessText: {
-    color: materialColors.onSecondaryContainer,
-  },
-  statusErrorText: {
-    color: materialColors.onErrorContainer,
-  },
-  submitButton: {
-    marginTop: 8,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 44,
-    backgroundColor: materialColors.primary,
-  },
-  submitButtonDisabled: {
-    opacity: 0.7,
-  },
-  submitLabel: {
-    color: materialColors.onPrimary,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-})

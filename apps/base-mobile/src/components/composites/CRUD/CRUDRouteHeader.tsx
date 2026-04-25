@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { Icon } from '../../base'
 import { materialColors } from '../../../theme/material'
 
@@ -10,40 +10,14 @@ type CRUDRouteHeaderProps = {
 
 export function CRUDRouteHeader({ title, onBack, backLabel = 'Back' }: CRUDRouteHeaderProps) {
   return (
-    <View style={styles.container}>
+    <View className="gap-2">
       {onBack ? (
-        <Pressable style={styles.backButton} onPress={onBack}>
-          <Icon name="arrow-left-line" size={18} color={materialColors.onSurface} />
-          <Text style={styles.backLabel}>{backLabel}</Text>
+        <Pressable className="self-start min-h-10 rounded-[10px] px-3 flex-row items-center gap-1.5" style={{ backgroundColor: materialColors.surfaceContainer }} onPress={onBack}>
+          <Icon name="arrow-left" size={18} color={materialColors.onSurface} />
+          <Text className="text-[13px] font-bold" style={{ color: materialColors.onSurface }}>{backLabel}</Text>
         </Pressable>
       ) : null}
-      <Text style={styles.title}>{title}</Text>
+      <Text className="text-2xl font-bold" style={{ color: materialColors.onSurface }}>{title}</Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 8,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    minHeight: 40,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: materialColors.surfaceContainer,
-  },
-  backLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-})

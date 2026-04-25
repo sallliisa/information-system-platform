@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { Card } from '../../components/base'
 import { materialColors } from '../../theme/material'
 
@@ -14,30 +14,11 @@ export function ModelRouteNotFound({ moduleSlug, modelSlug }: ModelRouteNotFound
       : 'Module and model route parameters are required.'
 
   return (
-    <View style={styles.container}>
-      <Card type="filled" color="surfaceContainerLow" style={styles.card}>
-        <Text style={styles.title}>Route not found</Text>
-        <Text style={styles.description}>{description}</Text>
+    <View className="flex-1 justify-center">
+      <Card type="filled" color="surfaceContainerLow" className="gap-2">
+        <Text className="text-lg font-bold" style={{ color: materialColors.onSurface }}>Route not found</Text>
+        <Text className="text-sm" style={{ color: materialColors.onSurfaceVariant }}>{description}</Text>
       </Card>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  card: {
-    gap: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-  },
-  description: {
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-})

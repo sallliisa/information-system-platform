@@ -1,4 +1,5 @@
 export { Form } from './Form'
+export { FormValidationContext, useFormValidationContext, type FormValidationContextValue } from './form.context'
 export {
   componentTypeMap,
   defaultBeforeSubmit,

@@ -1,3 +1,5 @@
+import '../global.css'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -6,15 +8,17 @@ import { MaterialThemeProvider } from '../src/theme'
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <MaterialThemeProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(guest)" />
-            <Stack.Screen name="(app)" />
-          </Stack>
+          <BottomSheetModalProvider>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(guest)" />
+              <Stack.Screen name="(app)" />
+            </Stack>
+          </BottomSheetModalProvider>
         </MaterialThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -1,6 +1,6 @@
 import type { ListConfig } from '@repo/model-meta'
 import { memo, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Text, View } from 'react-native'
 import { api } from '../../lib/api'
 import { formatValue } from '../../lib/format'
 import { materialColors } from '../../theme/material'
@@ -103,7 +103,7 @@ export const DataTable = memo(function DataTable({
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="items-center justify-center py-7">
         <ActivityIndicator size="small" color={materialColors.primary} />
       </View>
     )
@@ -112,21 +112,16 @@ export const DataTable = memo(function DataTable({
   if (!rows.length) {
     return (
       <Card type="outlined" color="surfaceContainerLow">
-        <Text style={styles.emptyText}>{emptyText}</Text>
+        <Text className="text-center text-sm" style={{ color: materialColors.onSurfaceVariant }}>{emptyText}</Text>
       </Card>
     )
   }
 
   return (
-    <View style={styles.table}>
+    <View className="gap-2.5">
       {rows.map((item, index) => (
-        <Card
-          key={String(item[uid] ?? index)}
-          type="outlined"
-          color="surface"
-          onPress={onPressRow ? () => onPressRow(item) : undefined}
-        >
-          <View style={styles.rowContent}>
+        <Card key={String(item[uid] ?? index)} type="outlined" color="surface" onPress={onPressRow ? () => onPressRow(item) : undefined}>
+          <View className="gap-2">
             {fields.map((field) => {
               if (field.startsWith('S|')) return null
               const sourceField = fieldsProxy[field] || field
@@ -139,60 +134,20 @@ export const DataTable = memo(function DataTable({
               const value = baseValue === '-' || !fieldsUnit[field] ? baseValue : `${baseValue}${fieldsUnit[field]}`
 
               return (
-                <View key={field} style={styles.fieldRow}>
-                  <Text style={styles.fieldKey}>{fieldsAlias[field] || field}</Text>
-                  <Text style={styles.fieldValue}>{value}</Text>
+                <View key={field} className="flex-row gap-3 items-start justify-between">
+                  <Text className="flex-1 text-[11px] font-bold uppercase" style={{ color: materialColors.onSurfaceVariant }}>{fieldsAlias[field] || field}</Text>
+                  <Text className="flex-[1.2] text-right text-sm" style={{ color: materialColors.onSurface }}>{value}</Text>
                 </View>
               )
             })}
-            {rowActions ? <View style={styles.actionsSection}>{rowActions(item)}</View> : null}
+            {rowActions ? (
+              <View className="mt-1 pt-2.5 border-t" style={{ borderTopColor: materialColors.outlineVariant }}>
+                {rowActions(item)}
+              </View>
+            ) : null}
           </View>
         </Card>
       ))}
     </View>
   )
-})
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 28,
-  },
-  emptyText: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-  table: {
-    gap: 10,
-  },
-  rowContent: {
-    gap: 8,
-  },
-  fieldRow: {
-    flexDirection: 'row',
-    gap: 12,
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  fieldKey: {
-    flex: 1,
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    color: materialColors.onSurfaceVariant,
-  },
-  fieldValue: {
-    flex: 1.2,
-    textAlign: 'right',
-    fontSize: 14,
-    color: materialColors.onSurface,
-  },
-  actionsSection: {
-    marginTop: 4,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: materialColors.outlineVariant,
-  },
 })

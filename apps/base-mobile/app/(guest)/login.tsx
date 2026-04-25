@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
 import { Card } from '../../src/components/base'
 import { login } from '../../src/lib/auth'
 import { DEFAULT_AUTH_ROUTE } from '../../src/lib/routes'
@@ -43,15 +43,16 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.screen}>
-      <Card type="outlined" color="surface" style={styles.card} contentPadding={20}>
-        <Text style={styles.caption}>Welcome to</Text>
-        <Text style={styles.title}>Base Mobile</Text>
+    <View className="flex-1 justify-center items-center p-6" style={{ backgroundColor: materialColors.background }}>
+      <Card type="outlined" color="surface" className="w-full max-w-[420px] rounded-[20px] gap-2.5" contentPadding={20}>
+        <Text className="text-sm" style={{ color: materialColors.onSurfaceVariant }}>Welcome to</Text>
+        <Text className="text-[28px] font-bold mb-2" style={{ color: materialColors.onSurface }}>Base Mobile</Text>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Username</Text>
+        <View className="gap-1.5">
+          <Text className="text-sm font-semibold" style={{ color: materialColors.onSurface }}>Username</Text>
           <TextInput
-            style={styles.input}
+            className="min-h-11 rounded-[10px] border px-3 py-2.5"
+            style={{ borderColor: materialColors.outlineVariant, backgroundColor: materialColors.surfaceContainerHighest, color: materialColors.onSurface }}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -62,10 +63,11 @@ export default function LoginScreen() {
           />
         </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Password</Text>
+        <View className="gap-1.5">
+          <Text className="text-sm font-semibold" style={{ color: materialColors.onSurface }}>Password</Text>
           <TextInput
-            style={styles.input}
+            className="min-h-11 rounded-[10px] border px-3 py-2.5"
+            style={{ borderColor: materialColors.outlineVariant, backgroundColor: materialColors.surfaceContainerHighest, color: materialColors.onSurface }}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -76,85 +78,15 @@ export default function LoginScreen() {
         </View>
 
         {error ? (
-          <View style={styles.errorBox}>
-            <Text style={styles.error}>{error}</Text>
+          <View className="mt-1 rounded-[10px] px-2.5 py-2" style={{ backgroundColor: materialColors.errorContainer }}>
+            <Text className="text-[13px]" style={{ color: materialColors.onErrorContainer }}>{error}</Text>
           </View>
         ) : null}
 
-        <Pressable style={[styles.loginButton, submitting && styles.loginButtonDisabled]} onPress={handleLogin} disabled={submitting}>
-          <Text style={styles.loginButtonLabel}>{submitting ? 'Signing in...' : 'Login'}</Text>
+        <Pressable className="mt-1.5 rounded-[10px] items-center py-3" style={{ backgroundColor: materialColors.primary, opacity: submitting ? 0.7 : 1 }} onPress={handleLogin} disabled={submitting}>
+          <Text className="text-[15px] font-semibold" style={{ color: materialColors.onPrimary }}>{submitting ? 'Signing in...' : 'Login'}</Text>
         </Pressable>
       </Card>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: materialColors.background,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 420,
-    borderRadius: 20,
-    gap: 10,
-  },
-  caption: {
-    fontSize: 14,
-    color: materialColors.onSurfaceVariant,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: materialColors.onSurface,
-    marginBottom: 8,
-  },
-  fieldGroup: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 14,
-    color: materialColors.onSurface,
-    fontWeight: '600',
-  },
-  input: {
-    minHeight: 44,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: materialColors.outlineVariant,
-    backgroundColor: materialColors.surfaceContainerHighest,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    color: materialColors.onSurface,
-  },
-  errorBox: {
-    marginTop: 4,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: materialColors.errorContainer,
-  },
-  error: {
-    color: materialColors.onErrorContainer,
-    fontSize: 13,
-  },
-  loginButton: {
-    marginTop: 6,
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingVertical: 12,
-    backgroundColor: materialColors.primary,
-  },
-  loginButtonDisabled: {
-    opacity: 0.7,
-  },
-  loginButtonLabel: {
-    color: materialColors.onPrimary,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-})

@@ -1,6 +1,6 @@
 import { Stack, useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { AutoScrollScreen } from '../../../../src/components/base'
 import { CRUDRouteHeader } from '../../../../src/components/composites/CRUD'
@@ -46,17 +46,12 @@ export default function MenuStackLayout() {
 
         return {
           header: () => (
-            <View style={[styles.headerWrap, { paddingTop: insets.top + 6 }]}>
-              <CRUDRouteHeader
-                title={title}
-                onBack={
-                  showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined
-                }
-              />
+            <View className="px-4 pb-2" style={{ paddingTop: insets.top + 6, backgroundColor: materialColors.background }}>
+              <CRUDRouteHeader title={title} onBack={showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined} />
             </View>
           ),
           headerStatusBarHeight: 0,
-          headerStyle: styles.header,
+          headerStyle: { backgroundColor: materialColors.background },
           headerShadowVisible: false,
           headerTitleAlign: 'center',
           gestureEnabled: true,
@@ -73,14 +68,3 @@ export default function MenuStackLayout() {
     </Stack>
   )
 }
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: materialColors.background,
-  },
-  headerWrap: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-    backgroundColor: materialColors.background,
-  },
-})

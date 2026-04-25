@@ -1,3 +1,6 @@
 export { Card } from './Card'
 export { AutoScrollScreen } from './AutoScrollScreen'
 export { Icon } from './Icon'
+export { Button } from './Button'
+export { Modal, ModalTrigger, ModalHeader, ModalContent, ModalFooter } from './Modal'
+export { Popover, PopoverTrigger, PopoverContent } from './Popover'

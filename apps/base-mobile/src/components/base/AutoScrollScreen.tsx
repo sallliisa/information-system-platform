@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react'
-import { ScrollView, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
+import { ScrollView, type StyleProp, type ViewStyle } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { screenPaddingBottom, screenPaddingHorizontal, screenPaddingTop } from '../../theme/layout'
 import { materialColors } from '../../theme/material'
@@ -14,7 +14,7 @@ export function AutoScrollScreen({ children, contentContainerStyle, includeTopIn
   const insets = useSafeAreaInsets()
   const mergedContentContainerStyle = useMemo<StyleProp<ViewStyle>>(
     () => [
-      styles.contentContainer,
+      { flexGrow: 1 },
       {
         paddingTop: (includeTopInset ? insets.top : 0) + screenPaddingTop,
         paddingBottom: screenPaddingBottom,
@@ -26,22 +26,8 @@ export function AutoScrollScreen({ children, contentContainerStyle, includeTopIn
   )
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={mergedContentContainerStyle}
-      keyboardShouldPersistTaps="handled"
-    >
+    <ScrollView className="flex-1" style={{ backgroundColor: materialColors.background }} contentContainerStyle={mergedContentContainerStyle} keyboardShouldPersistTaps="handled">
       {children}
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: materialColors.background,
-  },
-  contentContainer: {
-    flexGrow: 1,
-  },
-})
