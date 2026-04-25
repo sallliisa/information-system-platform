@@ -37,8 +37,8 @@ const DISABLED_CONTENT = 'rgba(0, 0, 0, 0.38)'
 
 const SIZE_STYLES: Record<ButtonSize, ViewStyle> = {
   square: {
-    width: 52,
-    height: 52,
+    width: 38,
+    height: 38,
     borderRadius: 999,
     paddingHorizontal: 0,
     paddingVertical: 0,

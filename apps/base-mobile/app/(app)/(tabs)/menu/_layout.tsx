@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Platform, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AutoScrollScreen } from '../../../../src/components/base'
+import { AppScreenScope } from '../../../../src/components/base'
 import { CRUDRouteHeader } from '../../../../src/components/composites/CRUD'
 import { getCatalogEntry, getMobileRouteCatalog } from '../../../../src/features/routes/catalog.index'
 import { navigateBackOrFallback } from '../../../../src/features/routes/navigation.policy'
@@ -36,7 +36,11 @@ export default function MenuStackLayout() {
 
   return (
     <Stack
-      screenLayout={({ children }) => <AutoScrollScreen includeTopInset={false}>{children}</AutoScrollScreen>}
+      screenLayout={({ children }) => (
+        <AppScreenScope defaultOptions={{ includeTopInset: false, scrollable: true }}>
+          {children}
+        </AppScreenScope>
+      )}
       screenOptions={({ route }) => {
         const routeParams = (route.params || {}) as Record<string, string | string[] | undefined>
         const moduleSlug = pickRouteParam(routeParams, 'module')
@@ -46,7 +50,7 @@ export default function MenuStackLayout() {
 
         return {
           header: () => (
-            <View className="px-4 pb-2" style={{ paddingTop: insets.top + 6, backgroundColor: materialColors.background }}>
+            <View className="px-4 pb-2" style={{ paddingTop: insets.top + 6, backgroundColor: materialColors.background, borderBottomColor: materialColors.outlineVariant, borderBottomWidth: 1 }}>
               <CRUDRouteHeader title={title} onBack={showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined} />
             </View>
           ),
@@ -56,7 +60,7 @@ export default function MenuStackLayout() {
           headerTitleAlign: 'center',
           gestureEnabled: true,
           animation: Platform.OS === 'ios' ? 'default' : 'fade',
-          ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: true } : {}),
+          ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: false } : {}),
         }
       }}
     >

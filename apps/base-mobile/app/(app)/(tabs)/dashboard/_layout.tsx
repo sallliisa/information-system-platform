@@ -1,11 +1,11 @@
 import { Stack } from 'expo-router'
 import { Platform } from 'react-native'
-import { AutoScrollScreen } from '../../../../src/components/base'
+import { AppScreen } from '../../../../src/components/base'
 
 export default function DashboardStackLayout() {
   return (
     <Stack
-      screenLayout={({ children }) => <AutoScrollScreen>{children}</AutoScrollScreen>}
+      screenLayout={({ children }) => <AppScreen>{children}</AppScreen>}
       screenOptions={{
         headerTitleAlign: 'center',
         headerShown: false,

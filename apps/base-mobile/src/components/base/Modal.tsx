@@ -307,7 +307,7 @@ const ModalBase = ({
             <View style={[styles.contentContainer, contentContainerStyle]}>{contentNode}</View>
           )}
 
-          {footerNode ? <View style={[styles.footer, { paddingBottom: 12 + insets.bottom }]}>{footerNode}</View> : null}
+          {footerNode ? <View style={[styles.footer, { paddingBottom: insets.bottom }]}>{footerNode}</View> : null}
         </BottomSheetView>
       </BottomSheetModal>
     </ModalSlotContextValue.Provider>

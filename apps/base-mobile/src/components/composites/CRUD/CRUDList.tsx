@@ -32,7 +32,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
   const canUpdate = config.actions?.update ?? true
 
   return (
-    <View style={{ gap: sectionGap }}>
+    <View className="flex-1" style={{ gap: sectionGap }}>
       <View className="flex-row items-center gap-2">
         <View className="flex-1">
           <TextInput
@@ -61,47 +61,49 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
         </View>
       ) : null}
 
-      <DataTable
-        {...listConfig}
-        getAPI={listConfig.getAPI || config.name}
-        searchParameters={searchParameters}
-        onPressRow={(row) => {
-          if (!canDetail) return
-          const rowID = row[uidField]
-          if (rowID === undefined || rowID === null) return
-          onDetail(rowID)
-        }}
-        rowActions={(row) => (
-          <View className="flex-row gap-2">
-            {canDetail ? (
-              <Pressable
-                className="rounded-lg px-2.5 py-2"
-                style={{ backgroundColor: materialColors.secondaryContainer }}
-                onPress={() => {
-                  const rowID = row[uidField]
-                  if (rowID === undefined || rowID === null) return
-                  onDetail(rowID)
-                }}
-              >
-                <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Detail</Text>
-              </Pressable>
-            ) : null}
-            {canUpdate ? (
-              <Pressable
-                className="rounded-lg px-2.5 py-2"
-                style={{ backgroundColor: materialColors.tertiaryContainer }}
-                onPress={() => {
-                  const rowID = row[uidField]
-                  if (rowID === undefined || rowID === null) return
-                  onUpdate(rowID)
-                }}
-              >
-                <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Update</Text>
-              </Pressable>
-            ) : null}
-          </View>
-        )}
-      />
+      <View className="flex-1">
+        <DataTable
+          {...listConfig}
+          getAPI={listConfig.getAPI || config.name}
+          searchParameters={searchParameters}
+          onPressRow={(row) => {
+            if (!canDetail) return
+            const rowID = row[uidField]
+            if (rowID === undefined || rowID === null) return
+            onDetail(rowID)
+          }}
+          rowActions={(row) => (
+            <View className="flex-row gap-2">
+              {canDetail ? (
+                <Pressable
+                  className="rounded-lg px-2.5 py-2"
+                  style={{ backgroundColor: materialColors.secondaryContainer }}
+                  onPress={() => {
+                    const rowID = row[uidField]
+                    if (rowID === undefined || rowID === null) return
+                    onDetail(rowID)
+                  }}
+                >
+                  <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Detail</Text>
+                </Pressable>
+              ) : null}
+              {canUpdate ? (
+                <Pressable
+                  className="rounded-lg px-2.5 py-2"
+                  style={{ backgroundColor: materialColors.tertiaryContainer }}
+                  onPress={() => {
+                    const rowID = row[uidField]
+                    if (rowID === undefined || rowID === null) return
+                    onUpdate(rowID)
+                  }}
+                >
+                  <Text className="text-xs font-bold" style={{ color: materialColors.onSurface }}>Update</Text>
+                </Pressable>
+              ) : null}
+            </View>
+          )}
+        />
+      </View>
     </View>
   )
 }

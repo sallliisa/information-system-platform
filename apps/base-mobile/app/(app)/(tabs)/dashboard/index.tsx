@@ -27,7 +27,7 @@ export default function DashboardScreen() {
 
   return (
     <View className="flex-1 justify-center">
-      <Card className="w-full max-w-[440px] gap-4" type="filled" color="surfaceContainerLow">
+      <Card className="w-full max-w-[440px] gap-4" type="filled">
         <Text className="text-[30px] font-bold" style={{ color: materialColors.onSurface }}>Dashboard</Text>
         <Text className="text-[15px]" style={{ color: materialColors.onSurfaceVariant }}>Phase 1 dummy dashboard tab.</Text>
 
@@ -131,7 +131,6 @@ export default function DashboardScreen() {
               {({ setOpen }: PopoverRenderContext) => (
                 <Card
                   type="outlined"
-                  color="surface"
                   className="w-[260px] gap-2.5"
                   style={{ shadowColor: materialColors.shadow, shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 2 }}
                 >
@@ -171,7 +170,6 @@ export default function DashboardScreen() {
               {({ setOpen }: PopoverRenderContext) => (
                 <Card
                   type="outlined"
-                  color="surface"
                   className="gap-3"
                   style={{ shadowColor: materialColors.shadow, shadowOpacity: 0.2, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 2 }}
                 >
@@ -242,7 +240,7 @@ export default function DashboardScreen() {
               </Button>
             </Popover.Trigger>
             <Popover.Content>
-              <Card type="outlined" color="surface" className="w-[220px]">
+              <Card type="outlined" className="w-[220px]">
                 <Text style={{ color: materialColors.onSurfaceVariant }}>
                   This content never opens because the popover is disabled.
                 </Text>

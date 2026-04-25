@@ -22,7 +22,5 @@ export default function DynamicCRUDCreateRoute() {
     return <ModelRouteNotFound moduleSlug={moduleSlug} modelSlug={modelSlug} />
   }
 
-  return (
-    <CRUDCreate config={entry.config} onBack={() => navigateBackOrFallback(router, entry.hrefs.list)} />
-  )
+  return <CRUDCreate config={entry.config} onBack={() => navigateBackOrFallback(router, entry.hrefs.list)} />
 }

@@ -69,7 +69,7 @@ function resolveElevationStyle(type: CardType): ViewStyle {
 
 export function Card({
   type = 'filled',
-  color,
+  color = 'surfaceContainer',
   containerRole,
   disabled = false,
   contentPadding = 16,

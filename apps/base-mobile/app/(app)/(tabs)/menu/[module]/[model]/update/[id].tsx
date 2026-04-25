@@ -23,7 +23,5 @@ export default function DynamicCRUDUpdateRoute() {
     return <ModelRouteNotFound moduleSlug={moduleSlug} modelSlug={modelSlug} />
   }
 
-  return (
-    <CRUDUpdate config={entry.config} dataID={dataID} onBack={() => navigateBackOrFallback(router, entry.hrefs.list)} />
-  )
+  return <CRUDUpdate config={entry.config} dataID={dataID} onBack={() => navigateBackOrFallback(router, entry.hrefs.list)} />
 }

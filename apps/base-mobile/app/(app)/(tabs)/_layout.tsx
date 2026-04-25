@@ -20,8 +20,8 @@ const CustomTabButton = forwardRef<ComponentRef<typeof Pressable>, CustomTabButt
     <Pressable
       ref={ref}
       {...props}
-      className="flex-1 min-h-14 items-center justify-center rounded-[10px] gap-0.5"
-      style={{ backgroundColor: isFocused ? materialColors.primaryContainer : materialColors.surfaceContainerHigh }}
+      className="flex-1 flex flex-col min-h-14 items-center justify-center gap-0.5 rounded-full"
+      style={{ backgroundColor: isFocused ? materialColors.primaryContainer : undefined }}
     >
       <Icon name={icon} size={18} color={foregroundColor} />
       <Text className="text-[13px] font-semibold" style={{ color: isFocused ? materialColors.onPrimaryContainer : materialColors.onSurfaceVariant }}>
@@ -42,7 +42,7 @@ export default function TabsLayout() {
         style={{
           paddingBottom: Math.max(insets.bottom, 10),
           borderTopColor: materialColors.outlineVariant,
-          backgroundColor: materialColors.surface,
+          backgroundColor: materialColors.surfaceContainer,
         }}
       >
         <TabTrigger name="dashboard" href="/dashboard" asChild>
