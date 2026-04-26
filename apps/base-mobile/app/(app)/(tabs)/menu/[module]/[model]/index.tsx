@@ -13,7 +13,7 @@ import { pickRouteParam } from '@/src/features/routes/route-params'
 import { View } from 'react-native'
 
 export default function DynamicCRUDListRoute() {
-  useAppScreenOptions({ layout: { scrollable: false }, padding: {left: 0, right: 0} })
+  useAppScreenOptions({ layout: { scrollable: false }, padding: {left: 0, right: 0, top: 0} })
 
   const router = useRouter()
   const params = useLocalSearchParams<Record<string, string | string[]>>()

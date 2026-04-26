@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Platform, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { AppScreenScope } from '../../../../src/components/base'
+import { ActionControlsRouteScope, AppScreenScope, HeaderActionHost, HeaderActionsProvider } from '../../../../src/components/base'
 import { CRUDRouteHeader } from '../../../../src/components/composites/CRUD'
 import { getCatalogEntry, getMobileRouteCatalog } from '../../../../src/features/routes/catalog.index'
 import { navigateBackOrFallback } from '../../../../src/features/routes/navigation.policy'
@@ -35,40 +35,48 @@ export default function MenuStackLayout() {
   const insets = useSafeAreaInsets()
 
   return (
-    <Stack
-      screenLayout={({ children }) => (
-        <AppScreenScope defaultOptions={{ safeArea: { top: false }, layout: { scrollable: true } }}>
-          {children}
-        </AppScreenScope>
-      )}
-      screenOptions={({ route }) => {
-        const routeParams = (route.params || {}) as Record<string, string | string[] | undefined>
-        const moduleSlug = pickRouteParam(routeParams, 'module')
-        const modelSlug = pickRouteParam(routeParams, 'model')
-        const entry = moduleSlug && modelSlug ? getCatalogEntry(catalog, moduleSlug, modelSlug) : undefined
-        const { title, fallbackHref, showBack } = resolveMenuHeader(route.name, entry?.config.title, entry?.hrefs.list)
+    <HeaderActionsProvider>
+      <Stack
+        screenLayout={({ children }) => (
+          <ActionControlsRouteScope>
+            <AppScreenScope defaultOptions={{ safeArea: { top: false }, layout: { scrollable: true } }}>
+              {children}
+            </AppScreenScope>
+          </ActionControlsRouteScope>
+        )}
+        screenOptions={({ route }) => {
+          const routeParams = (route.params || {}) as Record<string, string | string[] | undefined>
+          const moduleSlug = pickRouteParam(routeParams, 'module')
+          const modelSlug = pickRouteParam(routeParams, 'model')
+          const entry = moduleSlug && modelSlug ? getCatalogEntry(catalog, moduleSlug, modelSlug) : undefined
+          const { title, fallbackHref, showBack } = resolveMenuHeader(route.name, entry?.config.title, entry?.hrefs.list)
 
-        return {
-          header: () => (
-            <View className="px-4 pb-2" style={{ paddingTop: insets.top + 6, backgroundColor: materialColors.background, borderBottomColor: materialColors.outlineVariant, borderBottomWidth: 1 }}>
-              <CRUDRouteHeader title={title} onBack={showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined} />
-            </View>
-          ),
-          headerStatusBarHeight: 0,
-          headerStyle: { backgroundColor: materialColors.background },
-          headerShadowVisible: false,
-          headerTitleAlign: 'center',
-          gestureEnabled: true,
-          animation: Platform.OS === 'ios' ? 'default' : 'fade',
-          ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: false } : {}),
-        }
-      }}
-    >
-      <Stack.Screen name="index" options={{ animation: 'none' }} />
-      <Stack.Screen name="[module]/[model]/index" />
-      <Stack.Screen name="[module]/[model]/create" />
-      <Stack.Screen name="[module]/[model]/detail/[id]" />
-      <Stack.Screen name="[module]/[model]/update/[id]" />
-    </Stack>
+          return {
+            header: () => (
+              <View className="px-4 pb-2" style={{ paddingTop: insets.top + 6, backgroundColor: materialColors.background, borderBottomColor: materialColors.outlineVariant, borderBottomWidth: 1 }}>
+                <CRUDRouteHeader
+                  title={title}
+                  onBack={showBack ? () => navigateBackOrFallback(router, fallbackHref) : undefined}
+                  actions={<HeaderActionHost routeKey={route.key} />}
+                />
+              </View>
+            ),
+            headerStatusBarHeight: 0,
+            headerStyle: { backgroundColor: materialColors.background },
+            headerShadowVisible: false,
+            headerTitleAlign: 'center',
+            gestureEnabled: true,
+            animation: Platform.OS === 'ios' ? 'default' : 'fade',
+            ...(Platform.OS === 'ios' ? { fullScreenGestureEnabled: false } : {}),
+          }
+        }}
+      >
+        <Stack.Screen name="index" options={{ animation: 'none' }} />
+        <Stack.Screen name="[module]/[model]/index" />
+        <Stack.Screen name="[module]/[model]/create" />
+        <Stack.Screen name="[module]/[model]/detail/[id]" />
+        <Stack.Screen name="[module]/[model]/update/[id]" />
+      </Stack>
+    </HeaderActionsProvider>
   )
 }

@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { View } from 'react-native'
 import type { MobileModelConfig } from '../../../features/routes/catalog.types'
 import { buildMobileDetailConfig } from '../../../features/routes/config/defaults.builders'
 import { renderDetailUnderSlot } from '../../../features/routes/detail-slot'
 import { sectionGap } from '../../../theme/layout'
-import { materialColors } from '../../../theme/material'
+import { Button, HeaderAction, Icon } from '../../base'
 import { Detail } from '../Detail'
 
 type CRUDDetailProps = {
@@ -20,13 +20,13 @@ export function CRUDDetail({ config, dataID, onUpdate }: CRUDDetailProps) {
 
   return (
     <View style={{ gap: sectionGap }}>
-      <View className="flex-row justify-end gap-2">
-        {canUpdate ? (
-          <Pressable className="min-h-11 rounded-[10px] justify-center px-[14px]" style={{ backgroundColor: materialColors.secondaryContainer }} onPress={onUpdate}>
-            <Text className="text-[13px] font-bold" style={{ color: materialColors.onSecondaryContainer }}>Update</Text>
-          </Pressable>
-        ) : null}
-      </View>
+      {canUpdate ? (
+        <HeaderAction>
+          <Button size="square" variant="tonal" onPress={onUpdate}>
+            <Icon name="edit" />
+          </Button>
+        </HeaderAction>
+      ) : null}
 
       <Detail {...detailConfig} dataID={dataID ?? detailConfig.dataID} getAPI={detailConfig.getAPI || config.name} onDataLoaded={setDetailData} />
 

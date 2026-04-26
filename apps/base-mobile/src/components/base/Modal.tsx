@@ -1,5 +1,6 @@
 import {
   BottomSheetBackdrop,
+  type BottomSheetHandleProps,
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
@@ -18,7 +19,16 @@ import {
   type ReactElement,
   type ReactNode,
 } from 'react'
-import { Pressable, StyleSheet, Text, useWindowDimensions, View, type StyleProp, type ViewStyle } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+  type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { materialColors } from '../../theme/material'
 
@@ -49,6 +59,41 @@ type ModalComponent = ((props: ModalProps) => ReactElement) & {
   Header: typeof ModalHeader
   Content: typeof ModalContent
   Footer: typeof ModalFooter
+}
+
+const MAX_SNAP_RATIO = 0.95
+const DEFAULT_HANDLE_HEIGHT = 24
+const SNAP_DEDUPE_EPSILON = 1
+
+function resolveSnapPoint(snapPoint: string | number, windowHeight: number): number | null {
+  if (typeof snapPoint === 'number') {
+    return Number.isFinite(snapPoint) ? snapPoint : null
+  }
+
+  const trimmed = snapPoint.trim()
+
+  if (trimmed.endsWith('%')) {
+    const percentage = Number.parseFloat(trimmed.slice(0, -1))
+    return Number.isFinite(percentage) ? (percentage / 100) * windowHeight : null
+  }
+
+  const parsed = Number.parseFloat(trimmed)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function dedupeSortedSnapPoints(snapPoints: number[]): number[] {
+  return snapPoints
+    .sort((a, b) => a - b)
+    .filter((snapPoint, index, all) => index === 0 || Math.abs(snapPoint - all[index - 1]) > SNAP_DEDUPE_EPSILON)
+}
+
+function normalizeSnapPoints(snapPoints: Array<string | number>, windowHeight: number, maxSnapHeight: number): number[] {
+  return dedupeSortedSnapPoints(
+    snapPoints
+      .map((snapPoint) => resolveSnapPoint(snapPoint, windowHeight))
+      .filter((snapPoint): snapPoint is number => snapPoint !== null)
+      .map((snapPoint) => Math.min(Math.max(Math.round(snapPoint), 1), maxSnapHeight))
+  )
 }
 
 const ModalSlotContextValue = createContext<ModalSlotContext | null>(null)
@@ -171,6 +216,10 @@ const ModalBase = ({
   const visibilityRef = useRef(resolvedOpen)
   const { height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const [headerHeight, setHeaderHeight] = useState(0)
+  const [footerHeight, setFooterHeight] = useState(0)
+  const [contentHeight, setContentHeight] = useState(0)
+  const [currentSheetIndex, setCurrentSheetIndex] = useState(0)
 
   const updateVisibility = useCallback(
     (next: boolean, emitOpenChange: boolean) => {
@@ -193,6 +242,10 @@ const ModalBase = ({
     (next: boolean) => {
       if (next && disabled) return
 
+      if (next) {
+        setCurrentSheetIndex(0)
+      }
+
       if (!isControlled) {
         setUncontrolledOpen(next)
       } else if (next) {
@@ -209,6 +262,7 @@ const ModalBase = ({
   useEffect(() => {
     updateVisibility(resolvedOpen, false)
     if (resolvedOpen) {
+      setCurrentSheetIndex(0)
       sheetRef.current?.present()
     } else {
       sheetRef.current?.dismiss()
@@ -216,6 +270,8 @@ const ModalBase = ({
   }, [resolvedOpen, updateVisibility])
 
   const handleDismiss = useCallback(() => {
+    setCurrentSheetIndex(0)
+
     if (!isControlled) {
       setUncontrolledOpen(false)
     }
@@ -240,13 +296,87 @@ const ModalBase = ({
 
   const { trigger, header, content, footer } = parseSlots(children)
   const hasSnapPoints = Array.isArray(snapPoints) && snapPoints.length > 0
-  const maxDynamicContentSize = Math.round(height * 0.95)
+  const maxSnapHeight = Math.round(height * MAX_SNAP_RATIO)
+  const maxDynamicContentSize = maxSnapHeight
+  const modalChromeHeight = Math.round(headerHeight + footerHeight + DEFAULT_HANDLE_HEIGHT)
+  const measuredRequiredHeight = Math.round(modalChromeHeight + contentHeight)
+  const maxScrollableContentHeight = Math.max(maxSnapHeight - modalChromeHeight, 1)
+  const contentOverflowsAtMaxSnap = contentHeight > maxScrollableContentHeight + SNAP_DEDUPE_EPSILON
+
+  const effectiveSnapPoints = useMemo(() => {
+    if (!hasSnapPoints || !snapPoints) return undefined
+
+    const normalizedSnapPoints = normalizeSnapPoints(snapPoints, height, maxSnapHeight)
+    const baseSnapPoints = normalizedSnapPoints.length > 0 ? normalizedSnapPoints : [maxSnapHeight]
+
+    if (contentHeight <= 0) {
+      return baseSnapPoints
+    }
+
+    const expansionSnapPoint = Math.min(measuredRequiredHeight, maxSnapHeight)
+    const firstSnapPoint = baseSnapPoints[0]
+    if (expansionSnapPoint <= firstSnapPoint + SNAP_DEDUPE_EPSILON) {
+      return baseSnapPoints
+    }
+
+    return dedupeSortedSnapPoints([...baseSnapPoints, expansionSnapPoint])
+  }, [contentHeight, hasSnapPoints, height, maxSnapHeight, measuredRequiredHeight, snapPoints])
+
+  const largestEffectiveSnapIndex =
+    hasSnapPoints && effectiveSnapPoints && effectiveSnapPoints.length > 0 ? effectiveSnapPoints.length - 1 : null
+  const isAtLargestEffectiveSnap = largestEffectiveSnapIndex !== null && currentSheetIndex === largestEffectiveSnapIndex
+  const shouldEnableFixedScroll = Boolean(hasSnapPoints && isAtLargestEffectiveSnap && contentOverflowsAtMaxSnap)
+  const shouldLetContentOwnPanGesture = shouldEnableFixedScroll
+  const shouldEnableContentPanningGesture = !shouldLetContentOwnPanGesture
+  const fixedScrollViewStyle = useMemo(
+    () => [styles.scrollView, contentOverflowsAtMaxSnap ? { maxHeight: maxScrollableContentHeight } : null],
+    [contentOverflowsAtMaxSnap, maxScrollableContentHeight]
+  )
 
   const triggerNode = renderSlot(trigger, slotContext)
   const headerNode = renderSlot(header, slotContext)
   const contentNode = renderSlot(content, slotContext)
   const footerNode = renderSlot(footer, slotContext)
   const isFixedHeight = hasSnapPoints
+
+  const handleHeaderLayout = useCallback((event: LayoutChangeEvent) => {
+    const nextHeight = Math.round(event.nativeEvent.layout.height)
+    setHeaderHeight((previousHeight) =>
+      Math.abs(previousHeight - nextHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : nextHeight
+    )
+  }, [])
+
+  const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
+    const nextHeight = Math.round(event.nativeEvent.layout.height)
+    setFooterHeight((previousHeight) =>
+      Math.abs(previousHeight - nextHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : nextHeight
+    )
+  }, [])
+
+  const renderHandle = useCallback(
+    (_handleProps: BottomSheetHandleProps) => {
+      if (!headerNode) return null
+
+      return (
+        <View testID="modal-header" style={styles.handleContainer} onLayout={handleHeaderLayout}>
+          <View style={styles.handleGrip} />
+          <View style={styles.headerText}>{headerNode}</View>
+        </View>
+      )
+    },
+    [handleHeaderLayout, headerNode]
+  )
+
+  const handleScrollContentSizeChange = useCallback((_: number, nextHeight: number) => {
+    const roundedHeight = Math.round(nextHeight)
+    setContentHeight((previousHeight) =>
+      Math.abs(previousHeight - roundedHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : roundedHeight
+    )
+  }, [])
+
+  const handleSheetChange = useCallback((nextIndex: number) => {
+    setCurrentSheetIndex(nextIndex < 0 ? 0 : nextIndex)
+  }, [])
 
   return (
     <ModalSlotContextValue.Provider value={slotContext}>
@@ -264,14 +394,18 @@ const ModalBase = ({
         ref={sheetRef}
         index={0}
         onDismiss={handleDismiss}
+        onChange={handleSheetChange}
         backdropComponent={renderBackdrop}
         enablePanDownToClose
         enableDismissOnClose
+        enableHandlePanningGesture
+        enableContentPanningGesture={shouldEnableContentPanningGesture}
+        handleComponent={headerNode ? renderHandle : undefined}
         backgroundStyle={styles.sheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
         {...(hasSnapPoints
           ? {
-              snapPoints,
+              snapPoints: effectiveSnapPoints,
               enableDynamicSizing: false as const,
             }
           : {
@@ -280,25 +414,14 @@ const ModalBase = ({
             })}
       >
         <BottomSheetView style={styles.container}>
-          {headerNode ? (
-            <View style={styles.header}>
-              <View style={styles.headerText}>{headerNode}</View>
-              {/* <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Close modal"
-                onPress={() => setOpen(false)}
-                style={styles.closeButton}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </Pressable> */}
-            </View>
-          ) : null}
-
           {isFixedHeight ? (
             <BottomSheetScrollView
               bounces={false}
+              nestedScrollEnabled
               keyboardShouldPersistTaps="handled"
-              style={styles.scrollView}
+              scrollEnabled={shouldEnableFixedScroll}
+              onContentSizeChange={handleScrollContentSizeChange}
+              style={fixedScrollViewStyle}
               contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
             >
               {contentNode}
@@ -307,7 +430,11 @@ const ModalBase = ({
             <View style={[styles.contentContainer, contentContainerStyle]}>{contentNode}</View>
           )}
 
-          {footerNode ? <View style={[styles.footer, { paddingBottom: insets.bottom }]}>{footerNode}</View> : null}
+          {footerNode ? (
+            <View testID="modal-footer" style={[styles.footer, { paddingBottom: insets.bottom }]} onLayout={handleFooterLayout}>
+              {footerNode}
+            </View>
+          ) : null}
         </BottomSheetView>
       </BottomSheetModal>
     </ModalSlotContextValue.Provider>
@@ -336,16 +463,21 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   container: {},
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: 16,
+  handleContainer: {
     paddingTop: 6,
     paddingHorizontal: 16,
     paddingBottom: 12,
+    gap: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: materialColors.outlineVariant,
+  },
+  handleGrip: {
+    alignSelf: 'center',
+    width: 36,
+    height: 4,
+    borderRadius: 999,
+    backgroundColor: materialColors.onSurfaceVariant,
+    opacity: 0.45,
   },
   headerText: {
     flex: 1,
@@ -375,6 +507,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 0,
+    flexShrink: 1,
   },
   contentContainer: {
     padding: 16,

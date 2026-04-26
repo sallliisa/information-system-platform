@@ -96,13 +96,30 @@ export default function DashboardScreen() {
               </>
             </Modal.Header>
             <Modal.Content>
-              <View className="gap-2">
+              <View className="gap-3">
                 <Text style={{ color: materialColors.onSurfaceVariant }}>
                   Use `snapPoints` when a flow needs a predictable height.
                 </Text>
                 <Text style={{ color: materialColors.onSurfaceVariant }}>
                   This one is controlled with `open` and `onOpenChange`.
                 </Text>
+                {Array.from({ length: 24 }).map((_, index) => (
+                  <View
+                    key={`fixed-height-long-content-${index}`}
+                    className="gap-1 rounded-xl p-3"
+                    style={{ backgroundColor: materialColors.surfaceContainerHighest }}
+                  >
+                    <Text className="text-[13px] font-semibold" style={{ color: materialColors.onSurface }}>
+                      Demo Block {index + 1}
+                    </Text>
+                    <Text style={{ color: materialColors.onSurfaceVariant }}>
+                      Very long modal content for gesture QA. Keep dragging the sheet upward first, then scroll this content when the sheet reaches its largest snap.
+                    </Text>
+                    <Text style={{ color: materialColors.onSurfaceVariant }}>
+                      This line is repeated intentionally so the 65% modal clearly overflows and demonstrates expansion-first, scroll-later behavior.
+                    </Text>
+                  </View>
+                ))}
               </View>
             </Modal.Content>
             <Modal.Footer>

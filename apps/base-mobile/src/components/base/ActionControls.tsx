@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import {
+  Dimensions,
   Keyboard,
   Platform,
   View,
@@ -16,7 +17,6 @@ import {
   type LayoutChangeEvent,
   type ViewStyle,
 } from 'react-native'
-import { useIsFocused } from '@react-navigation/native'
 
 const HOST_GAP = 8
 
@@ -44,6 +44,7 @@ export type ActionControlProps = {
 
 type ActionControlsHostProps = {
   bottomOffset?: number
+  keyboardAvoidanceOffset?: number
 }
 
 const ActionControlsContext = createContext<ActionControlsContextValue | null>(null)
@@ -120,7 +121,6 @@ export function ActionControlsProvider({ children }: { children: ReactNode }) {
   const setHostHeight = useCallback((height: number) => {
     setHostHeightState((currentHeight) => (currentHeight === height ? currentHeight : height))
   }, [])
-
   const entries = useMemo(
     () => [...entriesState].sort((leftEntry, rightEntry) => leftEntry.sequence - rightEntry.sequence),
     [entriesState]
@@ -137,30 +137,45 @@ export function ActionControlsProvider({ children }: { children: ReactNode }) {
       bottomInset,
       entries,
     }),
-    [bottomInset, entries, register, setHostHeight, unregister, update]
+    [
+      bottomInset,
+      entries,
+      register,
+      setHostHeight,
+      unregister,
+      update,
+    ]
   )
 
   return <ActionControlsContext.Provider value={contextValue}>{children}</ActionControlsContext.Provider>
 }
 
-export function ActionControlsHost({ bottomOffset = 0 }: ActionControlsHostProps) {
+export function ActionControlsHost({
+  bottomOffset = 0,
+  keyboardAvoidanceOffset = 0,
+}: ActionControlsHostProps) {
   const context = useContext(ActionControlsContext)
   const keyboardHeight = useKeyboardHeight()
+  const entries = context?.entries || []
 
   useEffect(() => {
-    if (!context?.entries.length) {
+    if (!entries.length) {
       context?.setHostHeight(0)
     }
-  }, [context])
+  }, [context, entries.length])
 
-  if (!context?.entries.length) {
+  if (!entries.length) {
     return null
   }
 
-  const hostBottomOffset = Math.max(bottomOffset, keyboardHeight) + HOST_GAP
+  const keyboardOffset =
+    keyboardHeight > 0
+      ? Math.max(0, keyboardHeight - keyboardAvoidanceOffset)
+      : 0
+  const hostBottomOffset = Math.max(bottomOffset, keyboardOffset) + HOST_GAP
 
   const onHostLayout = (event: LayoutChangeEvent) => {
-    context.setHostHeight(event.nativeEvent.layout.height)
+    context?.setHostHeight(event.nativeEvent.layout.height)
   }
 
   return (
@@ -188,7 +203,7 @@ export function ActionControlsHost({ bottomOffset = 0 }: ActionControlsHostProps
           } satisfies ViewStyle
         }
       >
-        {context.entries.map((entry) => (
+        {entries.map((entry) => (
           <View key={entry.sequence} testID={entry.testID} pointerEvents="box-none">
             {entry.element}
           </View>
@@ -198,9 +213,32 @@ export function ActionControlsHost({ bottomOffset = 0 }: ActionControlsHostProps
   )
 }
 
+export function ActionControlsRouteScope({ children }: { children: ReactNode }) {
+  const containerRef = useRef<View>(null)
+  const [keyboardAvoidanceOffset, setKeyboardAvoidanceOffset] = useState(0)
+
+  const measureBottomGap = useCallback(() => {
+    containerRef.current?.measureInWindow((_x, y, _width, height) => {
+      const windowHeight = Dimensions.get('window').height
+      const nextBottomGap = Math.max(0, Math.round(windowHeight - (y + height)))
+      setKeyboardAvoidanceOffset((currentBottomGap) =>
+        currentBottomGap === nextBottomGap ? currentBottomGap : nextBottomGap
+      )
+    })
+  }, [])
+
+  return (
+    <ActionControlsProvider>
+      <View ref={containerRef} onLayout={measureBottomGap} style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>{children}</View>
+        <ActionControlsHost keyboardAvoidanceOffset={keyboardAvoidanceOffset} />
+      </View>
+    </ActionControlsProvider>
+  )
+}
+
 export function ActionControl({ children, enabled = true, testID }: ActionControlProps) {
   const context = useContext(ActionControlsContext)
-  const isFocused = useIsFocused()
   const idRef = useRef(Symbol('action-control'))
   const hasRegisteredRef = useRef(false)
   const hasWarnedRef = useRef(false)
@@ -213,8 +251,7 @@ export function ActionControl({ children, enabled = true, testID }: ActionContro
     hasWarnedRef.current = true
     console.warn('ActionControl must be used inside ActionControlsProvider. Registration is ignored.')
   }, [context])
-
-  const shouldRegister = Boolean(context && isFocused && enabled)
+  const shouldRegister = Boolean(context && enabled)
   const register = context?.register
   const unregister = context?.unregister
   const update = context?.update

@@ -1,4 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native'
+import { fireEvent, render, screen } from '@testing-library/react-native'
+import type { ReactNode } from 'react'
 import { StyleSheet, Text } from 'react-native'
 import { screenPaddingBottom } from '../../../theme/layout'
 import { AppScreen } from '../AppScreen'
@@ -6,39 +7,25 @@ import {
   ActionControl,
   ActionControlsHost,
   ActionControlsProvider,
+  ActionControlsRouteScope,
   useActionControlsBottomInset,
 } from '../ActionControls'
 
-const mockUseIsFocused = jest.fn(() => true)
-
-jest.mock('@react-navigation/native', () => ({
-  useIsFocused: () => mockUseIsFocused(),
-}))
-
 jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 10, right: 0, bottom: 0, left: 0 }),
-  SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
+  SafeAreaProvider: ({ children }: { children: ReactNode }) => children,
 }))
 
-function ActionControlsHarness({ children }: { children: React.ReactNode }) {
-  return (
-    <ActionControlsProvider>
-      <ActionControlsHost />
-      {children}
-    </ActionControlsProvider>
-  )
+function ActionControlsHarness({ children }: { children: ReactNode }) {
+  return <ActionControlsRouteScope>{children}</ActionControlsRouteScope>
 }
 
-function BottomInsetProbe() {
+function BottomInsetProbe({ testID = 'bottom-inset-value' }: { testID?: string }) {
   const inset = useActionControlsBottomInset()
-  return <Text testID="bottom-inset-value">{String(inset)}</Text>
+  return <Text testID={testID}>{String(inset)}</Text>
 }
 
 describe('ActionControls', () => {
-  beforeEach(() => {
-    mockUseIsFocused.mockReturnValue(true)
-  })
-
   it('ActionControl renders nothing inline', () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
     const { toJSON } = render(
@@ -51,7 +38,7 @@ describe('ActionControls', () => {
     warnSpy.mockRestore()
   })
 
-  it('registered child appears in ActionControlsHost', () => {
+  it('ActionControlsRouteScope provides host and renders registered controls', () => {
     render(
       <ActionControlsHarness>
         <ActionControl>
@@ -60,10 +47,11 @@ describe('ActionControls', () => {
       </ActionControlsHarness>
     )
 
+    expect(screen.getByTestId('action-controls-host')).toBeTruthy()
     expect(screen.getByText('Verify Report')).toBeTruthy()
   })
 
-  it('multiple controls render bottom-up with latest visually above earlier controls', () => {
+  it('multiple controls preserve sequence order', () => {
     render(
       <ActionControlsHarness>
         <ActionControl testID="first-control">
@@ -83,7 +71,7 @@ describe('ActionControls', () => {
     expect(stackStyle.flexDirection).toBe('column-reverse')
   })
 
-  it('unmounting a registering component removes its control', () => {
+  it('unmount removes a control', () => {
     function Harness({ visible }: { visible: boolean }) {
       return (
         <ActionControlsHarness>
@@ -194,7 +182,7 @@ describe('ActionControls', () => {
     expect(screen.getByTestId('bottom-inset-value').props.children).toBe('48')
   })
 
-  it('AppScreen includes action-control bottom inset when insets.actionControlsBottom is enabled', () => {
+  it('AppScreen includes action-control bottom inset within same route scope', () => {
     render(
       <ActionControlsHarness>
         <ActionControl>
@@ -214,25 +202,58 @@ describe('ActionControls', () => {
     expect(contentStyle.paddingBottom).toBe(screenPaddingBottom + 48)
   })
 
-  it('focus gating only registers while focused', () => {
-    function Harness() {
+  it('two independent providers do not share controls or bottom inset', () => {
+    render(
+      <>
+        <ActionControlsProvider>
+          <BottomInsetProbe testID="inset-a" />
+          <ActionControlsHost />
+          <ActionControl>
+            <Text>Scope A</Text>
+          </ActionControl>
+        </ActionControlsProvider>
+
+        <ActionControlsProvider>
+          <BottomInsetProbe testID="inset-b" />
+          <ActionControlsHost />
+          <ActionControl>
+            <Text>Scope B</Text>
+          </ActionControl>
+        </ActionControlsProvider>
+      </>
+    )
+
+    const hosts = screen.getAllByTestId('action-controls-host')
+
+    fireEvent(hosts[0], 'layout', { nativeEvent: { layout: { height: 30 } } })
+    expect(screen.getByTestId('inset-a').props.children).toBe('38')
+    expect(screen.getByTestId('inset-b').props.children).toBe('0')
+
+    fireEvent(hosts[1], 'layout', { nativeEvent: { layout: { height: 10 } } })
+    expect(screen.getByTestId('inset-a').props.children).toBe('38')
+    expect(screen.getByTestId('inset-b').props.children).toBe('18')
+
+    expect(screen.getByText('Scope A')).toBeTruthy()
+    expect(screen.getByText('Scope B')).toBeTruthy()
+  })
+
+  it('control remains registered while route scope stays mounted', () => {
+    function Harness({ label }: { label: string }) {
       return (
         <ActionControlsHarness>
           <ActionControl>
-            <Text>Focused Control</Text>
+            <Text>Persistent Control</Text>
           </ActionControl>
+          <Text>{label}</Text>
         </ActionControlsHarness>
       )
     }
 
-    mockUseIsFocused.mockReturnValue(false)
-    const { rerender } = render(<Harness />)
-    expect(screen.queryByText('Focused Control')).toBeNull()
+    const { rerender } = render(<Harness label="state-a" />)
+    expect(screen.getByText('Persistent Control')).toBeTruthy()
 
-    mockUseIsFocused.mockReturnValue(true)
-    act(() => {
-      rerender(<Harness />)
-    })
-    expect(screen.getByText('Focused Control')).toBeTruthy()
+    rerender(<Harness label="state-b" />)
+    expect(screen.getByText('Persistent Control')).toBeTruthy()
+    expect(screen.getByText('state-b')).toBeTruthy()
   })
 })

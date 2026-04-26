@@ -1,11 +1,15 @@
 import { Stack } from 'expo-router'
 import { Platform } from 'react-native'
-import { AppScreenScope } from '../../../../src/components/base'
+import { ActionControlsRouteScope, AppScreenScope } from '../../../../src/components/base'
 
 export default function ProfileStackLayout() {
   return (
     <Stack
-      screenLayout={({ children }) => <AppScreenScope>{children}</AppScreenScope>}
+      screenLayout={({ children }) => (
+        <ActionControlsRouteScope>
+          <AppScreenScope>{children}</AppScreenScope>
+        </ActionControlsRouteScope>
+      )}
       screenOptions={{
         headerTitleAlign: 'center',
         headerShown: false,

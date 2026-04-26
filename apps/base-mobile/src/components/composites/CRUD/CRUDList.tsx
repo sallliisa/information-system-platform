@@ -34,7 +34,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
 
   return (
     <>
-      {/* <ActionControl>
+      <ActionControl>
         <View className='flex-row items-center gap-2'>
           <View className="flex-1">
             <SearchBox
@@ -49,9 +49,9 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
             </Button>
           ) : null}
         </View>
-      </ActionControl> */}
+      </ActionControl>
       <View className="flex-1">
-        <View
+        {/* <View
           className="flex-row items-center gap-2 px-4"
           style={{borderBottomColor: materialColors.outlineVariant, borderBottomWidth: 1, paddingBottom: 8}}
         >
@@ -67,7 +67,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
               <Icon name='add'></Icon>
             </Button>
           ) : null}
-        </View>
+        </View> */}
 
         {showHeading ? (
           <View className="gap-0.5">
@@ -76,7 +76,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
           </View>
         ) : null}
 
-        <View className="flex-1 px-4">
+        <View className="flex-1">
           <DataTable
             {...listConfig}
             getAPI={listConfig.getAPI || config.name}
@@ -87,6 +87,7 @@ export function CRUDList({ config, onCreate, onDetail, onUpdate, showHeading = t
               if (rowID === undefined || rowID === null) return
               onDetail(rowID)
             }}
+            listContentContainerStyle={{ padding: 16 }}
             rowActions={(row) => (
               <View className="flex-row gap-2">
                 {canDetail ? (
