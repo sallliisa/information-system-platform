@@ -13,7 +13,7 @@ import { materialColors } from '../../../theme/material'
 import { Card } from '../../base'
 import { TextInput } from '../../inputs'
 import type { FormInputComponent } from '../../inputs'
-import type { SelectInputSpecificProps, TextInputConstraint } from '../../inputs'
+import type { LookupInputSpecificProps, SelectInputSpecificProps, TextInputConstraint } from '../../inputs'
 import {
   componentTypeMap,
   createMergedInputConfig,
@@ -285,6 +285,33 @@ function buildSelectInputProps(rawProps: Record<string, any>): SelectInputSpecif
     onSelect: typeof rawProps.onSelect === 'function' ? rawProps.onSelect : undefined,
     clearable: typeof rawProps.clearable === 'boolean' ? rawProps.clearable : undefined,
     placeholder: typeof rawProps.placeholder === 'string' ? rawProps.placeholder : undefined,
+  }
+}
+
+function buildLookupInputProps(rawProps: Record<string, any>): LookupInputSpecificProps {
+  return {
+    getAPI: typeof rawProps.getAPI === 'string' ? rawProps.getAPI : undefined,
+    searchParameters: isPlainObject(rawProps.searchParameters) ? rawProps.searchParameters : undefined,
+    getData: typeof rawProps.getData === 'function' ? rawProps.getData : undefined,
+    getDetail: typeof rawProps.getDetail === 'function' ? rawProps.getDetail : undefined,
+    multi: typeof rawProps.multi === 'boolean' ? rawProps.multi : undefined,
+    pick: typeof rawProps.pick === 'string' ? rawProps.pick : undefined,
+    fields: Array.isArray(rawProps.fields) ? rawProps.fields.filter((item) => typeof item === 'string') : undefined,
+    fieldsAlias: isPlainObject(rawProps.fieldsAlias) ? rawProps.fieldsAlias : undefined,
+    fieldsProxy: isPlainObject(rawProps.fieldsProxy) ? rawProps.fieldsProxy : undefined,
+    fieldsDictionary: isPlainObject(rawProps.fieldsDictionary) ? rawProps.fieldsDictionary : undefined,
+    fieldsParse: isPlainObject(rawProps.fieldsParse) ? rawProps.fieldsParse : undefined,
+    fieldsUnit: isPlainObject(rawProps.fieldsUnit) ? rawProps.fieldsUnit : undefined,
+    transform: isPlainObject(rawProps.transform) ? rawProps.transform : undefined,
+    preview: typeof rawProps.preview === 'string' ? rawProps.preview : undefined,
+    placeholder: typeof rawProps.placeholder === 'string' ? rawProps.placeholder : undefined,
+    pageSize: typeof rawProps.pageSize === 'number' ? rawProps.pageSize : undefined,
+    clearable: typeof rawProps.clearable === 'boolean' ? rawProps.clearable : undefined,
+    dataFormatter: typeof rawProps.dataFormatter === 'function' ? rawProps.dataFormatter : undefined,
+    onCommit: typeof rawProps.onCommit === 'function' ? rawProps.onCommit : undefined,
+    onSelectData: typeof rawProps.onSelectData === 'function' ? rawProps.onSelectData : undefined,
+    formData: rawProps.formData,
+    formDataSetter: typeof rawProps.formDataSetter === 'function' ? rawProps.formDataSetter : undefined,
   }
 }
 
@@ -1043,6 +1070,13 @@ export function Form({
                   renderAction,
                 } = buildInputProps(fieldConfig.type, mergedFieldProps)
                 const selectInputProps = fieldConfig.type === 'select' ? buildSelectInputProps(mergedFieldProps) : undefined
+                const lookupInputProps = fieldConfig.type === 'lookup' ? buildLookupInputProps(mergedFieldProps) : undefined
+                const lookupRuntimeProps = fieldConfig.type === 'lookup'
+                  ? {
+                      formData,
+                      formDataSetter: setFormData,
+                    }
+                  : undefined
                 const fieldDisabled = getFieldDisabled(field, fieldDependencyData, disabled)
 
                 const fieldCellStyle: Record<string, any> = {
@@ -1090,6 +1124,8 @@ export function Form({
                           disabled={fieldDisabled}
                           inputProps={inputProps}
                           {...selectInputProps}
+                          {...lookupInputProps}
+                          {...lookupRuntimeProps}
                         />
                       </View>
                     </View>
@@ -1118,6 +1154,8 @@ export function Form({
                         disabled={fieldDisabled}
                         inputProps={inputProps}
                         {...selectInputProps}
+                        {...lookupInputProps}
+                        {...lookupRuntimeProps}
                       />
                     </View>
                   </View>

@@ -12,7 +12,9 @@ const NOOP_ON_SELECT = () => undefined
 
 async function defaultSelectGetData(getAPI: string, searchParameters: Record<string, any>) {
   const response = await api.dataset(getAPI, { ...(searchParameters || {}) })
-  return Array.isArray(response?.data) ? response.data : []
+  if (Array.isArray(response?.data)) return response.data
+  if (Array.isArray(response)) return response
+  return []
 }
 
 function isNil(value: unknown): value is null | undefined {
@@ -145,7 +147,7 @@ export function SelectInput({
 
     async function loadOptions() {
       const loaded = getAPI ? await resolvedGetData(getAPI, resolvedSearchParameters) : resolvedData
-      const normalized = Array.isArray(loaded) ? loaded : []
+      const normalized = Array.isArray(loaded) ? loaded : Array.isArray((loaded as any)?.data) ? (loaded as any).data : []
 
       let nextOptions = normalized
       if (transform) {

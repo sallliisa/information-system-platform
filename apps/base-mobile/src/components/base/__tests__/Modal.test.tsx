@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen } from '@testing-library/react-native'
-import { Pressable, StyleSheet, Text } from 'react-native'
+import { fireEvent, render, screen } from '@testing-library/react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import * as ReactNative from 'react-native'
 import { Modal } from '../Modal'
 
@@ -24,11 +24,15 @@ jest.mock('@gorhom/bottom-sheet', () => {
       dismiss: mockDismiss,
     }))
 
-    const handleNode = props.handleComponent?.({})
+    const backdrop = props.backdropComponent?.({
+      animatedIndex: { value: 0 },
+      animatedPosition: { value: 0 },
+      style: {},
+    })
 
     return (
       <View testID="bottom-sheet-modal">
-        {handleNode}
+        {backdrop}
         {props.children}
         <RNPressable testID="mock-dismiss" onPress={() => props.onDismiss?.()}>
           <RNText>Mock Dismiss</RNText>
@@ -37,39 +41,14 @@ jest.mock('@gorhom/bottom-sheet', () => {
     )
   })
 
-  function BottomSheetView({ children, style }: { children: React.ReactNode; style?: any }) {
-    return (
-      <View testID="bottom-sheet-view" style={style}>
-        {children}
-      </View>
-    )
-  }
-
-  function BottomSheetScrollView({
-    children,
-    style,
-    contentContainerStyle,
-    onContentSizeChange,
-    scrollEnabled,
-    nestedScrollEnabled,
-  }: {
-    children: React.ReactNode
-    style?: any
-    contentContainerStyle?: any
-    onContentSizeChange?: (width: number, height: number) => void
-    scrollEnabled?: boolean
-    nestedScrollEnabled?: boolean
-  }) {
+  function BottomSheetScrollView({ children, contentContainerStyle, ...rest }: any) {
     latestScrollViewProps = {
-      onContentSizeChange,
-      scrollEnabled,
-      style,
+      ...rest,
       contentContainerStyle,
-      nestedScrollEnabled,
     }
 
     return (
-      <View testID="bottom-sheet-scroll-view" style={style}>
+      <View testID="bottom-sheet-scroll-view">
         <View testID="bottom-sheet-scroll-content" style={contentContainerStyle}>
           {children}
         </View>
@@ -77,21 +56,24 @@ jest.mock('@gorhom/bottom-sheet', () => {
     )
   }
 
-  function BottomSheetBackdrop() {
-    return <View testID="bottom-sheet-backdrop" />
+  function BottomSheetView({ children, style }: any) {
+    return (
+      <View testID="bottom-sheet-view" style={style}>
+        {children}
+      </View>
+    )
   }
 
-  function BottomSheetModalProvider({ children }: { children: React.ReactNode }) {
-    return <View>{children}</View>
+  function BottomSheetBackdrop(props: any) {
+    return <View testID="bottom-sheet-backdrop" {...props} />
   }
 
   return {
     __esModule: true,
     BottomSheetModal,
-    BottomSheetView,
     BottomSheetScrollView,
+    BottomSheetView,
     BottomSheetBackdrop,
-    BottomSheetModalProvider,
   }
 })
 
@@ -103,16 +85,80 @@ describe('Modal', () => {
     latestScrollViewProps = null
   })
 
-  it('opens and closes in uncontrolled mode using trigger and setOpen', () => {
+  it('renders all slots and receives slot context in render functions', () => {
+    const states: Array<{ open: boolean; disabled: boolean }> = []
+
+    render(
+      <Modal>
+        <Modal.Trigger>{({ open, disabled }) => <Text>{`trigger:${open}:${disabled}`}</Text>}</Modal.Trigger>
+        <Modal.Header>{({ open }) => <Text>{`header:${open}`}</Text>}</Modal.Header>
+        <Modal.Content>{({ open }) => <Text>{`content:${open}`}</Text>}</Modal.Content>
+        <Modal.Footer>{({ open }) => <Text>{`footer:${open}`}</Text>}</Modal.Footer>
+      </Modal>
+    )
+
+    states.push({
+      open: screen.getByText('trigger:false:false') != null,
+      disabled: true,
+    })
+
+    expect(screen.getByText('trigger:false:false')).toBeTruthy()
+    expect(screen.getByText('header:false')).toBeTruthy()
+    expect(screen.getByText('content:false')).toBeTruthy()
+    expect(screen.getByText('footer:false')).toBeTruthy()
+    expect(screen.getByTestId('modal-header')).toBeTruthy()
+    expect(screen.getByTestId('modal-footer')).toBeTruthy()
+    expect(states).toHaveLength(1)
+  })
+
+  it('wraps plain trigger in Pressable and opens modal', () => {
     render(
       <Modal>
         <Modal.Trigger>
           <Text>Open Modal</Text>
         </Modal.Trigger>
         <Modal.Content>
+          <Text>Body</Text>
+        </Modal.Content>
+      </Modal>
+    )
+
+    mockPresent.mockClear()
+    fireEvent.press(screen.getByText('Open Modal'))
+    expect(mockPresent).toHaveBeenCalledTimes(1)
+  })
+
+  it('render-prop trigger can call setOpen(true)', () => {
+    render(
+      <Modal>
+        <Modal.Trigger>
           {({ setOpen }) => (
-            <Pressable onPress={() => setOpen(false)}>
-              <Text>Close From Content</Text>
+            <Pressable onPress={() => setOpen(true)}>
+              <Text>Open Via Render Prop</Text>
+            </Pressable>
+          )}
+        </Modal.Trigger>
+        <Modal.Content>
+          <Text>Body</Text>
+        </Modal.Content>
+      </Modal>
+    )
+
+    mockPresent.mockClear()
+    fireEvent.press(screen.getByText('Open Via Render Prop'))
+    expect(mockPresent).toHaveBeenCalledTimes(1)
+  })
+
+  it('disabled modal does not open via trigger or setOpen(true)', () => {
+    render(
+      <Modal disabled>
+        <Modal.Trigger>
+          <Text>Open Modal</Text>
+        </Modal.Trigger>
+        <Modal.Content>
+          {({ setOpen }) => (
+            <Pressable onPress={() => setOpen(true)}>
+              <Text>Try Open</Text>
             </Pressable>
           )}
         </Modal.Content>
@@ -120,45 +166,66 @@ describe('Modal', () => {
     )
 
     mockPresent.mockClear()
-    mockDismiss.mockClear()
-
     fireEvent.press(screen.getByText('Open Modal'))
-    expect(mockPresent).toHaveBeenCalledTimes(1)
-
-    fireEvent.press(screen.getByText('Close From Content'))
-    expect(mockDismiss).toHaveBeenCalledTimes(1)
+    fireEvent.press(screen.getByText('Try Open'))
+    expect(mockPresent).not.toHaveBeenCalled()
   })
 
-  it('passes setOpen to footer slot', () => {
+  it('footer/content render props can close using setOpen(false)', () => {
     render(
-      <Modal>
-        <Modal.Trigger>
-          <Text>Open Modal</Text>
-        </Modal.Trigger>
-        <Modal.Header>{() => <Text>Header</Text>}</Modal.Header>
-        <Modal.Content>{() => <Text>Body</Text>}</Modal.Content>
+      <Modal defaultOpen>
+        <Modal.Content>
+          {({ setOpen }) => (
+            <Pressable onPress={() => setOpen(false)}>
+              <Text>Close Content</Text>
+            </Pressable>
+          )}
+        </Modal.Content>
         <Modal.Footer>
           {({ setOpen }) => (
             <Pressable onPress={() => setOpen(false)}>
-              <Text>Close From Footer</Text>
+              <Text>Close Footer</Text>
             </Pressable>
           )}
         </Modal.Footer>
       </Modal>
     )
 
+    mockDismiss.mockClear()
+    fireEvent.press(screen.getByText('Close Content'))
+    fireEvent.press(screen.getByText('Close Footer'))
+    expect(mockDismiss).toHaveBeenCalledTimes(1)
+  })
+
+  it('uncontrolled trigger opens and setOpen(false) dismisses', () => {
+    render(
+      <Modal>
+        <Modal.Trigger>
+          <Text>Open Modal</Text>
+        </Modal.Trigger>
+        <Modal.Content>
+          {({ setOpen }) => (
+            <Pressable onPress={() => setOpen(false)}>
+              <Text>Close Modal</Text>
+            </Pressable>
+          )}
+        </Modal.Content>
+      </Modal>
+    )
+
     mockPresent.mockClear()
     mockDismiss.mockClear()
 
     fireEvent.press(screen.getByText('Open Modal'))
-    fireEvent.press(screen.getByText('Close From Footer'))
+    fireEvent.press(screen.getByText('Close Modal'))
+
+    expect(mockPresent).toHaveBeenCalledTimes(1)
     expect(mockDismiss).toHaveBeenCalledTimes(1)
   })
 
-  it('syncs with controlled open changes', () => {
-    const onOpenChange = jest.fn()
+  it('controlled open=false->true calls present and true->false calls dismiss', () => {
     const { rerender } = render(
-      <Modal open={false} onOpenChange={onOpenChange}>
+      <Modal open={false}>
         <Modal.Content>
           <Text>Body</Text>
         </Modal.Content>
@@ -169,7 +236,7 @@ describe('Modal', () => {
     mockDismiss.mockClear()
 
     rerender(
-      <Modal open onOpenChange={onOpenChange}>
+      <Modal open>
         <Modal.Content>
           <Text>Body</Text>
         </Modal.Content>
@@ -178,7 +245,7 @@ describe('Modal', () => {
     expect(mockPresent).toHaveBeenCalledTimes(1)
 
     rerender(
-      <Modal open={false} onOpenChange={onOpenChange}>
+      <Modal open={false}>
         <Modal.Content>
           <Text>Body</Text>
         </Modal.Content>
@@ -187,7 +254,7 @@ describe('Modal', () => {
     expect(mockDismiss).toHaveBeenCalledTimes(1)
   })
 
-  it('emits open and close callbacks', () => {
+  it('fires onOpenChange/onOpen/onClose once per transition and onDismiss syncs close', () => {
     const onOpenChange = jest.fn()
     const onOpen = jest.fn()
     const onClose = jest.fn()
@@ -210,9 +277,10 @@ describe('Modal', () => {
     fireEvent.press(screen.getByTestId('mock-dismiss'))
     expect(onOpenChange).toHaveBeenCalledWith(false)
     expect(onClose).toHaveBeenCalledTimes(1)
+    expect(onOpenChange).toHaveBeenCalledTimes(2)
   })
 
-  it('uses dynamic sizing with 95 percent max content height by default', () => {
+  it('default mode uses dynamic sizing with 95% max height and no snapPoints', () => {
     render(
       <Modal>
         <Modal.Content>
@@ -221,16 +289,64 @@ describe('Modal', () => {
       </Modal>
     )
 
-    const expectedMaxDynamicContentSize = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-
+    const maxHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
     expect(latestModalProps?.enableDynamicSizing).toBe(true)
-    expect(latestModalProps?.maxDynamicContentSize).toBe(expectedMaxDynamicContentSize)
+    expect(latestModalProps?.maxDynamicContentSize).toBe(maxHeight)
     expect(latestModalProps?.snapPoints).toBeUndefined()
-    expect(latestModalProps?.enablePanDownToClose).toBe(true)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
   })
 
-  it('renders dynamic body content inside a plain View without nested BottomSheetView', () => {
+  it('renders default dynamic content in a measured view', () => {
+    render(
+      <Modal contentContainerStyle={{ paddingBottom: 40 }}>
+        <Modal.Content>
+          <Text>Body</Text>
+        </Modal.Content>
+      </Modal>
+    )
+
+    expect(screen.getByTestId('bottom-sheet-view')).toBeTruthy()
+    expect(screen.queryByTestId('bottom-sheet-scroll-view')).toBeNull()
+
+    const flattenedStyle = StyleSheet.flatten(screen.getByTestId('modal-content').props.style as any)
+    expect(flattenedStyle.paddingBottom).toBe(40)
+    expect(flattenedStyle.padding).toBe(16)
+  })
+
+  it('renders snap-point content inside BottomSheetScrollView and forwards content scroll props', () => {
+    const onScroll = jest.fn()
+
+    render(
+      <Modal
+        snapPoints={['65%']}
+        contentScrollProps={{
+          onScroll,
+          scrollEventThrottle: 24,
+          keyboardShouldPersistTaps: 'always',
+          bounces: true,
+          nestedScrollEnabled: false,
+        }}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        <Modal.Content>
+          <Text>Body</Text>
+        </Modal.Content>
+      </Modal>
+    )
+
+    expect(screen.getByTestId('bottom-sheet-scroll-view')).toBeTruthy()
+    expect(screen.queryByTestId('bottom-sheet-view')).toBeNull()
+    expect(latestScrollViewProps?.onScroll).toBe(onScroll)
+    expect(latestScrollViewProps?.scrollEventThrottle).toBe(24)
+    expect(latestScrollViewProps?.keyboardShouldPersistTaps).toBe('always')
+    expect(latestScrollViewProps?.bounces).toBe(true)
+    expect(latestScrollViewProps?.nestedScrollEnabled).toBe(false)
+
+    const flattenedStyle = StyleSheet.flatten(latestScrollViewProps?.contentContainerStyle as any)
+    expect(flattenedStyle.paddingBottom).toBe(40)
+    expect(flattenedStyle.padding).toBe(16)
+  })
+
+  it('backdrop is configured with close-on-press behavior', () => {
     render(
       <Modal>
         <Modal.Content>
@@ -239,313 +355,43 @@ describe('Modal', () => {
       </Modal>
     )
 
-    expect(screen.getAllByTestId('bottom-sheet-view')).toHaveLength(1)
-    expect(screen.queryByTestId('bottom-sheet-scroll-view')).toBeNull()
+    expect(latestModalProps?.backdropComponent).toBeDefined()
+
+    const backdrop = render((latestModalProps?.backdropComponent as any)({ animatedIndex: { value: 0 }, animatedPosition: { value: 0 }, style: {} }))
+    const backdropNode = backdrop.getByTestId('bottom-sheet-backdrop')
+    expect(backdropNode.props.appearsOnIndex).toBe(0)
+    expect(backdropNode.props.disappearsOnIndex).toBe(-1)
+    expect(backdropNode.props.pressBehavior).toBe('close')
   })
 
-  it('uses provided snapPoints and disables default dynamic sizing', () => {
+  it('provided snapPoints disable dynamic sizing and are normalized/clamped/sorted/deduped', () => {
     render(
-      <Modal snapPoints={[300, '80%']}>
+      <Modal snapPoints={['120%', 300, '80%', 300, -10, 'abc']}>
         <Modal.Content>
           <Text>Body</Text>
         </Modal.Content>
       </Modal>
     )
 
-    expect(latestModalProps?.snapPoints).toEqual([300, Math.round(ReactNative.Dimensions.get('window').height * 0.8)])
+    const h = ReactNative.Dimensions.get('window').height
+    const maxHeight = Math.round(h * 0.95)
+    const eighty = Math.round(h * 0.8)
+
     expect(latestModalProps?.enableDynamicSizing).toBe(false)
-    expect(latestModalProps?.maxDynamicContentSize).toBeUndefined()
-    expect(latestScrollViewProps?.nestedScrollEnabled).toBe(true)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
+    expect(latestModalProps?.snapPoints).toEqual([1, 300, eighty, maxHeight].sort((a, b) => a - b).filter((v, i, arr) => i === 0 || v !== arr[i - 1]))
   })
 
-  it('clamps provided snap points to 95 percent max height', () => {
+  it('all-invalid snapPoints fall back to 95% max height', () => {
     render(
-      <Modal snapPoints={[300, '120%']}>
+      <Modal snapPoints={['abc', Number.NaN]}>
         <Modal.Content>
           <Text>Body</Text>
         </Modal.Content>
       </Modal>
     )
 
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-    expect(latestModalProps?.snapPoints).toEqual([300, maxSnapHeight])
+    const maxHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
     expect(latestModalProps?.enableDynamicSizing).toBe(false)
-  })
-
-  it('inserts fit-content snap and keeps scroll disabled when content fits after expansion', () => {
-    render(
-      <Modal snapPoints={[300, '80%']}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(100, 520)
-    })
-
-    const expectedFitContentSnap = 520 + 24
-    const snapPoints = latestModalProps?.snapPoints as number[] | undefined
-
-    expect(snapPoints).toBeDefined()
-    expect(snapPoints).toContain(expectedFitContentSnap)
-    expect(snapPoints?.[0]).toBe(300)
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-
-    act(() => {
-      ;(latestModalProps?.onChange as ((index: number) => void) | undefined)?.(1)
-    })
-
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-  })
-
-  it('enables scroll only at largest snap when content still exceeds 95 percent cap', () => {
-    render(
-      <Modal snapPoints={[300, 500]}>
-        <Modal.Header>
-          <Text>Header</Text>
-        </Modal.Header>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-        <Modal.Footer>
-          <Text>Footer</Text>
-        </Modal.Footer>
-      </Modal>
-    )
-
-    fireEvent(screen.getByTestId('modal-header'), 'layout', { nativeEvent: { layout: { height: 120 } } })
-    fireEvent(screen.getByTestId('modal-footer'), 'layout', { nativeEvent: { layout: { height: 80 } } })
-
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(
-        100,
-        maxSnapHeight + 300
-      )
-    })
-
-    expect(latestModalProps?.snapPoints).toContain(maxSnapHeight)
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
-
-    const largestIndex = (latestModalProps?.snapPoints as number[]).length - 1
-    act(() => {
-      ;(latestModalProps?.onChange as ((index: number) => void) | undefined)?.(largestIndex)
-    })
-
-    expect(latestScrollViewProps?.scrollEnabled).toBe(true)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(false)
-  })
-
-  it('sets max scroll viewport height by subtracting header/footer/handle when content overflows', () => {
-    render(
-      <Modal snapPoints={[300, 500]}>
-        <Modal.Header>
-          <Text>Header</Text>
-        </Modal.Header>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-        <Modal.Footer>
-          <Text>Footer</Text>
-        </Modal.Footer>
-      </Modal>
-    )
-
-    fireEvent(screen.getByTestId('modal-header'), 'layout', { nativeEvent: { layout: { height: 120 } } })
-    fireEvent(screen.getByTestId('modal-footer'), 'layout', { nativeEvent: { layout: { height: 80 } } })
-
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(
-        100,
-        maxSnapHeight + 300
-      )
-    })
-
-    const flattenedStyle = StyleSheet.flatten(latestScrollViewProps?.style as any)
-    expect(flattenedStyle?.maxHeight).toBe(maxSnapHeight - 120 - 80 - 24)
-  })
-
-  it('does not set maxHeight style when content fits', () => {
-    render(
-      <Modal snapPoints={[300]}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(100, 520)
-    })
-
-    const flattenedStyle = StyleSheet.flatten(latestScrollViewProps?.style as any)
-    expect(flattenedStyle?.maxHeight).toBeUndefined()
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-  })
-
-  it('does not insert a smaller fit-content snap when content is shorter than initial snap', () => {
-    render(
-      <Modal snapPoints={[300, '80%']}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(100, 200)
-    })
-
-    expect(latestModalProps?.snapPoints).toEqual([300, Math.round(ReactNative.Dimensions.get('window').height * 0.8)])
-  })
-
-  it('resets current sheet index after dismiss', () => {
-    render(
-      <Modal snapPoints={[300, 500]}>
-        <Modal.Header>
-          <Text>Header</Text>
-        </Modal.Header>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-        <Modal.Footer>
-          <Text>Footer</Text>
-        </Modal.Footer>
-      </Modal>
-    )
-
-    fireEvent(screen.getByTestId('modal-header'), 'layout', { nativeEvent: { layout: { height: 120 } } })
-    fireEvent(screen.getByTestId('modal-footer'), 'layout', { nativeEvent: { layout: { height: 80 } } })
-
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(
-        100,
-        maxSnapHeight + 300
-      )
-    })
-
-    const largestIndex = (latestModalProps?.snapPoints as number[]).length - 1
-    act(() => {
-      ;(latestModalProps?.onChange as ((index: number) => void) | undefined)?.(largestIndex)
-    })
-    expect(latestScrollViewProps?.scrollEnabled).toBe(true)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(false)
-
-    fireEvent.press(screen.getByTestId('mock-dismiss'))
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
-  })
-
-  it('keeps content panning enabled before largest snap even when content overflows', () => {
-    render(
-      <Modal snapPoints={['65%']}>
-        <Modal.Header>
-          <Text>Header</Text>
-        </Modal.Header>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-        <Modal.Footer>
-          <Text>Footer</Text>
-        </Modal.Footer>
-      </Modal>
-    )
-
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(
-        100,
-        maxSnapHeight + 300
-      )
-    })
-
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
-  })
-
-  it('keeps content panning enabled at largest snap when content fits', () => {
-    render(
-      <Modal snapPoints={[300]}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(100, 520)
-    })
-
-    const largestIndex = (latestModalProps?.snapPoints as number[]).length - 1
-    act(() => {
-      ;(latestModalProps?.onChange as ((index: number) => void) | undefined)?.(largestIndex)
-    })
-
-    expect(latestScrollViewProps?.scrollEnabled).toBe(false)
-    expect(latestModalProps?.enableContentPanningGesture).toBe(true)
-  })
-
-  it('ignores invalid snap points and falls back to max height when all are invalid', () => {
-    const maxSnapHeight = Math.round(ReactNative.Dimensions.get('window').height * 0.95)
-
-    const { rerender } = render(
-      <Modal snapPoints={['abc', 300]}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    expect(latestModalProps?.snapPoints).toEqual([300])
-
-    rerender(
-      <Modal snapPoints={['abc']}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    expect(latestModalProps?.snapPoints).toEqual([maxSnapHeight])
-  })
-
-  it('dedupes generated fit-content snap when it matches a provided snap', () => {
-    render(
-      <Modal snapPoints={[300, 544]}>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    act(() => {
-      ;(latestScrollViewProps?.onContentSizeChange as ((width: number, height: number) => void) | undefined)?.(100, 520)
-    })
-
-    expect(latestModalProps?.snapPoints).toEqual([300, 544])
-  })
-
-  it('does not open when disabled trigger is pressed', () => {
-    render(
-      <Modal disabled>
-        <Modal.Trigger>
-          <Text>Open Modal</Text>
-        </Modal.Trigger>
-        <Modal.Content>
-          <Text>Body</Text>
-        </Modal.Content>
-      </Modal>
-    )
-
-    mockPresent.mockClear()
-    fireEvent.press(screen.getByText('Open Modal'))
-
-    expect(mockPresent).not.toHaveBeenCalled()
+    expect(latestModalProps?.snapPoints).toEqual([maxHeight])
   })
 })

@@ -1,8 +1,10 @@
 import type { CreateConfig, InputConfig } from '@repo/model-meta'
 import { defaultFormConfig } from '../../../configs/_defaults'
 import { api } from '../../../lib/api'
-import { SelectInput, TextInput } from '../../inputs'
-import type { FormInputComponent } from '../../inputs'
+import { LookupInput } from '../../inputs/LookupInput'
+import { SelectInput } from '../../inputs/SelectInput'
+import { TextInput } from '../../inputs/TextInput'
+import type { FormInputComponent } from '../../inputs/types'
 
 export type FormMode = 'create' | 'update'
 
@@ -90,7 +92,7 @@ export const componentTypeMap: Record<string, FormInputComponent> = {
   currency: TextInput,
   switch: TextInput,
   checkbox: TextInput,
-  lookup: TextInput,
+  lookup: LookupInput,
   'master-lookup': TextInput,
   location: TextInput,
   'multi-location': TextInput,

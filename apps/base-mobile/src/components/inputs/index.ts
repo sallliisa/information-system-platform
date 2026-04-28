@@ -6,6 +6,8 @@ export type {
   TextInputSpecificProps,
   SelectOption,
   SelectInputSpecificProps,
+  LookupOption,
+  LookupInputSpecificProps,
   FormInputControlProps,
   FormInputComponent,
   FormInputComponentProps,
@@ -14,3 +16,5 @@ export { TextInput } from './TextInput'
 export type { FormTextInputProps } from './TextInput'
 export { SelectInput } from './SelectInput'
 export type { FormSelectInputProps } from './SelectInput'
+export { LookupInput } from './LookupInput'
+export type { FormLookupInputProps } from './LookupInput'

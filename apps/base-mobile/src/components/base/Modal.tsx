@@ -1,6 +1,5 @@
 import {
   BottomSheetBackdrop,
-  type BottomSheetHandleProps,
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
@@ -22,20 +21,23 @@ import {
 import {
   Pressable,
   StyleSheet,
-  Text,
-  useWindowDimensions,
   View,
-  type LayoutChangeEvent,
+  useWindowDimensions,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { materialColors } from '../../theme/material'
 
-type ModalSlotContext = {
-  open: boolean
-  setOpen: (next: boolean) => void
-  disabled: boolean
+const MAX_HEIGHT_RATIO = 0.95
+const SNAP_DEDUPE_EPSILON = 1
+
+type ModalSlotName = 'trigger' | 'header' | 'content' | 'footer'
+
+type SlotTaggedComponent = {
+  __slot?: ModalSlotName
 }
 
 type ModalRenderable<TContext> = ReactNode | ((context: TContext) => ReactNode)
@@ -48,10 +50,31 @@ type ModalMarkerProps = {
   children?: ReactNode
 }
 
-type ModalSlotName = 'trigger' | 'header' | 'content' | 'footer'
+export type ModalSlotContext = {
+  open: boolean
+  setOpen: (next: boolean) => void
+  disabled: boolean
+}
 
-type SlotTaggedComponent = {
-  __slot?: ModalSlotName
+export type ModalScrollViewProps = {
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  scrollEventThrottle?: number
+  keyboardShouldPersistTaps?: 'always' | 'never' | 'handled' | boolean
+  bounces?: boolean
+  nestedScrollEnabled?: boolean
+}
+
+export type ModalProps = {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (next: boolean) => void
+  onOpen?: () => void
+  onClose?: () => void
+  disabled?: boolean
+  snapPoints?: Array<string | number>
+  contentContainerStyle?: StyleProp<ViewStyle>
+  contentScrollProps?: ModalScrollViewProps
+  children: ReactNode
 }
 
 type ModalComponent = ((props: ModalProps) => ReactElement) & {
@@ -59,41 +82,6 @@ type ModalComponent = ((props: ModalProps) => ReactElement) & {
   Header: typeof ModalHeader
   Content: typeof ModalContent
   Footer: typeof ModalFooter
-}
-
-const MAX_SNAP_RATIO = 0.95
-const DEFAULT_HANDLE_HEIGHT = 24
-const SNAP_DEDUPE_EPSILON = 1
-
-function resolveSnapPoint(snapPoint: string | number, windowHeight: number): number | null {
-  if (typeof snapPoint === 'number') {
-    return Number.isFinite(snapPoint) ? snapPoint : null
-  }
-
-  const trimmed = snapPoint.trim()
-
-  if (trimmed.endsWith('%')) {
-    const percentage = Number.parseFloat(trimmed.slice(0, -1))
-    return Number.isFinite(percentage) ? (percentage / 100) * windowHeight : null
-  }
-
-  const parsed = Number.parseFloat(trimmed)
-  return Number.isFinite(parsed) ? parsed : null
-}
-
-function dedupeSortedSnapPoints(snapPoints: number[]): number[] {
-  return snapPoints
-    .sort((a, b) => a - b)
-    .filter((snapPoint, index, all) => index === 0 || Math.abs(snapPoint - all[index - 1]) > SNAP_DEDUPE_EPSILON)
-}
-
-function normalizeSnapPoints(snapPoints: Array<string | number>, windowHeight: number, maxSnapHeight: number): number[] {
-  return dedupeSortedSnapPoints(
-    snapPoints
-      .map((snapPoint) => resolveSnapPoint(snapPoint, windowHeight))
-      .filter((snapPoint): snapPoint is number => snapPoint !== null)
-      .map((snapPoint) => Math.min(Math.max(Math.round(snapPoint), 1), maxSnapHeight))
-  )
 }
 
 const ModalSlotContextValue = createContext<ModalSlotContext | null>(null)
@@ -104,13 +92,6 @@ function useModalSlotContext() {
     throw new Error('Modal slot components must be used inside <Modal>.')
   }
   return context
-}
-
-function renderSlot<TContext>(slot: ModalRenderable<TContext> | undefined, context: TContext): ReactNode {
-  if (typeof slot === 'function') {
-    return (slot as (value: TContext) => ReactNode)(context)
-  }
-  return slot ?? null
 }
 
 function ModalSlotMarker({ children }: ModalSlotProps): ReactElement {
@@ -145,16 +126,31 @@ export const ModalFooter = Object.assign(
   { __slot: 'footer' as const }
 )
 
-export type ModalProps = {
-  open?: boolean
-  defaultOpen?: boolean
-  onOpenChange?: (next: boolean) => void
-  onOpen?: () => void
-  onClose?: () => void
-  disabled?: boolean
-  snapPoints?: Array<string | number>
-  contentContainerStyle?: StyleProp<ViewStyle>
-  children: ReactNode
+function resolveSnapPoint(snapPoint: string | number, windowHeight: number): number | null {
+  if (typeof snapPoint === 'number') {
+    return Number.isFinite(snapPoint) ? snapPoint : null
+  }
+
+  const trimmed = snapPoint.trim()
+  if (!trimmed) return null
+
+  if (trimmed.endsWith('%')) {
+    const percentage = Number.parseFloat(trimmed.slice(0, -1))
+    return Number.isFinite(percentage) ? (percentage / 100) * windowHeight : null
+  }
+
+  const parsed = Number.parseFloat(trimmed)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function normalizeSnapPoints(snapPoints: Array<string | number>, windowHeight: number, maxHeight: number): number[] {
+  const values = snapPoints
+    .map((value) => resolveSnapPoint(value, windowHeight))
+    .filter((value): value is number => value !== null)
+    .map((value) => Math.min(Math.max(Math.round(value), 1), maxHeight))
+    .sort((a, b) => a - b)
+
+  return values.filter((value, index) => index === 0 || Math.abs(value - values[index - 1]) > SNAP_DEDUPE_EPSILON)
 }
 
 function parseSlots(children: ReactNode) {
@@ -167,35 +163,22 @@ function parseSlots(children: ReactNode) {
     if (!isValidElement<ModalMarkerProps>(child)) return
 
     const slotChildren = child.props.children as ModalRenderable<ModalSlotContext>
-    const taggedType = child.type as SlotTaggedComponent
-    const slot = taggedType.__slot
+    const slot = (child.type as SlotTaggedComponent).__slot
 
-    // Prefer stable slot markers for Fast Refresh safety.
-    if (slot === 'trigger') {
-      trigger = slotChildren
-      return
-    }
-    if (slot === 'header') {
-      header = slotChildren
-      return
-    }
-    if (slot === 'content') {
-      content = slotChildren
-      return
-    }
-    if (slot === 'footer') {
-      footer = slotChildren
-      return
-    }
-
-    // Fallback for edge cases where slot marker is missing.
-    if (child.type === ModalTrigger) trigger = slotChildren
-    if (child.type === ModalHeader) header = slotChildren
-    if (child.type === ModalContent) content = slotChildren
-    if (child.type === ModalFooter) footer = slotChildren
+    if (slot === 'trigger') trigger = slotChildren
+    if (slot === 'header') header = slotChildren
+    if (slot === 'content') content = slotChildren
+    if (slot === 'footer') footer = slotChildren
   })
 
   return { trigger, header, content, footer }
+}
+
+function renderSlot<TContext>(slot: ModalRenderable<TContext> | undefined, context: TContext): ReactNode {
+  if (typeof slot === 'function') {
+    return (slot as (ctx: TContext) => ReactNode)(context)
+  }
+  return slot ?? null
 }
 
 const ModalBase = ({
@@ -207,33 +190,41 @@ const ModalBase = ({
   disabled = false,
   snapPoints,
   contentContainerStyle,
+  contentScrollProps,
   children,
 }: ModalProps) => {
   const isControlled = typeof open === 'boolean'
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen)
   const resolvedOpen = isControlled ? Boolean(open) : uncontrolledOpen
+
+  const { height: windowHeight } = useWindowDimensions()
+  const maxHeight = Math.round(windowHeight * MAX_HEIGHT_RATIO)
+
   const sheetRef = useRef<BottomSheetModal>(null)
-  const visibilityRef = useRef(resolvedOpen)
-  const { height } = useWindowDimensions()
+  const visibleRef = useRef(resolvedOpen)
+  const sheetPresentedRef = useRef(false)
   const insets = useSafeAreaInsets()
-  const [headerHeight, setHeaderHeight] = useState(0)
-  const [footerHeight, setFooterHeight] = useState(0)
-  const [contentHeight, setContentHeight] = useState(0)
-  const [currentSheetIndex, setCurrentSheetIndex] = useState(0)
 
-  const updateVisibility = useCallback(
+  const openSheet = useCallback(() => {
+    if (sheetPresentedRef.current) return
+    sheetPresentedRef.current = true
+    sheetRef.current?.present()
+  }, [])
+
+  const closeSheet = useCallback(() => {
+    if (!sheetPresentedRef.current) return
+    sheetPresentedRef.current = false
+    sheetRef.current?.dismiss()
+  }, [])
+
+  const emitVisibility = useCallback(
     (next: boolean, emitOpenChange: boolean) => {
-      if (visibilityRef.current === next) return
+      if (visibleRef.current === next) return
 
-      visibilityRef.current = next
-      if (emitOpenChange) {
-        onOpenChange?.(next)
-      }
-      if (next) {
-        onOpen?.()
-      } else {
-        onClose?.()
-      }
+      visibleRef.current = next
+      if (emitOpenChange) onOpenChange?.(next)
+      if (next) onOpen?.()
+      else onClose?.()
     },
     [onClose, onOpen, onOpenChange]
   )
@@ -242,48 +233,32 @@ const ModalBase = ({
     (next: boolean) => {
       if (next && disabled) return
 
-      if (next) {
-        setCurrentSheetIndex(0)
-      }
-
       if (!isControlled) {
         setUncontrolledOpen(next)
-      } else if (next) {
-        sheetRef.current?.present()
-      } else {
-        sheetRef.current?.dismiss()
       }
 
-      updateVisibility(next, true)
+      if (next) openSheet()
+      else closeSheet()
+
+      emitVisibility(next, true)
     },
-    [disabled, isControlled, updateVisibility]
+    [closeSheet, disabled, emitVisibility, isControlled, openSheet]
   )
 
   useEffect(() => {
-    updateVisibility(resolvedOpen, false)
-    if (resolvedOpen) {
-      setCurrentSheetIndex(0)
-      sheetRef.current?.present()
-    } else {
-      sheetRef.current?.dismiss()
-    }
-  }, [resolvedOpen, updateVisibility])
+    if (resolvedOpen) openSheet()
+    else closeSheet()
+
+    emitVisibility(resolvedOpen, true)
+  }, [closeSheet, emitVisibility, openSheet, resolvedOpen])
 
   const handleDismiss = useCallback(() => {
-    setCurrentSheetIndex(0)
-
+    sheetPresentedRef.current = false
     if (!isControlled) {
       setUncontrolledOpen(false)
     }
-    updateVisibility(false, true)
-  }, [isControlled, updateVisibility])
-
-  const renderBackdrop = useCallback(
-    (backdropProps: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />
-    ),
-    []
-  )
+    emitVisibility(false, true)
+  }, [emitVisibility, isControlled])
 
   const slotContext = useMemo<ModalSlotContext>(
     () => ({
@@ -295,88 +270,24 @@ const ModalBase = ({
   )
 
   const { trigger, header, content, footer } = parseSlots(children)
-  const hasSnapPoints = Array.isArray(snapPoints) && snapPoints.length > 0
-  const maxSnapHeight = Math.round(height * MAX_SNAP_RATIO)
-  const maxDynamicContentSize = maxSnapHeight
-  const modalChromeHeight = Math.round(headerHeight + footerHeight + DEFAULT_HANDLE_HEIGHT)
-  const measuredRequiredHeight = Math.round(modalChromeHeight + contentHeight)
-  const maxScrollableContentHeight = Math.max(maxSnapHeight - modalChromeHeight, 1)
-  const contentOverflowsAtMaxSnap = contentHeight > maxScrollableContentHeight + SNAP_DEDUPE_EPSILON
-
-  const effectiveSnapPoints = useMemo(() => {
-    if (!hasSnapPoints || !snapPoints) return undefined
-
-    const normalizedSnapPoints = normalizeSnapPoints(snapPoints, height, maxSnapHeight)
-    const baseSnapPoints = normalizedSnapPoints.length > 0 ? normalizedSnapPoints : [maxSnapHeight]
-
-    if (contentHeight <= 0) {
-      return baseSnapPoints
-    }
-
-    const expansionSnapPoint = Math.min(measuredRequiredHeight, maxSnapHeight)
-    const firstSnapPoint = baseSnapPoints[0]
-    if (expansionSnapPoint <= firstSnapPoint + SNAP_DEDUPE_EPSILON) {
-      return baseSnapPoints
-    }
-
-    return dedupeSortedSnapPoints([...baseSnapPoints, expansionSnapPoint])
-  }, [contentHeight, hasSnapPoints, height, maxSnapHeight, measuredRequiredHeight, snapPoints])
-
-  const largestEffectiveSnapIndex =
-    hasSnapPoints && effectiveSnapPoints && effectiveSnapPoints.length > 0 ? effectiveSnapPoints.length - 1 : null
-  const isAtLargestEffectiveSnap = largestEffectiveSnapIndex !== null && currentSheetIndex === largestEffectiveSnapIndex
-  const shouldEnableFixedScroll = Boolean(hasSnapPoints && isAtLargestEffectiveSnap && contentOverflowsAtMaxSnap)
-  const shouldLetContentOwnPanGesture = shouldEnableFixedScroll
-  const shouldEnableContentPanningGesture = !shouldLetContentOwnPanGesture
-  const fixedScrollViewStyle = useMemo(
-    () => [styles.scrollView, contentOverflowsAtMaxSnap ? { maxHeight: maxScrollableContentHeight } : null],
-    [contentOverflowsAtMaxSnap, maxScrollableContentHeight]
-  )
-
   const triggerNode = renderSlot(trigger, slotContext)
   const headerNode = renderSlot(header, slotContext)
   const contentNode = renderSlot(content, slotContext)
   const footerNode = renderSlot(footer, slotContext)
-  const isFixedHeight = hasSnapPoints
 
-  const handleHeaderLayout = useCallback((event: LayoutChangeEvent) => {
-    const nextHeight = Math.round(event.nativeEvent.layout.height)
-    setHeaderHeight((previousHeight) =>
-      Math.abs(previousHeight - nextHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : nextHeight
-    )
-  }, [])
+  const hasSnapPoints = Array.isArray(snapPoints) && snapPoints.length > 0
+  const normalizedSnapPoints = useMemo(() => {
+    if (!hasSnapPoints || !snapPoints) return undefined
+    const normalized = normalizeSnapPoints(snapPoints, windowHeight, maxHeight)
+    return normalized.length > 0 ? normalized : [maxHeight]
+  }, [hasSnapPoints, maxHeight, snapPoints, windowHeight])
 
-  const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
-    const nextHeight = Math.round(event.nativeEvent.layout.height)
-    setFooterHeight((previousHeight) =>
-      Math.abs(previousHeight - nextHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : nextHeight
-    )
-  }, [])
-
-  const renderHandle = useCallback(
-    (_handleProps: BottomSheetHandleProps) => {
-      if (!headerNode) return null
-
-      return (
-        <View testID="modal-header" style={styles.handleContainer} onLayout={handleHeaderLayout}>
-          <View style={styles.handleGrip} />
-          <View style={styles.headerText}>{headerNode}</View>
-        </View>
-      )
-    },
-    [handleHeaderLayout, headerNode]
+  const renderBackdrop = useCallback(
+    (backdropProps: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop {...backdropProps} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior="close" />
+    ),
+    []
   )
-
-  const handleScrollContentSizeChange = useCallback((_: number, nextHeight: number) => {
-    const roundedHeight = Math.round(nextHeight)
-    setContentHeight((previousHeight) =>
-      Math.abs(previousHeight - roundedHeight) <= SNAP_DEDUPE_EPSILON ? previousHeight : roundedHeight
-    )
-  }, [])
-
-  const handleSheetChange = useCallback((nextIndex: number) => {
-    setCurrentSheetIndex(nextIndex < 0 ? 0 : nextIndex)
-  }, [])
 
   return (
     <ModalSlotContextValue.Provider value={slotContext}>
@@ -394,48 +305,67 @@ const ModalBase = ({
         ref={sheetRef}
         index={0}
         onDismiss={handleDismiss}
-        onChange={handleSheetChange}
         backdropComponent={renderBackdrop}
         enablePanDownToClose
         enableDismissOnClose
-        enableHandlePanningGesture
-        enableContentPanningGesture={shouldEnableContentPanningGesture}
-        handleComponent={headerNode ? renderHandle : undefined}
         backgroundStyle={styles.sheetBackground}
         handleIndicatorStyle={styles.handleIndicator}
-        {...(hasSnapPoints
+        {...(normalizedSnapPoints
           ? {
-              snapPoints: effectiveSnapPoints,
+              snapPoints: normalizedSnapPoints,
               enableDynamicSizing: false as const,
             }
           : {
               enableDynamicSizing: true as const,
-              maxDynamicContentSize,
+              maxDynamicContentSize: maxHeight,
             })}
       >
-        <BottomSheetView style={styles.container}>
-          {isFixedHeight ? (
+        {hasSnapPoints ? (
+          <View style={styles.container}>
+            {headerNode ? (
+              <View testID="modal-header" style={styles.header}>
+                {headerNode}
+              </View>
+            ) : null}
+
             <BottomSheetScrollView
-              bounces={false}
-              nestedScrollEnabled
-              keyboardShouldPersistTaps="handled"
-              scrollEnabled={shouldEnableFixedScroll}
-              onContentSizeChange={handleScrollContentSizeChange}
-              style={fixedScrollViewStyle}
+              bounces={contentScrollProps?.bounces ?? false}
+              nestedScrollEnabled={contentScrollProps?.nestedScrollEnabled ?? true}
+              keyboardShouldPersistTaps={contentScrollProps?.keyboardShouldPersistTaps ?? 'handled'}
+              onScroll={contentScrollProps?.onScroll}
+              {...(contentScrollProps?.scrollEventThrottle !== undefined
+                ? ({ scrollEventThrottle: contentScrollProps.scrollEventThrottle } as any)
+                : {})}
               contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
             >
               {contentNode}
             </BottomSheetScrollView>
-          ) : (
-            <View style={[styles.contentContainer, contentContainerStyle]}>{contentNode}</View>
-          )}
 
-          {footerNode ? (
-            <View testID="modal-footer" style={[styles.footer, { paddingBottom: insets.bottom }]} onLayout={handleFooterLayout}>
-              {footerNode}
+            {footerNode ? (
+              <View testID="modal-footer" style={[styles.footer, { paddingBottom: insets.bottom }]}>
+                {footerNode}
+              </View>
+            ) : null}
+          </View>
+        ) : (
+          <BottomSheetView style={styles.container}>
+            {headerNode ? (
+              <View testID="modal-header" style={styles.header}>
+                {headerNode}
+              </View>
+            ) : null}
+
+            <View testID="modal-content" style={[styles.contentContainer, contentContainerStyle]}>
+              {contentNode}
             </View>
-          ) : null}
-        </BottomSheetView>
+
+            {footerNode ? (
+              <View testID="modal-footer" style={[styles.footer, { paddingBottom: insets.bottom }]}>
+                {footerNode}
+              </View>
+            ) : null}
+          </BottomSheetView>
+        )}
       </BottomSheetModal>
     </ModalSlotContextValue.Provider>
   )
@@ -452,8 +382,6 @@ export function useModalContext() {
   return useModalSlotContext()
 }
 
-export type { ModalSlotContext }
-
 const styles = StyleSheet.create({
   sheetBackground: {
     backgroundColor: materialColors.surface,
@@ -462,52 +390,15 @@ const styles = StyleSheet.create({
     backgroundColor: materialColors.onSurfaceVariant,
     opacity: 0.45,
   },
-  container: {},
-  handleContainer: {
+  container: {
+    flexShrink: 1,
+  },
+  header: {
     paddingTop: 6,
     paddingHorizontal: 16,
     paddingBottom: 12,
-    gap: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: materialColors.outlineVariant,
-  },
-  handleGrip: {
-    alignSelf: 'center',
-    width: 36,
-    height: 4,
-    borderRadius: 999,
-    backgroundColor: materialColors.onSurfaceVariant,
-    opacity: 0.45,
-  },
-  headerText: {
-    flex: 1,
-    gap: 6,
-  },
-  title: {
-    color: materialColors.onSurface,
-    fontSize: 18,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
-  description: {
-    color: materialColors.onSurfaceVariant,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  closeButton: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: materialColors.surfaceContainerHigh,
-  },
-  closeButtonText: {
-    color: materialColors.onSurfaceVariant,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  scrollView: {
-    flexGrow: 0,
-    flexShrink: 1,
   },
   contentContainer: {
     padding: 16,

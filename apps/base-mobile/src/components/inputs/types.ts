@@ -1,5 +1,6 @@
 import type { TextInputProps as RNTextInputProps } from 'react-native'
 import type { JSX, ReactNode } from 'react'
+import type { DataTableGetData, DataTablePageResponse } from '../composites/DataTable'
 
 export type CommonInputProps = {
   field: string
@@ -29,7 +30,7 @@ export type SelectInputSpecificProps = {
   data?: SelectOption[]
   getAPI?: string
   searchParameters?: Record<string, any>
-  getData?: (getAPI: string, searchParameters: Record<string, any>) => Promise<SelectOption[]>
+  getData?: (getAPI: string, searchParameters?: Record<string, any>) => Promise<DataTablePageResponse>
   defaultToFirst?: boolean
   pick?: string
   view?: string
@@ -62,9 +63,8 @@ export type LookupInputGetDetail = (
 
 export type LookupInputSpecificProps = {
   getAPI?: string
-  showAPI?: string
   searchParameters?: Record<string, any>
-  getData?: LookupInputGetData
+  getData?: DataTableGetData
   getDetail?: LookupInputGetDetail
   multi?: boolean
   pick?: string
