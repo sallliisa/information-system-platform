@@ -321,7 +321,7 @@ const ModalBase = ({
             })}
       >
         {hasSnapPoints ? (
-          <View style={styles.container}>
+          <View testID="modal-fixed-container" style={styles.fixedContainer}>
             {headerNode ? (
               <View testID="modal-header" style={styles.header}>
                 {headerNode}
@@ -336,6 +336,7 @@ const ModalBase = ({
               {...(contentScrollProps?.scrollEventThrottle !== undefined
                 ? ({ scrollEventThrottle: contentScrollProps.scrollEventThrottle } as any)
                 : {})}
+              style={styles.scrollView}
               contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
             >
               {contentNode}
@@ -392,6 +393,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flexShrink: 1,
+  },
+  fixedContainer: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
   },
   header: {
     paddingTop: 6,

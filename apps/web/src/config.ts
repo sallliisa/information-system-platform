@@ -5,7 +5,7 @@ const config = {
   company: '',
   mode: 'EARLY_DEVELOPMENT',
   server: {
-    development: 'https://iso-adhi.pttas.net/api/',
+    development: 'https://trom2.hakaaston.co.id/api/',
     production: 'https://api-staging.danantara.id',
   },
   maps_api_key: {

@@ -3,6 +3,12 @@ import type { ReactNode } from 'react'
 import { LookupInput } from '../LookupInput'
 import { api } from '../../../lib/api'
 
+type Deferred<T> = {
+  promise: Promise<T>
+  resolve: (value: T) => void
+  reject: (reason?: unknown) => void
+}
+
 type MockModalProps = {
   open?: boolean
   onOpenChange?: (next: boolean) => void
@@ -14,6 +20,16 @@ type MockModalProps = {
 }
 
 let latestModalProps: MockModalProps | null = null
+
+function createDeferred<T>(): Deferred<T> {
+  let resolve!: (value: T) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
+}
 
 jest.mock('../../../lib/api', () => ({
   api: {
@@ -209,6 +225,19 @@ describe('LookupInput', () => {
     })
   })
 
+  it('merges caller search params with active default params', async () => {
+    renderLookup({ searchParameters: { active: false, company_id: 9 } })
+
+    await waitFor(() => {
+      expect(datasetMock).toHaveBeenCalledWith('/customers', {
+        active: false,
+        company_id: 9,
+        page: '1',
+        limit: 10,
+      })
+    })
+  })
+
   it('search updates table search params', async () => {
     jest.useFakeTimers()
     renderLookup()
@@ -326,6 +355,163 @@ describe('LookupInput', () => {
     })
 
     expect(screen.getByText('Customer 7')).toBeTruthy()
+  })
+
+  it('existing object value displays without detail fetch', async () => {
+    renderLookup({ value: { id: 1, name: 'Alice' } })
+
+    await waitFor(() => {
+      expect(screen.getByText('Alice')).toBeTruthy()
+    })
+
+    expect(detailMock).not.toHaveBeenCalled()
+  })
+
+  it('preview displays until the value is changed', async () => {
+    const { onChangeValue } = renderLookup({
+      value: { id: 1, name: 'Alice' },
+      preview: 'Existing Customer',
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Existing Customer')).toBeTruthy()
+    })
+
+    await openModal()
+    await screen.findByText('Bob')
+
+    fireEvent.press(screen.getByText('Bob'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onChangeValue).toHaveBeenCalledWith(2)
+    })
+    expect(screen.getByText('Bob')).toBeTruthy()
+  })
+
+  it('applies transform before formatting committed data', async () => {
+    const dataFormatter = jest.fn((data) => data[0]?.customer_id)
+    const { onChangeValue } = renderLookup({
+      transform: { id: 'customer_id' },
+      dataFormatter,
+    })
+
+    await openModal()
+    await screen.findByText('Alice')
+
+    fireEvent.press(screen.getByText('Alice'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onChangeValue).toHaveBeenCalledWith(1)
+    })
+    expect(dataFormatter).toHaveBeenCalledWith(
+      [{ id: 1, name: 'Alice', customer_id: 1 }],
+      false,
+      'id',
+      ['name']
+    )
+  })
+
+  it('respects custom dataFormatter output', async () => {
+    const { onChangeValue } = renderLookup({
+      dataFormatter: (data: Record<string, any>[]) => ({ selected_id: data[0]?.id }),
+    })
+
+    await openModal()
+    await screen.findByText('Alice')
+
+    fireEvent.press(screen.getByText('Alice'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onChangeValue).toHaveBeenCalledWith({ selected_id: 1 })
+    })
+  })
+
+  it('awaits onCommit before changing value', async () => {
+    const commit = createDeferred<void>()
+    const onChangeValue = jest.fn()
+    const onCommit = jest.fn(() => commit.promise)
+
+    renderLookup({ onChangeValue, onCommit })
+
+    await openModal()
+    await screen.findByText('Alice')
+
+    fireEvent.press(screen.getByText('Alice'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    expect(onCommit).toHaveBeenCalledWith([{ id: 1, name: 'Alice' }])
+    expect(onChangeValue).not.toHaveBeenCalled()
+
+    commit.resolve()
+
+    await waitFor(() => {
+      expect(onChangeValue).toHaveBeenCalledWith(1)
+    })
+  })
+
+  it('failed onCommit does not commit value or close the modal', async () => {
+    const onChangeValue = jest.fn()
+    const onCommit = jest.fn(async () => {
+      throw new Error('failed')
+    })
+
+    renderLookup({ onChangeValue, onCommit })
+
+    await openModal()
+    await screen.findByText('Alice')
+
+    fireEvent.press(screen.getByText('Alice'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onCommit).toHaveBeenCalled()
+    })
+    expect(onChangeValue).not.toHaveBeenCalled()
+    expect(screen.getByTestId('lookup-modal-root')).toBeTruthy()
+  })
+
+  it('calls onSelectData with form context after save', async () => {
+    const onSelectData = jest.fn()
+    const formDataSetter = jest.fn()
+    const formData = { customer: null }
+
+    renderLookup({ onSelectData, formData, formDataSetter })
+
+    await openModal()
+    await screen.findByText('Alice')
+
+    fireEvent.press(screen.getByText('Alice'))
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onSelectData).toHaveBeenCalledWith(formData, [{ id: 1, name: 'Alice' }], formDataSetter)
+    })
+  })
+
+  it('closing without save resets staged selection', async () => {
+    const { onChangeValue } = renderLookup({ value: { id: 1, name: 'Alice' } })
+
+    await waitFor(() => {
+      expect(screen.getByText('Alice')).toBeTruthy()
+    })
+
+    await openModal()
+    await screen.findByText('Bob')
+
+    fireEvent.press(screen.getByText('Bob'))
+    fireEvent.press(screen.getByText('Batal'))
+
+    expect(onChangeValue).not.toHaveBeenCalled()
+
+    await openModal()
+    fireEvent.press(screen.getByTestId('lookup-save-customer'))
+
+    await waitFor(() => {
+      expect(onChangeValue).toHaveBeenCalledWith(1)
+    })
   })
 
   it('clear emits null for single', async () => {

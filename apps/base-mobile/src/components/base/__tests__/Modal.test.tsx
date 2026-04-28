@@ -41,9 +41,10 @@ jest.mock('@gorhom/bottom-sheet', () => {
     )
   })
 
-  function BottomSheetScrollView({ children, contentContainerStyle, ...rest }: any) {
+  function BottomSheetScrollView({ children, contentContainerStyle, style, ...rest }: any) {
     latestScrollViewProps = {
       ...rest,
+      style,
       contentContainerStyle,
     }
 
@@ -344,6 +345,28 @@ describe('Modal', () => {
     const flattenedStyle = StyleSheet.flatten(latestScrollViewProps?.contentContainerStyle as any)
     expect(flattenedStyle.paddingBottom).toBe(40)
     expect(flattenedStyle.padding).toBe(16)
+  })
+
+  it('fixed snap-point layout stretches content so footer stays at the sheet bottom', () => {
+    render(
+      <Modal snapPoints={['95%']}>
+        <Modal.Header>
+          <Text>Header</Text>
+        </Modal.Header>
+        <Modal.Content>
+          <Text>Short Body</Text>
+        </Modal.Content>
+        <Modal.Footer>
+          <Text>Footer</Text>
+        </Modal.Footer>
+      </Modal>
+    )
+
+    const flattenedContainerStyle = StyleSheet.flatten(screen.getByTestId('modal-fixed-container').props.style as any)
+    const flattenedScrollStyle = StyleSheet.flatten(latestScrollViewProps?.style as any)
+
+    expect(flattenedContainerStyle.flex).toBe(1)
+    expect(flattenedScrollStyle.flex).toBe(1)
   })
 
   it('backdrop is configured with close-on-press behavior', () => {

@@ -185,9 +185,10 @@ const users = {
         },
       },
       role_id: {
-        type: 'select',
+        type: 'lookup',
         props: {
           getAPI: 'roles',
+          fields: ['role_name'],
           view: 'role_name',
           multi: true,
         },
