@@ -205,7 +205,7 @@ export function Button({
   const colorRole = COLOR_ROLES[color]
   const contentColor = disabled ? DISABLED_CONTENT : getContentColor(variant, colorRole)
   const pressableClassName = useMemo(() => {
-    const base = 'items-center justify-center flex-row'
+    const base = 'items-center justify-center flex-row gap-2'
     if (!className) return base
     const trimmed = className.trim()
     return trimmed.length > 0 ? `${base} ${trimmed}` : base

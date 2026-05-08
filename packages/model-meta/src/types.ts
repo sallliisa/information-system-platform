@@ -41,6 +41,8 @@ export type KnownFieldType =
   | 'master-lookup'
   | 'custom'
 
+import type { ZodTypeAny } from 'zod'
+
 export type FieldType = KnownFieldType | (string & {})
 
 export type FieldDependency = {
@@ -84,7 +86,8 @@ export type ModelFormField = {
     mobile?: Partial<ModelFormField>
   }
   props?: Record<string, any> & {
-    validation?: any[]
+    required?: boolean
+    validation?: ZodTypeAny
   }
   propGenerator?: Record<string, (formData: Record<string, any>) => any>
 }

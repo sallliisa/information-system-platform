@@ -86,6 +86,42 @@ export type LookupInputSpecificProps = {
   formDataSetter?: (newData: any) => void
 }
 
+export type ImageUploadResult = {
+  success?: boolean
+  path?: string
+  data?: string
+  url?: string
+  tumbnail_url?: string
+  thumbnail_url?: string
+  [key: string]: any
+}
+
+export type ImageInputSpecificProps = {
+  maxSize?: number
+  disableInformation?: boolean
+  multi?: boolean
+  limit?: number
+  additionalInfo?: string
+  transform?: Record<string, string>
+  uploadPath?: string
+}
+
+export type FileUploadResult = {
+  success?: boolean
+  path?: string
+  data?: string
+  url?: string
+  filename?: string
+  [key: string]: any
+}
+
+export type FileInputSpecificProps = {
+  accept?: string[]
+  maxSize?: number
+  multi?: boolean
+  uploadPath?: string
+}
+
 export type FormInputControlProps = {
   value: unknown
   onChangeValue: (nextValue: any) => void
@@ -98,6 +134,8 @@ export type FormInputComponentProps =
   & TextInputSpecificProps
   & SelectInputSpecificProps
   & LookupInputSpecificProps
+  & ImageInputSpecificProps
+  & FileInputSpecificProps
   & FormInputControlProps
 
 export type FormInputComponent = (props: FormInputComponentProps) => JSX.Element

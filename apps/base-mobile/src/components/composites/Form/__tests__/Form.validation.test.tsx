@@ -1,5 +1,6 @@
 import type { InputConfig } from '@repo/model-meta'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native'
+import { z } from 'zod'
 import type { ReactNode } from 'react'
 import { Pressable, StyleSheet, Text } from 'react-native'
 import { BaseInput, type FormTextInputProps } from '../../../inputs'
@@ -46,7 +47,7 @@ describe('Form validation integration', () => {
       inputConfig: {
         name: {
           type: 'text',
-          props: { validation: ['required'], enableHelperMessage: true },
+          props: { required: true, enableHelperMessage: true },
         },
       },
     })
@@ -67,7 +68,7 @@ describe('Form validation integration', () => {
       inputConfig: {
         name: {
           type: 'text',
-          props: { validation: ['required'], enableHelperMessage: true },
+          props: { required: true, enableHelperMessage: true },
         },
       },
     })
@@ -93,7 +94,7 @@ describe('Form validation integration', () => {
         },
         secret: {
           type: 'text',
-          props: { validation: ['required'], enableHelperMessage: true },
+          props: { required: true, enableHelperMessage: true },
           dependency: {
             fields: ['show_secret'],
             visibility: {
@@ -167,7 +168,7 @@ describe('Form validation integration', () => {
         custom_field: {
           type: 'custom',
           component: TouchOnlyCustomInput as any,
-          props: { validation: ['required'], enableHelperMessage: true },
+          props: { required: true, enableHelperMessage: true },
         },
       },
     })
@@ -281,5 +282,39 @@ describe('Form validation integration', () => {
 
     await screen.findByLabelText('name')
     expect(screen.getByText('Submit')).toBeTruthy()
+  })
+
+  it('validates optional zod email only for non-empty values', async () => {
+    renderForm({
+      fields: ['email'],
+      inputConfig: {
+        email: {
+          type: 'text',
+          props: {
+            enableHelperMessage: true,
+            validation: z.string().email('Format email tidak valid!'),
+          },
+        },
+      },
+    })
+
+    const input = await screen.findByLabelText('email')
+
+    fireEvent(input, 'blur')
+    await waitFor(() => {
+      expect(screen.queryByText('Format email tidak valid!')).toBeNull()
+    })
+
+    fireEvent.changeText(input, 'bad')
+    fireEvent(input, 'blur')
+    await waitFor(() => {
+      expect(screen.getByText('Format email tidak valid!')).toBeTruthy()
+    })
+
+    fireEvent.changeText(input, 'user.com')
+    fireEvent(input, 'blur')
+    await waitFor(() => {
+      expect(screen.queryByText('Format email tidak valid!')).toBeNull()
+    })
   })
 })

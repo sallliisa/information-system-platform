@@ -1,5 +1,6 @@
 /* @jsxImportSource vue */
 import type { InputConfig } from '@repo/model-meta'
+import { z } from 'zod'
 
 export const defaultGlobalConfig: {
   fieldSlots: Record<string, any>
@@ -15,18 +16,24 @@ export const defaultGlobalConfig: {
     updated_by: 'rel_updated_by',
   },
   inputConfig: {
-    title: { type: 'text', props: { validation: ['required'] } },
-    name: { type: 'text', props: { validation: ['required'] } },
-    fullname: { type: 'text', props: { validation: ['required'] } },
-    username: { type: 'text', props: { validation: ['required'] } },
-    code: { type: 'text', props: { validation: ['required'] } },
-    email: { type: 'text', props: { validation: ['required'] } },
-    telephone: { type: 'text', props: { validation: ['required'] } },
+    title: { type: 'text', props: { required: true } },
+    name: { type: 'text', props: { required: true } },
+    fullname: { type: 'text', props: { required: true } },
+    username: { type: 'text', props: { required: true } },
+    code: { type: 'text', props: { required: true } },
+    email: {
+      type: 'text',
+      props: {
+        required: true,
+        validation: z.string().email('Format email tidak valid!'),
+      },
+    },
+    telephone: { type: 'text', props: { required: true } },
     description: { type: 'textarea' },
     active: {
       type: 'radio',
       props: {
-        validation: ['required'],
+        required: true,
         defaultValue: true,
         data: [
           { name: 'Aktif', id: true },
@@ -37,7 +44,7 @@ export const defaultGlobalConfig: {
     status_code: {
       type: 'radio',
       props: {
-        validation: ['required'],
+        required: true,
         data: [
           { name: 'Aktif', id: 'active' },
           { name: 'Nonaktif', id: 'non_active' },
@@ -191,7 +198,7 @@ export const defaultFormConfig: {
     status_code: {
       type: 'radio',
       props: {
-        validation: ['required'],
+        required: true,
         defaultValue: true,
         data: [
           { name: 'Aktif', id: 'active' },

@@ -4,7 +4,6 @@ import { ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import ImagePreview from '@/components/base/ImagePreview.vue'
 import Draggable from 'vuedraggable'
-import Compressor from 'compressorjs'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
 

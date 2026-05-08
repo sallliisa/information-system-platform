@@ -8,6 +8,10 @@ export type {
   SelectInputSpecificProps,
   LookupOption,
   LookupInputSpecificProps,
+  ImageUploadResult,
+  ImageInputSpecificProps,
+  FileUploadResult,
+  FileInputSpecificProps,
   FormInputControlProps,
   FormInputComponent,
   FormInputComponentProps,
@@ -18,3 +22,7 @@ export { SelectInput } from './SelectInput'
 export type { FormSelectInputProps } from './SelectInput'
 export { LookupInput } from './LookupInput'
 export type { FormLookupInputProps } from './LookupInput'
+export { ImageInput } from './ImageInput'
+export type { FormImageInputProps } from './ImageInput'
+export { FileInput } from './FileInput'
+export type { FormFileInputProps } from './FileInput'

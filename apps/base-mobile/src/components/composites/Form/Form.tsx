@@ -11,9 +11,7 @@ import {
 import { defaultFormConfig } from '../../../configs/_defaults'
 import { materialColors } from '../../../theme/material'
 import { Card } from '../../base'
-import { TextInput } from '../../inputs'
-import type { FormInputComponent } from '../../inputs'
-import type { LookupInputSpecificProps, SelectInputSpecificProps, TextInputConstraint } from '../../inputs'
+import { TextInput, type FileInputSpecificProps, type FormInputComponent, type ImageInputSpecificProps, type LookupInputSpecificProps, type SelectInputSpecificProps, type TextInputConstraint } from '../../inputs'
 import {
   componentTypeMap,
   createMergedInputConfig,
@@ -29,7 +27,7 @@ import {
   type FormOnSuccessParams,
 } from './form.defaults'
 import { FormValidationContext, type FormValidationContextValue } from './form.context'
-import { executeValidationRules, type ValidationRule } from './validation'
+import { executeValidationRules } from './validation'
 
 type FormRenderSubmitParams = {
   loading: boolean
@@ -315,6 +313,27 @@ function buildLookupInputProps(rawProps: Record<string, any>): LookupInputSpecif
   }
 }
 
+function buildImageInputProps(rawProps: Record<string, any>): ImageInputSpecificProps {
+  return {
+    maxSize: typeof rawProps.maxSize === 'number' ? rawProps.maxSize : undefined,
+    disableInformation: typeof rawProps.disableInformation === 'boolean' ? rawProps.disableInformation : undefined,
+    multi: typeof rawProps.multi === 'boolean' ? rawProps.multi : undefined,
+    limit: typeof rawProps.limit === 'number' ? rawProps.limit : undefined,
+    additionalInfo: typeof rawProps.additionalInfo === 'string' ? rawProps.additionalInfo : undefined,
+    transform: isPlainObject(rawProps.transform) ? rawProps.transform : undefined,
+    uploadPath: typeof rawProps.uploadPath === 'string' ? rawProps.uploadPath : undefined,
+  }
+}
+
+function buildFileInputProps(rawProps: Record<string, any>): FileInputSpecificProps {
+  return {
+    accept: Array.isArray(rawProps.accept) ? rawProps.accept.filter((item) => typeof item === 'string') : undefined,
+    maxSize: typeof rawProps.maxSize === 'number' ? rawProps.maxSize : undefined,
+    multi: typeof rawProps.multi === 'boolean' ? rawProps.multi : undefined,
+    uploadPath: typeof rawProps.uploadPath === 'string' ? rawProps.uploadPath : undefined,
+  }
+}
+
 function computeFieldError({
   field,
   formData,
@@ -338,7 +357,7 @@ function computeFieldError({
       formData,
       inputConfig: activeInputConfig,
     },
-    activeInputConfig.props?.validation as ValidationRule[] | undefined
+    activeInputConfig.props?.validation
   )
 }
 
@@ -1071,6 +1090,8 @@ export function Form({
                 } = buildInputProps(fieldConfig.type, mergedFieldProps)
                 const selectInputProps = fieldConfig.type === 'select' ? buildSelectInputProps(mergedFieldProps) : undefined
                 const lookupInputProps = fieldConfig.type === 'lookup' ? buildLookupInputProps(mergedFieldProps) : undefined
+                const imageInputProps = fieldConfig.type === 'image' ? buildImageInputProps(mergedFieldProps) : undefined
+                const fileInputProps = fieldConfig.type === 'file' ? buildFileInputProps(mergedFieldProps) : undefined
                 const lookupRuntimeProps = fieldConfig.type === 'lookup'
                   ? {
                       formData,
@@ -1125,6 +1146,8 @@ export function Form({
                           inputProps={inputProps}
                           {...selectInputProps}
                           {...lookupInputProps}
+                          {...imageInputProps}
+                          {...fileInputProps}
                           {...lookupRuntimeProps}
                         />
                       </View>
@@ -1155,6 +1178,8 @@ export function Form({
                         inputProps={inputProps}
                         {...selectInputProps}
                         {...lookupInputProps}
+                        {...imageInputProps}
+                        {...fileInputProps}
                         {...lookupRuntimeProps}
                       />
                     </View>

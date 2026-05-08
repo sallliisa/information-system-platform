@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, type PropType, watch, provide, onMounted } from 'vue'
+import { ref, type PropType, watch, provide, onMounted, nextTick } from 'vue'
 import { evaluateFieldDependencies, type FieldDependency, type InputConfig } from '@repo/model-meta'
 import { componentTypeMap, defaultBeforeSubmit, defaultFormGetData, defaultOnError, defaultOnSubmit, defaultOnSuccess } from '@/app/actions/Form'
-import { executeValidationRules, type ValidationRule } from '@/app/actions/validations'
+import { executeValidationRules } from '@/app/actions/validations'
 import { toast } from 'vue-sonner'
 import { useRoute } from 'vue-router'
 import { componentTypeMap as typeConfigMap } from './common/properties'
@@ -59,6 +59,16 @@ const loading = ref({
 })
 
 const fieldDependencyData = ref<{ [key: string]: FieldDependency }>({})
+const fieldContainerRefs = ref<Record<string, HTMLElement>>({})
+
+function setFieldContainerRef(field: string, element: Element | null) {
+  if (element instanceof HTMLElement) {
+    fieldContainerRefs.value[field] = element
+    return
+  }
+
+  delete fieldContainerRefs.value[field]
+}
 
 function isFieldVisible(field: string) {
   const visibility = fieldDependencyData.value[field]?.visibility
@@ -85,7 +95,7 @@ function validateField(field: string) {
       formData: formData.value,
       inputConfig: activeInputConfig,
     },
-    activeInputConfig.props?.validation as ValidationRule[] | undefined
+    activeInputConfig.props?.validation
   )
 
   if (error) fieldErrors.value[field] = error
@@ -109,6 +119,32 @@ function validateVisibleFields() {
   }
 
   return hasError
+}
+
+function getFirstVisibleErrorField() {
+  for (const field of props.fields) {
+    if (!inputConfig.value[field]) continue
+    if (!isFieldVisible(field)) continue
+    if (!fieldErrors.value[field]) continue
+    return field
+  }
+
+  return ''
+}
+
+async function scrollToFirstVisibleErrorField() {
+  await nextTick()
+
+  const firstErrorField = getFirstVisibleErrorField()
+  if (!firstErrorField) return
+
+  const container = fieldContainerRefs.value[firstErrorField]
+  if (!container) return
+
+  container.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+
+  const focusTarget = container.querySelector<HTMLElement>('input, textarea, select, button, [tabindex]:not([tabindex="-1"])')
+  focusTarget?.focus?.({ preventScroll: true })
 }
 
 function handleFieldTouch(field: string) {
@@ -214,6 +250,7 @@ async function preflight() {
 async function submitForm() {
   submitAttempted.value = true
   if (validateVisibleFields()) {
+    void scrollToFirstVisibleErrorField()
     toast.error('Masih terdapat data yang kosong atau tidak valid!')
     return
   }
@@ -321,6 +358,7 @@ onMounted(() => {
           </div>
           <template v-else-if="inputConfig[field]">
             <div
+              :ref="(el) => setFieldContainerRef(field, el)"
               v-if="!fieldDependencyData[field] ? true : !fieldDependencyData[field].visibility ? true : fieldDependencyData[field].visibility?.value"
               class="px-2 py-2"
               :style="{

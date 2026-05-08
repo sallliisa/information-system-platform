@@ -22,7 +22,7 @@ describe('model-meta runtime helpers', () => {
     },
     transaction: {
       inputConfig: {
-        name: { type: 'text', props: { validation: ['required'] } },
+        name: { type: 'text', props: { required: true } },
         status: {
           type: 'select',
           platform: {

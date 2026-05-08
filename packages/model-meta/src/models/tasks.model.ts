@@ -22,25 +22,25 @@ const tasks = {
       task_code: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
       },
       task_name: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
       },
       task_group: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
       },
       table_name: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
       },
     },

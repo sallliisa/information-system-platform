@@ -11,5 +11,8 @@
     "./models/roles.model": "./src/models/roles.model.ts",
     "./models/tasks": "./src/models/tasks.model.ts",
     "./models/tasks.model": "./src/models/tasks.model.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.0"
   }
 }

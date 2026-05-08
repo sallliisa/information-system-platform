@@ -4,7 +4,14 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { MaterialThemeProvider } from '../src/theme'
+import { Toaster } from 'sonner-native'
+import { MaterialThemeProvider, useMaterialTheme } from '../src/theme'
+
+function GlobalToaster() {
+  const { scheme } = useMaterialTheme()
+
+  return <Toaster position="bottom-center" richColors theme={scheme === 'dark' ? 'dark' : 'light'} />
+}
 
 export default function RootLayout() {
   return (
@@ -18,6 +25,7 @@ export default function RootLayout() {
               <Stack.Screen name="(guest)" />
               <Stack.Screen name="(app)" />
             </Stack>
+            <GlobalToaster />
           </BottomSheetModalProvider>
         </MaterialThemeProvider>
       </SafeAreaProvider>

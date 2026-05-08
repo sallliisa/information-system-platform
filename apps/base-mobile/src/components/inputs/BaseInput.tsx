@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { useCallback, useMemo } from 'react'
 import { Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { useFormValidationContext } from '../composites/Form/form.context'
-import { hasRequiredValidation, type ValidationRule } from '../composites/Form/validation'
+import { hasRequiredValidation } from '../composites/Form/validation'
 import { materialColors } from '../../theme/material'
 
 type BaseInputRenderProps = {
@@ -35,8 +35,7 @@ export function BaseInput({
 
   const requiredMark = useMemo(() => {
     if (!field || !formValidation?.inputConfig?.[field]) return false
-    const validationRules = formValidation.inputConfig[field]?.props?.validation as ValidationRule[] | undefined
-    return hasRequiredValidation(validationRules)
+    return hasRequiredValidation(formValidation.inputConfig[field])
   }, [field, formValidation])
 
   const shouldShowValidationError = useMemo(() => {

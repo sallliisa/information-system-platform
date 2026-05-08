@@ -4,6 +4,8 @@ import { api } from '../../../lib/api'
 import { LookupInput } from '../../inputs/LookupInput'
 import { SelectInput } from '../../inputs/SelectInput'
 import { TextInput } from '../../inputs/TextInput'
+import { ImageInput } from '../../inputs/ImageInput'
+import { FileInput } from '../../inputs/FileInput'
 import type { FormInputComponent } from '../../inputs/types'
 
 export type FormMode = 'create' | 'update'
@@ -80,8 +82,8 @@ export const componentTypeMap: Record<string, FormInputComponent> = {
   text: TextInput,
   textarea: TextInput,
   password: TextInput,
-  file: TextInput,
-  image: TextInput,
+  file: FileInput,
+  image: ImageInput,
   select: SelectInput,
   radio: TextInput,
   date: TextInput,
@@ -93,7 +95,6 @@ export const componentTypeMap: Record<string, FormInputComponent> = {
   switch: TextInput,
   checkbox: TextInput,
   lookup: LookupInput,
-  'master-lookup': TextInput,
   location: TextInput,
   'multi-location': TextInput,
   'rich-text': TextInput,

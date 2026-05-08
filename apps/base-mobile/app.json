@@ -28,6 +28,13 @@
     "plugins": [
       "expo-router",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Izinkan aplikasi mengakses foto untuk mengunggah gambar.",
+          "cameraPermission": "Izinkan aplikasi menggunakan kamera untuk mengambil gambar."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",

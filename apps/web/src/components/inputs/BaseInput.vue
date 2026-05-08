@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { hasRequiredValidation, type ValidationRule } from '@/app/actions/validations'
+import { hasRequiredValidation } from '@/app/actions/validations'
 import type { InputConfig } from '@repo/model-meta'
 import { computed, inject, ref, type Ref } from 'vue'
 import { twMerge } from 'tailwind-merge'
@@ -49,7 +49,7 @@ const formInputConfig = inject<Ref<InputConfig> | null>('formInputConfig', null)
 
 const requiredMark = computed(() => {
   if (!props.field || !formInputConfig?.value?.[props.field]) return false
-  return hasRequiredValidation(formInputConfig.value[props.field]?.props?.validation as ValidationRule[])
+  return hasRequiredValidation(formInputConfig.value[props.field])
 })
 
 const shouldShowValidationError = computed(() => {

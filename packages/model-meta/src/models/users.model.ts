@@ -1,4 +1,5 @@
 import type { ModelConfig } from '../types'
+import { z } from 'zod'
 
 const roleTypeOptions = [
   { id: 'internal', name: 'Internal' },
@@ -125,7 +126,7 @@ const users = {
       fullname: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
         dependency: {
           fields: ['role_type'],
@@ -138,13 +139,14 @@ const users = {
       username: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
         },
       },
       email: {
         type: 'text',
         props: {
-          validation: ['required'],
+          required: true,
+          validation: z.string().email('Format email tidak valid!'),
         },
         dependency: {
           fields: ['role_type'],
@@ -155,12 +157,12 @@ const users = {
         },
       },
       img_photo_user: {
-        type: 'image',
+        type: 'file',
       },
       role_type: {
         type: 'select',
         props: {
-          validation: ['required'],
+          required: true,
           defaultValue: 'internal',
           data: roleTypeOptions,
         },
@@ -174,7 +176,7 @@ const users = {
             is_user: false,
             status_code: 'employee',
           },
-          validation: ['required'],
+          required: true,
         },
         dependency: {
           fields: ['role_type'],
@@ -211,7 +213,7 @@ const users = {
         props: {
           getAPI: 'toll-owners',
           fields: ['owner_name'],
-          validation: ['required'],
+          required: true,
         },
         dependency: {
           fields: ['role_type'],

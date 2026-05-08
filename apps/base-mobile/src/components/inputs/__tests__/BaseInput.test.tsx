@@ -60,7 +60,7 @@ describe('BaseInput', () => {
           name: {
             type: 'text',
             props: {
-              validation: ['required'],
+              required: true,
             },
           },
         },

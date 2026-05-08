@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
 import { mount } from '@vue/test-utils'
+import { z } from 'zod'
 import type { InputConfig } from '@repo/model-meta'
 import Form from '@/components/composites/Form.vue'
 import BaseInput from '@/components/inputs/BaseInput.vue'
@@ -115,6 +116,38 @@ function mountForm(options: {
 }
 
 describe('Form validation integration', () => {
+  it('scrolls to the topmost invalid visible field on submit', async () => {
+    const scrollIntoViewSpy = vi.fn()
+    const originalScrollIntoView = HTMLElement.prototype.scrollIntoView
+    HTMLElement.prototype.scrollIntoView = scrollIntoViewSpy as any
+
+    try {
+      const wrapper = mountForm({
+        fields: ['name', 'email'],
+        inputConfig: {
+          name: {
+            type: 'custom',
+            component: TextFieldInput,
+            props: { required: true },
+          },
+          email: {
+            type: 'custom',
+            component: TextFieldInput,
+            props: { required: true },
+          },
+        },
+      })
+
+      await flushFormRender()
+      await wrapper.get('form').trigger('submit.prevent')
+
+      expect(wrapper.text()).toContain('Harus diisi!')
+      expect(scrollIntoViewSpy).toHaveBeenCalledTimes(1)
+    } finally {
+      HTMLElement.prototype.scrollIntoView = originalScrollIntoView
+    }
+  })
+
   it('shows no error before first blur and shows after blur', async () => {
     const wrapper = mountForm({
       fields: ['name'],
@@ -122,7 +155,7 @@ describe('Form validation integration', () => {
         name: {
           type: 'custom',
           component: TextFieldInput,
-          props: { validation: ['required'] },
+          props: { required: true },
         },
       },
     })
@@ -141,7 +174,7 @@ describe('Form validation integration', () => {
         name: {
           type: 'custom',
           component: TextFieldInput,
-          props: { validation: ['required'] },
+          props: { required: true },
         },
       },
     })
@@ -164,7 +197,7 @@ describe('Form validation integration', () => {
         name: {
           type: 'custom',
           component: TextFieldInput,
-          props: { validation: ['required'] },
+          props: { required: true },
         },
       },
     })
@@ -190,7 +223,7 @@ describe('Form validation integration', () => {
         secret: {
           type: 'custom',
           component: TextFieldInput,
-          props: { validation: ['required'] },
+          props: { required: true },
           dependency: {
             fields: ['show_secret'],
             visibility: {
@@ -224,7 +257,7 @@ describe('Form validation integration', () => {
         custom_field: {
           type: 'custom',
           component: TouchOnlyInput,
-          props: { validation: ['required'] },
+          props: { required: true },
         },
       },
     })
@@ -232,5 +265,32 @@ describe('Form validation integration', () => {
     await flushFormRender()
     await wrapper.get('[data-testid="commit-custom_field"]').trigger('click')
     expect(wrapper.text()).toContain('Harus diisi!')
+  })
+
+  it('validates optional zod email only for non-empty values', async () => {
+    const wrapper = mountForm({
+      fields: ['email'],
+      inputConfig: {
+        email: {
+          type: 'custom',
+          component: TextFieldInput,
+          props: { validation: z.string().email('Format email tidak valid!') },
+        },
+      },
+    })
+
+    await flushFormRender()
+    const input = wrapper.get('[data-testid="input-email"]')
+
+    await input.trigger('blur')
+    expect(wrapper.text()).not.toContain('Format email tidak valid!')
+
+    await input.setValue('bad')
+    await input.trigger('blur')
+    expect(wrapper.text()).toContain('Format email tidak valid!')
+
+    await input.setValue('user@mail.com')
+    await input.trigger('blur')
+    expect(wrapper.text()).not.toContain('Format email tidak valid!')
   })
 })

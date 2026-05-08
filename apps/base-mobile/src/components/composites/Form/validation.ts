@@ -1,6 +1,5 @@
 import type { ModelFormField } from '@repo/model-meta'
-
-export type ValidationPreset = 'required' | 'email' | 'phone'
+import type { ZodTypeAny } from 'zod'
 
 export type ValidationContext = {
   field: string
@@ -8,92 +7,28 @@ export type ValidationContext = {
   inputConfig: ModelFormField
 }
 
-export type ValidationFn = (value: any, ctx: ValidationContext) => true | string
-
-export type ValidationRule = ValidationPreset | ValidationFn | { rule: ValidationPreset | ValidationFn; message?: string }
-
-type PresetExecutor = (value: any) => boolean
-
-export type NormalizedValidationRule = {
-  preset?: ValidationPreset
-  message?: string
-  executor: ValidationFn
-}
-
-const PRESET_MESSAGES: Record<ValidationPreset, string> = {
-  required: 'Harus diisi!',
-  email: 'Format email tidak valid!',
-  phone: 'Format nomor telepon tidak valid!',
-}
-
-const PRESET_EXECUTORS: Record<ValidationPreset, PresetExecutor> = {
-  required: (value) => !isEmptyValue(value),
-  email: (value) => {
-    if (isEmptyValue(value)) return true
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value))
-  },
-  phone: (value) => {
-    if (isEmptyValue(value)) return true
-    return /^(\+?\d{1,3}[-.\s]?)?(\(?\d+\)?[-.\s]?){2,}$/.test(String(value))
-  },
-}
+export const REQUIRED_MESSAGE = 'Harus diisi!'
+export const INVALID_MESSAGE = 'Data tidak valid!'
 
 export function isEmptyValue(value: any) {
-  if (value === null || value === undefined) return true
+  if (value == null) return true
   if (typeof value === 'string') return value.trim() === ''
   if (Array.isArray(value)) return value.length === 0
   return false
 }
 
-function normalizeRule(rule: ValidationRule): NormalizedValidationRule | null {
-  if (typeof rule === 'string') {
-    const preset = rule
-    return {
-      preset,
-      message: PRESET_MESSAGES[preset],
-      executor: (value) => (PRESET_EXECUTORS[preset](value) ? true : PRESET_MESSAGES[preset]),
-    }
-  }
+export function executeValidationRules(value: any, ctx: ValidationContext, validation?: ZodTypeAny | null): string {
+  if (ctx.inputConfig.props?.required && isEmptyValue(value)) return REQUIRED_MESSAGE
+  if (isEmptyValue(value)) return ''
 
-  if (typeof rule === 'function') {
-    return {
-      executor: rule,
-    }
-  }
+  if (!validation) return ''
 
-  if (rule && typeof rule === 'object' && 'rule' in rule) {
-    const base = normalizeRule(rule.rule as ValidationRule)
-    if (!base) return null
+  const result = validation.safeParse(value)
+  if (result.success) return ''
 
-    if (!rule.message) return base
-
-    return {
-      ...base,
-      message: rule.message,
-      executor: (value, ctx) => {
-        const result = base.executor(value, ctx)
-        return result === true ? true : rule.message || result
-      },
-    }
-  }
-
-  return null
+  return result.error.issues[0]?.message || INVALID_MESSAGE
 }
 
-export function normalizeValidationRules(rules?: ValidationRule[] | null): NormalizedValidationRule[] {
-  if (!Array.isArray(rules)) return []
-  return rules.map((rule) => normalizeRule(rule)).filter((rule): rule is NormalizedValidationRule => Boolean(rule))
-}
-
-export function executeValidationRules(value: any, ctx: ValidationContext, rules?: ValidationRule[] | null): string {
-  const normalizedRules = normalizeValidationRules(rules)
-  for (const rule of normalizedRules) {
-    const result = rule.executor(value, ctx)
-    if (result !== true) return result
-  }
-  return ''
-}
-
-export function hasRequiredValidation(rules?: ValidationRule[] | null): boolean {
-  return normalizeValidationRules(rules).some((rule) => rule.preset === 'required')
+export function hasRequiredValidation(inputConfig?: ModelFormField | null): boolean {
+  return Boolean(inputConfig?.props?.required)
 }
