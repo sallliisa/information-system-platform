@@ -2,17 +2,16 @@
 import { onMounted, ref } from 'vue'
 import { modules } from '@/stores/modules'
 import { useRoute, useRouter } from 'vue-router'
-import Toast from '@/components/base/Toast.vue'
-import Form from '@repo/vue-framework/components/composites/Form.vue'
+import Toast from '@repo/vue-framework/components/base/Toast.vue'
 import services from '@/utils/services'
 import _app from '@/app/configs/_app'
-import PasswordInput from '@/components/inputs/PasswordInput.vue'
+import PasswordInput from '@repo/vue-framework/components/inputs/PasswordInput.vue'
 import Logo from '@/assets/corporate/common/Logo.vue'
 import { storage } from '@/utils/storage'
 import { permissions } from '@/stores/permissions'
 import CompanyLogo from '@/assets/corporate/assets/app-logo.svg'
 import { globalLoading } from '@/stores/loading'
-import TextInput from '@/components/inputs/TextInput.vue'
+import TextInput from '@repo/vue-framework/components/inputs/TextInput.vue'
 import Button from '@repo/vue-framework/components/base/Button.vue'
 import Card from '@repo/vue-framework/components/base/Card.vue'
 import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
@@ -22,10 +21,6 @@ const loginMessage = ref<{ message: string; type: 'error' | 'warning' | 'info' |
 const [route, router] = [useRoute(), useRouter()]
 const loading = ref(false)
 const formData = ref({username: '', password: ''})
-
-function onLoginSuccess(res: Record<string, any>) {
-  
-}
 
 function login() {
   loading.value = true
