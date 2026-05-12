@@ -28,6 +28,14 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('../../packages/model-meta/src/index.ts', import.meta.url)),
       },
       {
+        find: /^@repo\/vue-framework$/,
+        replacement: fileURLToPath(new URL('../../packages/vue-framework/src/index.ts', import.meta.url)),
+      },
+      {
+        find: '@repo/vue-framework/',
+        replacement: fileURLToPath(new URL('../../packages/vue-framework/src/', import.meta.url)),
+      },
+      {
         find: /^@repo\/sdk$/,
         replacement: fileURLToPath(new URL('../../packages/sdk/src/index.ts', import.meta.url)),
       },

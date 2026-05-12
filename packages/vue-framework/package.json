@@ -1,0 +1,24 @@
+{
+  "name": "@repo/vue-framework",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*",
+    "./utils/*": "./src/utils/*",
+    "./renderers/*": "./src/renderers/*",
+    "./behaviors/*": "./src/behaviors/*",
+    "./styles/*": "./src/styles/*"
+  },
+  "peerDependencies": {
+    "@repo/model-meta": "workspace:*",
+    "vue": "^3.5.12",
+    "vue-router": "^4.2.2"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^1.13.1",
+    "xlsx": "^0.18.5"
+  }
+}

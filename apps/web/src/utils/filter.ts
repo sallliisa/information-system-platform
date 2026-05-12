@@ -1,3 +1,4 @@
+import { createParser } from '@repo/vue-framework/utils/parse'
 import { formatCurrency, formatDate, formatDateTime, formatDelta, formatHour, formatLargeNumber, formatMonth, formatNumber, formatTime } from '@/utils/common'
 import _dictionary from '@/app/configs/_dictionary'
 
@@ -15,7 +16,7 @@ const formatterMap: Record<string, any> = {
   delta: formatDelta
 }
 
-export const parse = (key: string, value: string | number): any => {
-  if (!formatterMap[key]) return filter[key]?.[value] || value
-  else return formatterMap[key as keyof typeof formatterMap]?.(value as any) || value
-}
+export const parse = createParser({
+  dictionary: filter,
+  formatters: formatterMap,
+})
