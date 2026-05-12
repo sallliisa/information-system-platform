@@ -18,6 +18,7 @@ import Card from '@repo/vue-framework/components/base/Card.vue'
 import Icon from '@repo/vue-framework/components/base/Icon.vue'
 import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
   config: ModelConfig
@@ -224,7 +225,12 @@ onMounted(() => {
                       </Button>
                       <ConfirmationModal
                         v-if="(config.actions?.delete ?? true) && data.can_delete != false && permissions.delete"
-                        :onConfirm="async () => await onDelete(config.name, data[listConfig.uid!], `${config.name}_table`)"
+                        :onConfirm="async () => await onDelete(config.name, data[listConfig.uid!])"
+                        :onSuccess="() => {
+                          toast.success(`${config.title || config.name} berhasil dihapus`)
+                          keyManager().triggerChange(`${config.name}_table`)
+                        }"
+
                       >
                         <template #trigger>
                           <Button size="square" color="error">

@@ -17,7 +17,7 @@ describe('apostle', () => {
 
     await apostle.post('/users', { name: 'John' })
 
-    const requestInit = fetchImpl.mock.calls[0][1] as RequestInit
+    const requestInit = ((fetchImpl.mock.calls[0] as unknown) as [unknown, RequestInit?])[1] as RequestInit
     expect(requestInit.body).toBe(JSON.stringify({ name: 'John' }))
     expect(new Headers(requestInit.headers).get('Content-Type')).toBe('application/json')
   })
@@ -33,8 +33,8 @@ describe('apostle', () => {
     await apostle.post('/fd', fd)
     await apostle.post('/blob', blob)
 
-    expect((fetchImpl.mock.calls[0][1] as RequestInit).body).toBe(fd)
-    expect((fetchImpl.mock.calls[1][1] as RequestInit).body).not.toBe(JSON.stringify(blob as any))
+    expect((((fetchImpl.mock.calls[0] as unknown) as [unknown, RequestInit?])[1] as RequestInit).body).toBe(fd)
+    expect((((fetchImpl.mock.calls[1] as unknown) as [unknown, RequestInit?])[1] as RequestInit).body).not.toBe(JSON.stringify(blob as any))
   })
 
   it('absolute URL does not receive baseURL', async () => {
@@ -43,7 +43,7 @@ describe('apostle', () => {
 
     await apostle.put('https://signed-upload-url.com/file', new Blob(['x']))
 
-    expect(fetchImpl.mock.calls[0][0]).toBe('https://signed-upload-url.com/file')
+    expect(((fetchImpl.mock.calls[0] as unknown) as [unknown, RequestInit?])[0]).toBe('https://signed-upload-url.com/file')
   })
 
   it('response type inference + raw response return', async () => {

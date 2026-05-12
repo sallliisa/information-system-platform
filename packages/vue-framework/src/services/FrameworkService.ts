@@ -110,7 +110,7 @@ export class FrameworkService {
     return this.withServiceOptions(this.apostle.patch(path, data, undefined, options?.responseType, options?.init), options)
   }
 
-  delete(path: string, data?: any, options?: ServiceRequestOptions): Promise<any> {
+  del(path: string, data?: any, options?: ServiceRequestOptions): Promise<any> {
     return this.withServiceOptions(this.apostle.delete(path, data, undefined, options?.responseType, options?.init), options)
   }
 
@@ -140,8 +140,8 @@ export class FrameworkService {
     )
   }
 
-  remove(path: string, data?: any, options?: ServiceRequestOptions): Promise<any> {
-    return this.delete(this.parseURL(path, '', this.endpoints.deleteSuffix), data, options)
+  delete(path: string, data?: any, options?: ServiceRequestOptions): Promise<any> {
+    return this.del(this.parseURL(path, '', this.endpoints.deleteSuffix), data, options)
   }
 
   dataset(path: string, query?: Record<string, any>, options?: ServiceRequestOptions): Promise<any> {

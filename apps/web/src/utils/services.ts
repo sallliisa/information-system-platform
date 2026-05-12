@@ -83,9 +83,9 @@ class AppServices extends FrameworkService {
     return extractErrorMessage(error)
   }
 
-  delete(url: string, data: object, options?: ServiceRequestOptions) {
-    return this.remove(url, data, options)
-  }
+  // delete(url: string, data: object, options?: ServiceRequestOptions) {
+  //   return this.remove(url, data, options)
+  // }
 }
 
 const services = new AppServices()

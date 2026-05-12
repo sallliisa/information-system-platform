@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { modules } from '@/stores/modules'
-import Popover from '@/components/base/Popover.vue'
+import Popover from '@repo/vue-framework/components/base/Popover.vue';
 import Button from '@repo/vue-framework/components/base/Button.vue'
 import Card from '@repo/vue-framework/components/base/Card.vue'
 import Icon from '@repo/vue-framework/components/base/Icon.vue'

@@ -2,7 +2,7 @@ import services from '@repo/vue-framework/adapters/services'
 import { parse } from '@repo/vue-framework/utils/parse'
 import * as XLSX from 'xlsx'
 
-export async function onDelete(endpoint: string, id: object, _key?: string) {
+export async function onDelete(endpoint: string, id: object) {
   await services.delete(endpoint, { id })
 }
 

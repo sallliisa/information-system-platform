@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { inject } from 'vue'
-import Card from '@/components/base/Card.vue'
-import Switch from '@/components/inputs/Switch.vue'
+import Switch from '@repo/vue-framework/components/inputs/Switch.vue'
 import tasks from '@repo/model-meta/models/tasks.model'
 import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
 import services from '@/utils/services'

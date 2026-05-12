@@ -1,23 +1,23 @@
 import { defineAsyncComponent } from 'vue'
 
 export const componentTypeMap: Record<string, { component?: any; propKeyValue?: [string, string | null][] }> = {
-  chip: { component: defineAsyncComponent(() => import('@/components/base/Chip.vue')) },
+  chip: { component: defineAsyncComponent(() => import('../../base/Chip.vue')) },
   image: {
-    component: defineAsyncComponent(() => import('@/components/base/ImagePreview.vue')),
+    component: defineAsyncComponent(() => import('../../base/ImagePreview.vue')),
     propKeyValue: [
       ['thumbnail', 'tumbnail_url'],
       ['url', 'url'],
     ],
   },
   location: {
-    component: defineAsyncComponent(() => import('@/components/base/MapView.vue')),
+    component: defineAsyncComponent(() => import('../../base/MapView.vue')),
     propKeyValue: [
       ['lat', 'latitude'],
       ['lng', 'longitude'],
     ],
   },
   file: {
-    component: defineAsyncComponent(() => import('@/components/base/FileComponent.vue')),
+    component: defineAsyncComponent(() => import('../../base/FileComponent.vue')),
     propKeyValue: [
       ['url', 'url'],
       ['filename', 'filename'],
