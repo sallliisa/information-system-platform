@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onBeforeMount } from 'vue'
 import type { PropType } from 'vue'
-import Radio from '@/components/inputs/Radio.vue'
+import Radio from '@repo/vue-framework/components/inputs/Radio.vue'
 import { commonProps } from './commonprops'
 import { defaultGetData } from '@repo/vue-framework/behaviors/radioGroup'
 import BaseInput from './BaseInput.vue'

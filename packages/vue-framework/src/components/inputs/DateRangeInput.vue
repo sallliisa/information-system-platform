@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Datepicker from '@vuepic/vue-datepicker'
 import { commonProps } from './commonprops'
-import { useColorPreference } from '@/stores/colorpreference'
+import { useColorPreference } from '@repo/vue-framework/adapters/state'
 import { ref, type PropType, watch, computed } from 'vue'
 import BaseInput from './BaseInput.vue'
 import { lightFormat } from 'date-fns'

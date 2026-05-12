@@ -5,8 +5,7 @@
     "src/**/*",
     "src/**/*.vue",
     "../../packages/model-meta/src/**/*",
-    "../../packages/sdk/src/**/*",
-    "../../packages/vue-framework/src/**/*"
+    "../../packages/sdk/src/**/*"
   ],
   "exclude": [
     "src/**/__tests__/*",

@@ -3,7 +3,7 @@ import { toast } from 'vue-sonner'
 import { buildFormConfig, type ModelConfig } from '@repo/model-meta'
 import Form from '../Form.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { defaultFormConfig } from '@/app/configs/_defaults'
+import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
 
 const props = defineProps<{
   config: ModelConfig

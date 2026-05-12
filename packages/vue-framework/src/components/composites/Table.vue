@@ -2,9 +2,9 @@
 import { computed, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
 import { parse } from '@repo/vue-framework/utils/parse'
-import Pagination from '@/components/utils/Pagination.vue'
+import Pagination from '@repo/vue-framework/components/utils/Pagination.vue'
 import { defaultTableGetData, tableFieldTypes } from '@repo/vue-framework/behaviors/table'
-import { defaultTableConfig } from '@/app/configs/_defaults'
+import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
 import { onMounted, onBeforeUnmount } from 'vue'
 import Draggable from 'vuedraggable'
 

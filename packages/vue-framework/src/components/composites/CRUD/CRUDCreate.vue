@@ -4,8 +4,8 @@ import { buildFormConfig, type ModelConfig } from '@repo/model-meta'
 import Form from '../Form.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { bulkCreateFormProps, composeInputTemplateSheet } from '@repo/vue-framework/behaviors/crudCreate'
-import Modal from '@/components/base/Modal.vue'
-import { defaultFormConfig } from '@/app/configs/_defaults'
+import Modal from '@repo/vue-framework/components/base/Modal.vue'
+import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
 import { defineAsyncComponent } from 'vue'
 
 const props = defineProps<{

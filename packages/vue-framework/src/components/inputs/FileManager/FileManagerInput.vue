@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import FileManager from '@/components/utils/FileManager/FileManager.vue'
+import FileManager from '@repo/vue-framework/components/utils/FileManager/FileManager.vue'
 import BaseInput from '../BaseInput.vue'
 import { commonProps } from '../commonprops'
 import FileManagerDialogContent from './_layouts/FileManagerDialogContent.vue'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogScrollContent, DialogTitle, DialogTrigger, DialogClose } from '@/components/base/Dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogScrollContent, DialogTitle, DialogTrigger, DialogClose } from '@repo/vue-framework/components/base/Dialog'
 import { ref } from 'vue'
 
 const props = defineProps({

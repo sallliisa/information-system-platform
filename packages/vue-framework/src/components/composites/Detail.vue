@@ -3,7 +3,7 @@ import { defaultDetailGetData, defaultOnDataLoaded, detailFieldTypes } from '@re
 import { parse } from '@repo/vue-framework/utils/parse'
 import { computed, onMounted, ref, type PropType } from 'vue'
 import { componentTypeMap, parsedTypes } from './common/properties'
-import { defaultDetailConfig } from '@/app/configs/_defaults'
+import { defaultDetailConfig } from '@repo/vue-framework/adapters/defaults'
 
 const props = defineProps({
   fields: { type: Array as PropType<string[]>, required: true },

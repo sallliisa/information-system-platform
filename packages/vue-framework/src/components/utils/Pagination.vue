@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Select from '@/components/inputs/SelectInput.vue'
+import Select from '@repo/vue-framework/components/inputs/SelectInput.vue'
 import { watch, type PropType, computed, ref } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])

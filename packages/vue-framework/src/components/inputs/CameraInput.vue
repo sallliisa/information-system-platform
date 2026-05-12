@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import services from '@/utils/services'
+import services from '@repo/vue-framework/adapters/services'
 import Modal from '../base/Modal.vue'
 
 const props = defineProps({

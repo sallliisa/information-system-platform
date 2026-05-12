@@ -19,6 +19,22 @@
   "dependencies": {
     "clsx": "^2.1.1",
     "tailwind-merge": "^1.13.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "vue": "^3.5.12",
+    "vue-router": "^4.2.2",
+    "vue-sonner": "^2.0.1",
+    "@vuepic/vue-datepicker": "^11.0.3",
+    "@vueuse/core": "^12.5.0",
+    "radix-vue": "^1.9.2",
+    "vuedraggable": "^4.1.0",
+    "date-fns": "^4.1.0",
+    "@tinymce/tinymce-vue": "^6.0.1",
+    "tinymce": "^7.2.1",
+    "uuid": "^11.0.2",
+    "vue3-google-map": "^0.15.0",
+    "vue-to-print": "^1.2.1",
+    "@headlessui/vue": "^1.7.14",
+    "vaul-vue": "^0.3.0",
+    "vue-tippy": "^6.7.1"
   }
 }

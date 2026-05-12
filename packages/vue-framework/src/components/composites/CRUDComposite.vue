@@ -6,7 +6,7 @@ import CRUDList from './CRUD/CRUDList.vue'
 import CRUDDetail from './CRUD/CRUDDetail.vue'
 import CRUDCreate from './CRUD/CRUDCreate.vue'
 import CRUDUpdate from './CRUD/CRUDUpdate.vue'
-import { permissions } from '@/stores/permissions'
+import { permissions } from '@repo/vue-framework/adapters/state'
 import Spinner from '../base/Spinner.vue'
 
 const [router, route] = [useRouter(), useRoute()]

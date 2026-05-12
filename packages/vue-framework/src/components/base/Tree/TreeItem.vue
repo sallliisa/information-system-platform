@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { PropType } from 'vue'
 import { defaultTableGetData, tableFieldTypes } from '@repo/vue-framework/behaviors/table'
-import { defaultTableConfig } from '@/app/configs/_defaults'
+import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
 import { parse } from '@repo/vue-framework/utils/parse'
 
 const props = defineProps({

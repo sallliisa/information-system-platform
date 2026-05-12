@@ -41,7 +41,7 @@ Chart.register(FunnelController, TrapezoidElement, LinearScale, CategoryScale)
 
 const app = createApp(App)
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   export interface ComponentCustomProperties {
     $parse: (key: string, value: string | number, mode?: 'dictionary' | 'parser') => any
   }

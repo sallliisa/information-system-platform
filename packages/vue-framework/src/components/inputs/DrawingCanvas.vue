@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dataURItoBlob } from '@repo/vue-framework/utils/object'
-import services from '@/utils/services'
+import services from '@repo/vue-framework/adapters/services'
 import { ref, onMounted, type PropType } from 'vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'

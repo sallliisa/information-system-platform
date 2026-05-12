@@ -12,7 +12,7 @@ import ConfirmationModal from '../composites/ConfirmationModal.vue'
 import Modal from '../base/Modal.vue'
 import Popover from '../base/Popover.vue'
 import Form from '../composites/Form.vue'
-import { keyManager } from '@/stores/keyManager'
+import { keyManager } from '@repo/vue-framework/adapters/state'
 
 const props = defineProps({
   ...commonProps,

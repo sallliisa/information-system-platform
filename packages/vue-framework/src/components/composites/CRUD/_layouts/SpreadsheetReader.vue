@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UploadDropzone from '@/components/inputs/UploadDropzone.vue'
+import UploadDropzone from '@repo/vue-framework/components/inputs/UploadDropzone.vue'
 import * as XLSX from 'xlsx'
 
 const props = defineProps({

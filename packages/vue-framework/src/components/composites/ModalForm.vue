@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Form from '@/components/composites/Form.vue'
+import Form from '@repo/vue-framework/components/composites/Form.vue'
 import type { InputConfig } from '@repo/model-meta'
 import type { PropType } from 'vue'
 import { defaultFormGetData, defaultBeforeSubmit, defaultOnSubmit, defaultOnSuccess, defaultOnError } from '@repo/vue-framework/behaviors/form'

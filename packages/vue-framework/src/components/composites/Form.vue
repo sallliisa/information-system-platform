@@ -6,8 +6,8 @@ import { executeValidationRules } from '@repo/vue-framework/behaviors/validation
 import { toast } from 'vue-sonner'
 import { useRoute } from 'vue-router'
 import { componentTypeMap as typeConfigMap } from './common/properties'
-import { keyManager } from '@/stores/keyManager'
-import { defaultFormConfig } from '@/app/configs/_defaults'
+import { keyManager } from '@repo/vue-framework/adapters/state'
+import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
 
 const props = defineProps({
   inputConfig: { type: Object as PropType<InputConfig>, default: () => ({}) },

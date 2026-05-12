@@ -61,7 +61,7 @@ const loading = ref({
 const fieldDependencyData = ref<{ [key: string]: FieldDependency }>({})
 const fieldContainerRefs = ref<Record<string, HTMLElement>>({})
 
-function setFieldContainerRef(field: string, element: Element | null) {
+function setFieldContainerRef(field: string, element: Element | any | null) {
   if (element instanceof HTMLElement) {
     fieldContainerRefs.value[field] = element
     return

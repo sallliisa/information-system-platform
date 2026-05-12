@@ -1,11 +1,11 @@
-export async function onDelete() {
+export async function onDelete(..._args: any[]) {
   throw new Error('[vue-framework] onDelete is not implemented yet. Pass onDelete explicitly or install framework services later.')
 }
 
-export async function defaultOnExport() {
+export async function defaultOnExport(..._args: any[]) {
   throw new Error('[vue-framework] defaultOnExport(list) is not implemented yet. Pass onExport explicitly or install framework services later.')
 }
 
-export function defaultOnDragChange() {
+export function defaultOnDragChange(..._args: any[]) {
   throw new Error('[vue-framework] defaultOnDragChange is not implemented yet. Pass onDragChange explicitly or install framework services later.')
 }

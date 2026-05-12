@@ -3,8 +3,8 @@ import { defaultGetData } from '@repo/vue-framework/behaviors/select'
 import { ref, type PropType, watch, computed, type ComputedRef, onMounted } from 'vue'
 import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
-import Popover from '@/components/base/Popover.vue'
-import TextInput from '@/components/inputs/TextInput.vue'
+import Popover from '@repo/vue-framework/components/base/Popover.vue'
+import TextInput from '@repo/vue-framework/components/inputs/TextInput.vue'
 
 const props = defineProps({
   placeholder: {

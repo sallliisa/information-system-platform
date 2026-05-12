@@ -4,10 +4,9 @@ import { buildDetailConfig, type ModelConfig } from '@repo/model-meta'
 import Detail from '../Detail.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { defaultOnExport } from '@repo/vue-framework/behaviors/crudDetail'
-import ExportComponent from './_layouts/ExportComponent.vue'
 import { useVueToPrint } from 'vue-to-print'
 import { parse } from '@repo/vue-framework/utils/parse'
-import { defaultDetailConfig } from '@/app/configs/_defaults'
+import { defaultDetailConfig } from '@repo/vue-framework/adapters/defaults'
 
 const props = defineProps<{
   config: ModelConfig
@@ -288,8 +287,4 @@ const { handlePrint } = useVueToPrint({
         <slot name="detail-under" v-bind="{ data: activeData }"></slot>
       </Suspense>
     </div>
-  </div>
-  <div v-if="activeData && detailConfig.export?.allow" class="hidden print:block" ref="detailExportRef">
-    <ExportComponent v-bind="detailConfig.export" :data="activeData" :title="config.view?.detail?.export?.title || config.title || String($route.meta.title)" />
-  </div>
-</template>
+  </div></template>

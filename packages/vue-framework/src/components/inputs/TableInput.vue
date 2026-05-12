@@ -4,7 +4,7 @@ import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
 import ModalForm from '../composites/ModalForm.vue'
 import Table from '../composites/Table.vue'
-import { keyManager } from '@/stores/keyManager'
+import { keyManager } from '@repo/vue-framework/adapters/state'
 import { useId } from 'radix-vue'
 import ConfirmationModal from '../composites/ConfirmationModal.vue'
 

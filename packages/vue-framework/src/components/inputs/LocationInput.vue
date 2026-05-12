@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { GoogleMap, Marker } from 'vue3-google-map'
 import { ref, watch, type PropType } from 'vue'
-import services from '@/utils/services'
+import services from '@repo/vue-framework/adapters/services'
 import { commonProps } from './commonprops'
 import Popover from '../base/Popover.vue'
 import SearchBox from '../composites/SearchBox.vue'
 import BaseInput from './BaseInput.vue'
 import Form from '../composites/Form.vue'
-import config from '@/config'
-import mode from '@/mode'
+import config, { mode } from '@repo/vue-framework/adapters/defaults'
 
 type Coordinate = {
   lat: number

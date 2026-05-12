@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import Popover from '@/components/base/Popover.vue'
+import Popover from '@repo/vue-framework/components/base/Popover.vue'
 import { buildListConfig, type ModelConfig } from '@repo/model-meta'
 import SearchBox from '../SearchBox.vue'
 import { onMounted, ref } from 'vue'
-import { keyManager } from '@/stores/keyManager'
+import { keyManager } from '@repo/vue-framework/adapters/state'
 import Table from '../Table.vue'
 import ConfirmationModal from '../ConfirmationModal.vue'
-import Switch from '@/components/inputs/Switch.vue'
+import Switch from '@repo/vue-framework/components/inputs/Switch.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { defaultOnExport, defaultOnDragChange, onDelete } from '@repo/vue-framework/behaviors/crudList'
 import Form from '../Form.vue'
-import services from '@/utils/services'
-import Modal from '@/components/base/Modal.vue'
-import { defaultTableConfig } from '@/app/configs/_defaults'
+import services from '@repo/vue-framework/adapters/services'
+import Modal from '@repo/vue-framework/components/base/Modal.vue'
+import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
 
 const props = defineProps<{
   config: ModelConfig

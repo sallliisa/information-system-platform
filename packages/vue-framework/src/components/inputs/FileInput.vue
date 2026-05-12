@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import services from '@/utils/services'
+import services from '@repo/vue-framework/adapters/services'
 import { ref, watch, computed } from 'vue'
-import FileComponent from '@/components/base/FileComponent.vue'
+import FileComponent from '@repo/vue-framework/components/base/FileComponent.vue'
 import { toast } from 'vue-sonner'
 import UploadDropzone from './UploadDropzone.vue'
 import BaseInput from './BaseInput.vue'

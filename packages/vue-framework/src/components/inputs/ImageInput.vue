@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import services from '@/utils/services'
+import services from '@repo/vue-framework/adapters/services'
 import { ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import ImagePreview from '@/components/base/ImagePreview.vue'
+import ImagePreview from '@repo/vue-framework/components/base/ImagePreview.vue'
 import Draggable from 'vuedraggable'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
