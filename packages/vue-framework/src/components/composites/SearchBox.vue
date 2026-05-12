@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { debounce } from '@repo/vue-framework/utils/object'
 import { ref, watch } from 'vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   debounced: {

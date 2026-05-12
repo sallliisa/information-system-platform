@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   type: {

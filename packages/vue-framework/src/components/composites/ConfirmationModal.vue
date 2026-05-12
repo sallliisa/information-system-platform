@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, type PropType } from 'vue'
 import Modal from '../base/Modal.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
 
 type ConfirmationHandler = (setOpen: (open: boolean) => void) => unknown | Promise<unknown>
 type CancelHandler = () => unknown | Promise<unknown>

@@ -8,6 +8,9 @@ import { useRoute } from 'vue-router'
 import { componentTypeMap as typeConfigMap } from './common/properties'
 import { keyManager } from '@repo/vue-framework/adapters/state'
 import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const props = defineProps({
   inputConfig: { type: Object as PropType<InputConfig>, default: () => ({}) },

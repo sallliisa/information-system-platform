@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
 import { twMerge } from 'tailwind-merge'
 import type { PropType } from 'vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   images: {

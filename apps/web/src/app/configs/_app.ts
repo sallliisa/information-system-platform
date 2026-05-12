@@ -1,8 +1,6 @@
-import _COMPANY from '@/company'
 import type langpacks from '../langpacks'
 
 export default {
-  company: _COMPANY as keyof typeof langpacks,
   unprotectedRoutes: [
     'login',
     'certificate',

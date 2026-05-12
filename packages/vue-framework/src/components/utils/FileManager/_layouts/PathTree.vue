@@ -12,6 +12,7 @@ import services from '@/utils/services'
 import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 import { toast } from 'vue-sonner'
 import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   item: {

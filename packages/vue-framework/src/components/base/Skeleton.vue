@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import { useColorPreference } from '@repo/vue-framework/adapters/state'
+import Card from '@repo/vue-framework/components/base/Card.vue'
 
 const props = defineProps({
   color: {

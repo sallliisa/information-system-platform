@@ -5,6 +5,8 @@ import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
 import Popover from '@repo/vue-framework/components/base/Popover.vue'
 import TextInput from '@repo/vue-framework/components/inputs/TextInput.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   placeholder: {

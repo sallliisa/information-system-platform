@@ -5,6 +5,7 @@ import { moduleNameRouteMap } from '@/utils/common'
 import { parse } from '@/utils/filter'
 import services from '@/utils/services'
 import { nextTick } from 'vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
 
 const { data } = await services.list('notifications', { limit: 99999 })
 </script>

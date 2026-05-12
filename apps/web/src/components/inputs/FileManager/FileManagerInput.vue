@@ -5,6 +5,8 @@ import { commonProps } from '../commonprops'
 import FileManagerDialogContent from './_layouts/FileManagerDialogContent.vue'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogScrollContent, DialogTitle, DialogTrigger, DialogClose } from '@/components/base/Dialog'
 import { ref } from 'vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   multi: {

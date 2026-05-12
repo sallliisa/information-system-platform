@@ -18,6 +18,10 @@ import { keyManager } from '@/stores/keyManager'
 import { transformData } from '@/stores/modules'
 import Drawer from '@/components/base/Drawer.vue'
 import Notifications from './layouts/Notifications.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const menu = computed(() => transformData(_menu))
 

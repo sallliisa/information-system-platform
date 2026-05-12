@@ -4,6 +4,7 @@ import type { InputConfig } from '@repo/model-meta'
 import type { PropType } from 'vue'
 import { defaultFormGetData, defaultBeforeSubmit, defaultOnSubmit, defaultOnSuccess, defaultOnError } from '@repo/vue-framework/behaviors/form'
 import Modal from '../base/Modal.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
 // import ModalDeprecated from '../base/ModalDeprecated.vue';
 
 const props = defineProps({

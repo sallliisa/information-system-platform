@@ -2,6 +2,9 @@
 import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { keyManager } from '@/stores/keyManager'
 import SalaryDetail from './_layouts/SalaryDetail.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Modal from '@repo/vue-framework/components/base/Modal.vue'
 </script>
 
 <template>

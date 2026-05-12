@@ -7,6 +7,8 @@ import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { keyManager } from '@/stores/keyManager'
 import { useId } from 'radix-vue'
 import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   title: String,

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useDropZone } from '@vueuse/core'
 import { ref, type PropType } from 'vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   accept: {

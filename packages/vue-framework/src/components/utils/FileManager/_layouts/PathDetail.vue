@@ -7,8 +7,9 @@ import { ContextMenuContent, ContextMenuItem, ContextMenuPortal, ContextMenuTrig
 import { toast } from 'vue-sonner'
 import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 import config from '@/config'
-import mode from '@/mode'
 import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   item: {
@@ -196,7 +197,7 @@ const _window = window
                       <ContextMenuItem
                         class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 hover:bg-on-surface/10"
                         @select.prevent
-                        @click="() => _window.open(`${config.server[mode]}read-file/${item.path}`, '_blank')"
+                        @click="() => _window.open(`${config.apiUrl}read-file/${item.path}`, '_blank')"
                       >
                         <Icon name="arrow-right-up"></Icon>
                         <p>Open</p>

@@ -4,6 +4,10 @@ import services from '@repo/vue-framework/adapters/services'
 import { ref, onMounted, type PropType } from 'vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
 // import { defaultDrawingCanvasOnSave } from "./configs/DrawingCanvas";
 
 const props = defineProps({

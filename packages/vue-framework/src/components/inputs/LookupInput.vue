@@ -13,6 +13,10 @@ import Modal from '../base/Modal.vue'
 import Popover from '../base/Popover.vue'
 import Form from '../composites/Form.vue'
 import { keyManager } from '@repo/vue-framework/adapters/state'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Chip from '@repo/vue-framework/components/base/Chip.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   ...commonProps,

@@ -2,6 +2,8 @@
 import services from '@/utils/services'
 import { useColorPreference } from '@/stores/colorpreference'
 import { storage } from '@/utils/storage'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const profileData = storage.localStorage.get('profile')
 </script>

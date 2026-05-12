@@ -7,6 +7,10 @@ import { bulkCreateFormProps, composeInputTemplateSheet } from '@repo/vue-framew
 import Modal from '@repo/vue-framework/components/base/Modal.vue'
 import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
 import { defineAsyncComponent } from 'vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const props = defineProps<{
   config: ModelConfig

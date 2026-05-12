@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import IframePreviewModal from '@repo/vue-framework/components/composites/IframePreviewModal.vue'
 import { getFileExtension, isPreviewableExtension } from '@/utils/common'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   file: Object,

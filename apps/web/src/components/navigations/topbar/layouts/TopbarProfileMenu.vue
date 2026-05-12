@@ -2,6 +2,7 @@
 import Tabs from '@/components/base/Tabs.vue'
 import services from '@/utils/services'
 import { defineAsyncComponent, ref } from 'vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
 
 const { user: profile } = await services.get('me')
 

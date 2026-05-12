@@ -3,6 +3,7 @@ import services from '@/utils/services'
 import { ref, watch, type PropType } from 'vue'
 import PathTree from './_layouts/PathTree.vue'
 import PathDetail from './_layouts/PathDetail.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const props = defineProps({
   multi: {

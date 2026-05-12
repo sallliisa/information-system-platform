@@ -7,6 +7,7 @@ import { useColorPreference } from './stores/colorpreference'
 import { Toaster } from 'vue-sonner'
 import { keyManager } from './stores/keyManager'
 import config from './config'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const error = ref<Error | null>(null)
 onErrorCaptured((err, instance, info) => {

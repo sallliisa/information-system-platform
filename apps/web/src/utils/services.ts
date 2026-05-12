@@ -1,5 +1,4 @@
 import config from '@/config'
-import mode from '@/mode'
 import router from '../router'
 import { modules } from '@/stores/modules'
 import { storage } from './storage'
@@ -15,7 +14,7 @@ function extractErrorMessage(error: any): string {
 
 async function notifyLogoutToServer(token: string) {
   try {
-    await fetch(`${config.server[mode]}logout`, {
+    await fetch(`${config.apiUrl}logout`, {
       method: 'GET',
       headers: {
         Accept: 'application/json, text/plain, */*',
@@ -34,7 +33,7 @@ function shouldRedirectToSintaOn401(): boolean {
 class AppServices extends FrameworkService {
   constructor() {
     super({
-      baseURL: config.server[mode],
+      baseURL: config.apiUrl,
       defaultHeaders: {
         Accept: 'application/json, text/plain, */*',
       },

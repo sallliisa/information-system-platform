@@ -13,6 +13,11 @@ import Form from '../Form.vue'
 import services from '@repo/vue-framework/adapters/services'
 import Modal from '@repo/vue-framework/components/base/Modal.vue'
 import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
 
 const props = defineProps<{
   config: ModelConfig

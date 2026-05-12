@@ -8,6 +8,11 @@ import SearchBox from '../composites/SearchBox.vue'
 import BaseInput from './BaseInput.vue'
 import Form from '../composites/Form.vue'
 import config, { mode } from '@repo/vue-framework/adapters/defaults'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
 
 type Coordinate = {
   lat: number
@@ -85,7 +90,6 @@ function handlePinDragEnd(event: any) {
   emit('validation:touch')
 }
 
-// const GOOGLE_MAP_API_KEY = config.maps_api_key[mode]
 const { data } = await services.get('configs')
 
 const GOOGLE_MAP_API_KEY = data.gmaps.web

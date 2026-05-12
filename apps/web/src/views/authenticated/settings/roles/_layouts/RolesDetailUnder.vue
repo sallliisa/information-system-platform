@@ -9,6 +9,8 @@ import services from '@/utils/services'
 import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
 import { toast } from 'vue-sonner'
 import { keyManager } from '@/stores/keyManager'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const data = inject<any>('data', {})
 </script>

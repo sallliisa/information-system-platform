@@ -3,6 +3,9 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import services from '@repo/vue-framework/adapters/services'
 import Modal from '../base/Modal.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
 
 const props = defineProps({
   modelValue: {

@@ -42,6 +42,8 @@ Or run the web app directly from `apps/web` with the package scripts defined in 
 ## Environment Variables
 
 - `GOOGLE_MAP_API_KEY`: used by map components
+- `VITE_API_URL`: API base URL for app services
+- `VITE_APP_BYPASS_ALL_PERMISSIONS`: set to `true` to bypass permission checks
 
 Vite is configured with:
 
@@ -51,8 +53,8 @@ envPrefix: ['VITE_', 'GOOGLE_MAP_API_KEY']
 
 ## Runtime Configuration Notes
 
-- Active app mode is set in `src/mode.ts`
-- API base URLs and app keys are defined in `src/config.ts`
+- API base URL comes from `VITE_API_URL` (normalized in `src/config.ts`)
+- Permission bypass comes from `VITE_APP_BYPASS_ALL_PERMISSIONS`
 - Company code is set in `src/company.ts`
 
 ## Current Baseline

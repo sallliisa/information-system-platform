@@ -6,6 +6,8 @@ import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import Logo from '@/assets/corporate/common/Logo.vue'
 import { useRouter } from 'vue-router'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const sidebarexpand = ref<HTMLElement>()
 const sidebarState = ref<{ index: number; open: boolean }>({ index: 0, open: false })

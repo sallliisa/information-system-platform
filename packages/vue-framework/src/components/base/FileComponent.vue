@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import type { PropType } from 'vue'
 import IframePreviewModal from '../composites/IframePreviewModal.vue'
 import { getFileExtension, isPreviewableExtension } from '@repo/vue-framework/utils/object'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
 
 const props = defineProps({
   filename: {

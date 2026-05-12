@@ -7,6 +7,9 @@ import { defaultTableGetData, tableFieldTypes } from '@repo/vue-framework/behavi
 import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
 import { onMounted, onBeforeUnmount } from 'vue'
 import Draggable from 'vuedraggable'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   fields: { type: Array as PropType<string[]>, required: true },

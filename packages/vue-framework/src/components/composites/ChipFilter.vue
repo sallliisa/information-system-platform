@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import Chip from '@repo/vue-framework/components/base/Chip.vue'
 
 const modelValue = defineModel()
 

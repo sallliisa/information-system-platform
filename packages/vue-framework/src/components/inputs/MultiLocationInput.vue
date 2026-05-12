@@ -4,6 +4,9 @@ import LocationInput from './LocationInput.vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
 import Modal from '../base/Modal.vue'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Card from '@repo/vue-framework/components/base/Card.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   ...commonProps,

@@ -1,9 +1,10 @@
-import app from '@/config'
 import { storage } from './storage'
 import { permissions } from '@/stores/permissions'
 
+const BYPASS_ALL_PERMISSIONS = import.meta.env.VITE_APP_BYPASS_ALL_PERMISSIONS === 'true'
+
 export function getCRUDPermissions(permission: string | undefined | null): { view: boolean; lookup: boolean; detail: boolean; create: boolean; update: boolean; delete: boolean } {
-  if (app.mode == 'EARLY_DEVELOPMENT' || storage.localStorage.get('profile').role_id === -1)
+  if (BYPASS_ALL_PERMISSIONS || storage.localStorage.get('profile').role_id === -1)
     return {
       view: true,
       lookup: true,

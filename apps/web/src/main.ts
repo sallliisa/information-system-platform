@@ -1,4 +1,4 @@
-import { createApp, defineAsyncComponent } from 'vue'
+import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { parse } from './utils/filter'
 import services from './utils/services'
@@ -67,27 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   )
   app.config.globalProperties.$parse = parse
-
-  const definedGlobalComponents = [
-    { name: 'Alert', class: 'base' },
-    { name: 'Button', class: 'base' },
-    { name: 'Card', class: 'base' },
-    { name: 'Chip', class: 'base' },
-    { name: 'Icon', class: 'base' },
-    { name: 'Modal', class: 'base' },
-    { name: 'Skeleton', class: 'base' },
-    { name: 'Spinner', class: 'base' },
-    { name: 'Tooltip', class: 'base' },
-    { name: 'DataFetcher', class: 'utils' },
-    { name: 'Pagination', class: 'utils' },
-  ]
-
-  definedGlobalComponents.forEach((component) => {
-    app.component(
-      component.name,
-      defineAsyncComponent(() => import(`./components/${component.class}/${component.name}.vue`))
-    )
-  })
 
   app.config.errorHandler = (err, vm, info) => {
     console.error('Global error handler :: ', err)

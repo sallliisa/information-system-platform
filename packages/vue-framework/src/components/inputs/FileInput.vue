@@ -7,6 +7,9 @@ import UploadDropzone from './UploadDropzone.vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
 import { MIME_TYPE_NAMES } from '@repo/vue-framework/utils/object'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
 
 const props = defineProps({
   accept: {

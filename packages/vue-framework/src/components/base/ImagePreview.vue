@@ -2,6 +2,8 @@
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
 import { computed, ref, useSlots, watch } from 'vue'
 import { twMerge } from 'tailwind-merge'
+import Button from '@repo/vue-framework/components/base/Button.vue'
+import Icon from '@repo/vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   url: {

@@ -1,4 +1,6 @@
-<script setup lang="ts">
+<script setup lang="ts">import Icon from '@repo/vue-framework/components/base/Icon.vue'
+
+
 const props = defineProps({
   value: {
     type: [Number, String],
