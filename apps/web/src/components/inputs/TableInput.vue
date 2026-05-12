@@ -2,11 +2,11 @@
 import type { PropType } from 'vue'
 import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
-import ModalForm from '../composites/ModalForm.vue'
-import Table from '../composites/Table.vue'
+import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
+import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { keyManager } from '@/stores/keyManager'
 import { useId } from 'radix-vue'
-import ConfirmationModal from '../composites/ConfirmationModal.vue'
+import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 
 const props = defineProps({
   title: String,

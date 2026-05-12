@@ -1,6 +1,8 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import { createPinia } from 'pinia'
 import { parse } from './utils/filter'
+import services from './utils/services'
+import { configureFrameworkServices } from '@repo/vue-framework/adapters/services'
 
 import App from './App.vue'
 import router from './router'
@@ -40,6 +42,7 @@ Chart.register(annotationPlugin)
 Chart.register(FunnelController, TrapezoidElement, LinearScale, CategoryScale)
 
 const app = createApp(App)
+configureFrameworkServices(services)
 
 declare module 'vue' {
   export interface ComponentCustomProperties {

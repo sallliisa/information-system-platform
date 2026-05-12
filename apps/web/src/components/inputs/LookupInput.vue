@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { defaultGetData, defaultGetDetail, defaultFieldsAlias, defaultDataFormatter } from '@/app/actions/Lookup'
+import { defaultGetData, defaultGetDetail, defaultFieldsAlias, defaultDataFormatter } from '@repo/vue-framework/behaviors/lookup'
 import { ref, type PropType, watch, computed, onMounted } from 'vue'
 import { commonProps } from './commonprops'
 import Radio from './Radio.vue'
 import BaseInput from './BaseInput.vue'
-import Table from '../composites/Table.vue'
+import Table from '@repo/vue-framework/components/composites/Table.vue'
 import Checkbox from './CheckboxInput.vue'
-import SearchBox from '../composites/SearchBox.vue'
-import ModalForm from '../composites/ModalForm.vue'
-import ConfirmationModal from '../composites/ConfirmationModal.vue'
+import SearchBox from '@repo/vue-framework/components/composites/SearchBox.vue'
+import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
+import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 import Modal from '../base/Modal.vue'
 import Popover from '../base/Popover.vue'
-import Form from '../composites/Form.vue'
+import Form from '@repo/vue-framework/components/composites/Form.vue'
 import { keyManager } from '@/stores/keyManager'
 
 const props = defineProps({

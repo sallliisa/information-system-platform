@@ -1,5 +1,7 @@
-export async function defaultTableGetData() {
-  throw new Error('[vue-framework] defaultTableGetData is not implemented yet. Pass getData explicitly or install framework services later.')
+import services from '@repo/vue-framework/adapters/services'
+
+export async function defaultTableGetData(getAPI: string, searchParameters?: Record<string, number | string | undefined>) {
+  return (await services.list(getAPI, searchParameters)) as { data: Record<string, any>[]; totalPage: number; total: number }
 }
 
 export function defaultOnDataLoaded() {

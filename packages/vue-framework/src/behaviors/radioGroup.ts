@@ -1,3 +1,6 @@
-export async function defaultGetData() {
-  throw new Error('[vue-framework] defaultGetData(radioGroup) is not implemented yet. Pass getData explicitly or install framework services later.')
+import services from '@repo/vue-framework/adapters/services'
+
+export async function defaultGetData(getAPI: string, searchParameters: object) {
+  const { data } = await services.dataset(getAPI, { active: true, ...searchParameters })
+  return data
 }

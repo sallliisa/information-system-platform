@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import roles from '@repo/model-meta/models/roles.model'
-import ConfirmationModal from '@/components/composites/ConfirmationModal.vue'
-import CRUDComposite from '@/components/composites/CRUDComposite.vue'
+import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
+import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
 import { syncModel } from '@/utils/projectcommons/model'
 import RolesDetailUnder from './_layouts/RolesDetailUnder.vue'
 import { keyManager } from '@/stores/keyManager'

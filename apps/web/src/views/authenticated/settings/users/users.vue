@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import users from '@repo/model-meta/models/users.model'
-import CRUDComposite from '@/components/composites/CRUDComposite.vue'
+import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
 import UsersMappingRole from './_layouts/UsersMappingRole.vue';
 </script>
 

@@ -15,7 +15,7 @@ const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <DialogDescription v-bind="forwardedProps" :class="twMerge('text-muted-foreground text-sm', props.class)">
+  <DialogDescription v-bind="forwardedProps" :class="twMerge('text-muted-foreground text-sm', props.class as any)">
     <slot />
   </DialogDescription>
 </template>

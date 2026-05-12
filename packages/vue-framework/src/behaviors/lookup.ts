@@ -1,9 +1,13 @@
-export async function defaultGetData() {
-  throw new Error('[vue-framework] defaultGetData(lookup) is not implemented yet. Pass getData explicitly or install framework services later.')
+import services from '@repo/vue-framework/adapters/services'
+
+export async function defaultGetData(getAPI: string, searchParameters: object) {
+  const { data, total, totalPage } = await services.dataset(getAPI, { active: true, ...searchParameters })
+  return { data, total, totalPage }
 }
 
-export async function defaultGetDetail() {
-  throw new Error('[vue-framework] defaultGetDetail(lookup) is not implemented yet. Pass getDetail explicitly or install framework services later.')
+export async function defaultGetDetail(getAPI: string, id: string | number, searchParameters?: object) {
+  const { data } = await services.detail(getAPI, id, { active: true, ...(searchParameters || {}) })
+  return data
 }
 
 export function defaultDataFormatter(data: Array<Record<string, any>>, allowMulti: boolean, pick: string) {

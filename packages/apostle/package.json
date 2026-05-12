@@ -1,0 +1,18 @@
+{
+  "name": "@repo/apostle",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "qs": "^6.11.2"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}

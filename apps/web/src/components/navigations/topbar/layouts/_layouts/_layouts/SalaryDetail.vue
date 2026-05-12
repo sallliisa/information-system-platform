@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Detail from '@/components/composites/Detail.vue'
+import Detail from '@repo/vue-framework/components/composites/Detail.vue'
 import { parse } from '@/utils/filter'
 import services from '@/utils/services'
 

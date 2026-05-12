@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./services": "./src/services/index.ts",
+    "./adapters/*": "./src/adapters/*",
     "./components/*": "./src/components/*",
     "./utils/*": "./src/utils/*",
     "./renderers/*": "./src/renderers/*",
@@ -17,6 +19,7 @@
     "vue-router": "^4.2.2"
   },
   "dependencies": {
+    "@repo/apostle": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^1.13.1",
     "xlsx": "^0.18.5",
@@ -36,5 +39,12 @@
     "@headlessui/vue": "^1.7.14",
     "vaul-vue": "^0.3.0",
     "vue-tippy": "^6.7.1"
+  },
+  "devDependencies": {
+    "jsdom": "^20.0.3",
+    "vitest": "^2.1.9"
+  },
+  "scripts": {
+    "test": "vitest run --environment jsdom"
   }
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PropType } from 'vue'
-import IframePreviewModal from '../composites/IframePreviewModal.vue'
+import IframePreviewModal from '@repo/vue-framework/components/composites/IframePreviewModal.vue'
 import { getFileExtension, isPreviewableExtension } from '@/utils/common'
 
 const props = defineProps({

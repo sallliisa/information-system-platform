@@ -5,10 +5,10 @@ import { ref, watch } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import { ContextMenuContent, ContextMenuItem, ContextMenuPortal, ContextMenuTrigger, ContextMenuRoot } from 'radix-vue'
 import { toast } from 'vue-sonner'
-import ConfirmationModal from '@/components/composites/ConfirmationModal.vue'
+import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 import config from '@/config'
 import mode from '@/mode'
-import ModalForm from '@/components/composites/ModalForm.vue'
+import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
 
 const props = defineProps({
   item: {

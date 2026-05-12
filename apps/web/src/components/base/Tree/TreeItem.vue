@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { PropType } from 'vue'
-import { defaultTableGetData, tableFieldTypes } from '@/app/actions/Table'
+import { defaultTableGetData, tableFieldTypes } from '@repo/vue-framework/behaviors/table'
 import { defaultTableConfig } from '@/app/configs/_defaults'
 import { parse } from '@/utils/filter'
 

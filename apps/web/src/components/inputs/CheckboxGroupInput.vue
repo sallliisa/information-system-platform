@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defaultGetData } from '@/app/actions/CheckboxGroupInput'
+import { defaultGetData } from '@repo/vue-framework/behaviors/checkboxGroup'
 import { onMounted, ref, type PropType } from 'vue'
 import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'

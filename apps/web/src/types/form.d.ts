@@ -1,4 +1,4 @@
-import type { componentTypeMap } from '@/app/actions/Form'
+import type { componentTypeMap } from '@repo/vue-framework/behaviors/form'
 import type { ZodTypeAny } from 'zod'
 import type { FieldDependency, ModelFormField } from '@repo/model-meta'
 import type { AsyncComponentLoader, Component } from 'vue'

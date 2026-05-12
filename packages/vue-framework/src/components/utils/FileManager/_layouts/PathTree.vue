@@ -9,9 +9,9 @@ interface FolderItem {
 }
 
 import services from '@/utils/services'
-import ConfirmationModal from '@/components/composites/ConfirmationModal.vue'
+import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
 import { toast } from 'vue-sonner'
-import ModalForm from '@/components/composites/ModalForm.vue'
+import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
 
 const props = defineProps({
   item: {

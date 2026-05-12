@@ -3,7 +3,7 @@ import { ref, onMounted, type PropType } from 'vue'
 import TreeItem from './TreeItem.vue'
 import services from '@/utils/services'
 import { defaultTableConfig } from '@/app/configs/_defaults'
-import { defaultTableGetData } from '@/app/actions/Table'
+import { defaultTableGetData } from '@repo/vue-framework/behaviors/table'
 import { parse } from '@/utils/filter'
 
 const props = defineProps({

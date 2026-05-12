@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Form from '@/components/composites/Form.vue'
+import Form from '@repo/vue-framework/components/composites/Form.vue'
 import { keyManager } from '@/stores/keyManager'
 import { toast } from 'vue-sonner'
 import services from '@/utils/services'

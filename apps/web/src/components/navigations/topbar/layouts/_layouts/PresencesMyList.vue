@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Table from '@/components/composites/Table.vue'
+import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { keyManager } from '@/stores/keyManager'
 import SalaryDetail from './_layouts/SalaryDetail.vue'
 </script>

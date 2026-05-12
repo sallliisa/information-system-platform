@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Table from '@/components/composites/Table.vue'
+import Table from '@repo/vue-framework/components/composites/Table.vue'
 import { inject } from 'vue'
 import Card from '@/components/base/Card.vue'
 import Switch from '@/components/inputs/Switch.vue'
 import tasks from '@repo/model-meta/models/tasks.model'
-import CRUDComposite from '@/components/composites/CRUDComposite.vue'
+import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
 import services from '@/utils/services'
-import ModalForm from '@/components/composites/ModalForm.vue'
+import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
 import { toast } from 'vue-sonner'
 import { keyManager } from '@/stores/keyManager'
 

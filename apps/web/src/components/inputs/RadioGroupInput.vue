@@ -3,7 +3,7 @@ import { ref, watch, onBeforeMount } from 'vue'
 import type { PropType } from 'vue'
 import Radio from '@/components/inputs/Radio.vue'
 import { commonProps } from './commonprops'
-import { defaultGetData } from '@/app/actions/RadioGroup'
+import { defaultGetData } from '@repo/vue-framework/behaviors/radioGroup'
 import BaseInput from './BaseInput.vue'
 
 const props = defineProps({

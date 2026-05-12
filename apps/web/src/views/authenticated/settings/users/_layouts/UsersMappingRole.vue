@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CRUDComposite from '@/components/composites/CRUDComposite.vue'
-import Switch from '@/components/inputs/Switch.vue'
-import services from '@/utils/services'
+import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
+import Switch from '@repo/vue-framework/components/inputs/Switch.vue'
+import services from '@repo/vue-framework/adapters/services'
 import type { ModelConfig } from '@repo/model-meta'
 import { inject } from 'vue'
 import { useRoute } from 'vue-router'

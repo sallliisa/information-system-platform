@@ -39,6 +39,12 @@
       ],
       "@repo/vue-framework/*": [
         "../../packages/vue-framework/src/*"
+      ],
+      "@repo/apostle": [
+        "../../packages/apostle/src/index.ts"
+      ],
+      "@repo/apostle/*": [
+        "../../packages/apostle/src/*"
       ]
     },
     "module": "esnext",

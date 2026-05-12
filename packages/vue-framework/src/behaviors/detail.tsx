@@ -1,5 +1,8 @@
-export async function defaultDetailGetData() {
-  throw new Error('[vue-framework] defaultDetailGetData is not implemented yet. Pass getData explicitly or install framework services later.')
+import services from '@repo/vue-framework/adapters/services'
+
+export async function defaultDetailGetData(getAPI: string, searchParameters?: Record<string, any>, getDataID?: string) {
+  const { data } = await services.detail(getAPI, getDataID, searchParameters)
+  return data
 }
 
 export function defaultOnDataLoaded() {

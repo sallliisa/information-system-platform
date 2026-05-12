@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defaultGetData } from '@/app/actions/Select'
+import { defaultGetData } from '@repo/vue-framework/behaviors/select'
 import { ref, type PropType, watch, computed, type ComputedRef, onMounted } from 'vue'
 import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'

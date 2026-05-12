@@ -409,6 +409,16 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(typescript@5.9.3)
 
+  packages/apostle:
+    dependencies:
+      qs:
+        specifier: ^6.11.2
+        version: 6.15.1
+    devDependencies:
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@18.19.130)(jsdom@20.0.3)(lightningcss@1.32.0)(terser@5.46.1)
+
   packages/config-meta:
     dependencies:
       '@repo/model-meta':
@@ -435,6 +445,9 @@ importers:
       '@headlessui/vue':
         specifier: ^1.7.14
         version: 1.7.23(vue@3.5.32(typescript@5.9.3))
+      '@repo/apostle':
+        specifier: workspace:*
+        version: link:../apostle
       '@repo/model-meta':
         specifier: workspace:*
         version: link:../model-meta
@@ -492,6 +505,13 @@ importers:
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
+    devDependencies:
+      jsdom:
+        specifier: ^20.0.3
+        version: 20.0.3
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@18.19.130)(jsdom@20.0.3)(lightningcss@1.32.0)(terser@5.46.1)
 
 packages:
 
