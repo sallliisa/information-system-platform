@@ -10,7 +10,7 @@ export const bulkCreateFormProps: any = {
   inputConfig: {
     data: {
       type: 'custom',
-      component: defineAsyncComponent(() => import('@repo/vue-framework/components/composites/CRUD/_layouts/SpreadsheetReader.vue')),
+      component: defineAsyncComponent(() => import('@southneuhof/is-vue-framework/components/composites/CRUD/_layouts/SpreadsheetReader.vue')),
       props: { required: true },
     },
   },

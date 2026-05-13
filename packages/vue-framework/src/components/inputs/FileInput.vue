@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 import { ref, watch, computed } from 'vue'
-import FileComponent from '@repo/vue-framework/components/base/FileComponent.vue'
+import FileComponent from '@southneuhof/is-vue-framework/components/base/FileComponent.vue'
 import { toast } from 'vue-sonner'
 import UploadDropzone from './UploadDropzone.vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
-import { MIME_TYPE_NAMES } from '@repo/vue-framework/utils/object'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
-import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
+import { MIME_TYPE_NAMES } from '@southneuhof/is-vue-framework/utils/object'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
+import Tooltip from '@southneuhof/is-vue-framework/components/base/Tooltip.vue'
 
 const props = defineProps({
   accept: {

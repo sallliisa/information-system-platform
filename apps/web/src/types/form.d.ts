@@ -1,6 +1,6 @@
-import type { componentTypeMap } from '@repo/vue-framework/behaviors/form'
+import type { componentTypeMap } from '@southneuhof/is-vue-framework/behaviors/form'
 import type { ZodTypeAny } from 'zod'
-import type { FieldDependency, ModelFormField } from '@repo/model-meta'
+import type { FieldDependency, ModelFormField } from '@southneuhof/is-data-model'
 import type { AsyncComponentLoader, Component } from 'vue'
 
 export type FormTypes = keyof typeof componentTypeMap | 'custom'

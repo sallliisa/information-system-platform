@@ -1,5 +1,3 @@
-import type langpacks from '../langpacks'
-
 export default {
   unprotectedRoutes: [
     'login',

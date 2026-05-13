@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 import Modal from '../base/Modal.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const props = defineProps({
   modelValue: {

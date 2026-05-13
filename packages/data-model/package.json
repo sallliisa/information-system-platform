@@ -9,6 +9,6 @@
     "./models/mobile/*": "./src/models/mobile/*"
   },
   "dependencies": {
-    "@repo/model-meta": "workspace:*"
+    "@southneuhof/is-data-model": "workspace:*"
   }
 }

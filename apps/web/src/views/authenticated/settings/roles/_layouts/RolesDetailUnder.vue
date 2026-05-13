@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { inject } from 'vue'
-import Switch from '@repo/vue-framework/components/inputs/Switch.vue'
+import Switch from '@southneuhof/is-vue-framework/components/inputs/Switch.vue'
 import tasks from '@client/data-model/models/web/tasks.model'
-import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
+import CRUDComposite from '@southneuhof/is-vue-framework/components/composites/CRUDComposite.vue'
 import services from '@/utils/services'
-import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
+import ModalForm from '@southneuhof/is-vue-framework/components/composites/ModalForm.vue'
 import { toast } from 'vue-sonner'
 import { keyManager } from '@/stores/keyManager'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const data = inject<any>('data', {})
 </script>

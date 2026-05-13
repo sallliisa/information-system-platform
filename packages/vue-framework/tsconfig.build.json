@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "jsx": "react",
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
+    "paths": {
+      "@southneuhof/is-vue-framework": [
+        "./src/index.ts"
+      ],
+      "@southneuhof/is-vue-framework/*": [
+        "./src/*"
+      ],
+      "@southneuhof/is-data-model": [
+        "../model-meta/dist/index.d.ts"
+      ],
+      "@southneuhof/is-data-model/*": [
+        "../model-meta/dist/*"
+      ],
+      "@southneuhof/apostle": [
+        "../apostle/dist/index.d.ts"
+      ],
+      "@southneuhof/apostle/*": [
+        "../apostle/dist/*"
+      ]
+    }
+  },
+  "exclude": [
+    "src/**/__tests__/*",
+    "dist"
+  ]
+}

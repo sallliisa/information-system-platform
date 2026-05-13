@@ -2,8 +2,8 @@
 import type { PropType } from 'vue'
 import { ref } from 'vue'
 import TextInput from './TextInput.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   prefix: {

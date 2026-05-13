@@ -1,1 +1,1 @@
-export { detailFieldTypes as detailFieldRenderers } from '@repo/vue-framework/behaviors/detail'
+export { detailFieldTypes as detailFieldRenderers } from '@southneuhof/is-vue-framework/behaviors/detail'

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, ref, useSlots, watch } from 'vue'
 import type { PropType } from 'vue'
-import { parse } from '@repo/vue-framework/utils/parse'
-import Pagination from '@repo/vue-framework/components/utils/Pagination.vue'
-import { defaultTableGetData, tableFieldTypes } from '@repo/vue-framework/behaviors/table'
-import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
+import { parse } from '@southneuhof/is-vue-framework/utils/parse'
+import Pagination from '@southneuhof/is-vue-framework/components/utils/Pagination.vue'
+import { defaultTableGetData, tableFieldTypes } from '@southneuhof/is-vue-framework/behaviors/table'
+import { defaultTableConfig } from '@southneuhof/is-vue-framework/adapters/defaults'
 import { onMounted, onBeforeUnmount } from 'vue'
 import Draggable from 'vuedraggable'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   fields: { type: Array as PropType<string[]>, required: true },

@@ -4,11 +4,11 @@ import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
 import ModalForm from '../composites/ModalForm.vue'
 import Table from '../composites/Table.vue'
-import { keyManager } from '@repo/vue-framework/adapters/state'
+import { keyManager } from '@southneuhof/is-vue-framework/adapters/state'
 import { useId } from 'radix-vue'
 import ConfirmationModal from '../composites/ConfirmationModal.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   title: String,

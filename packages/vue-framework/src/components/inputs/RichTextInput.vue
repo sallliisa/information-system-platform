@@ -2,7 +2,7 @@
 import { commonProps } from './commonprops'
 import BaseInput from './BaseInput.vue'
 import { onUnmounted, ref, watch, type PropType } from 'vue'
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 import 'tinymce/tinymce'
 import 'tinymce/skins/ui/oxide/skin.css'
 import 'tinymce/skins/ui/oxide/content.css'

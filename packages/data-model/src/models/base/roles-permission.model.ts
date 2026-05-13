@@ -1,1 +1,1 @@
-import type { ModelConfig } from "@repo/model-meta";
+import type { ModelConfig } from "@southneuhof/is-data-model";

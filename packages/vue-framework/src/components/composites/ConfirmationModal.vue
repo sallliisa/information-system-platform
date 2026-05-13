@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, ref, type PropType } from 'vue'
 import Modal from '../base/Modal.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
 
 type ButtonVariant = 'filled' | 'outlined' | 'tonal' | 'icon'
 type ButtonColor = 'primary' | 'secondary' | 'tertiary' | 'warning' | 'error' | 'info' | 'success'

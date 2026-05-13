@@ -2,7 +2,7 @@
 import { type HTMLAttributes, computed } from 'vue'
 import { DialogClose, DialogContent, type DialogContentEmits, type DialogContentProps, DialogOverlay, DialogPortal, useForwardPropsEmits } from 'radix-vue'
 import { twMerge } from 'tailwind-merge'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps<DialogContentProps & { class?: HTMLAttributes['class'] }>()
 const emits = defineEmits<DialogContentEmits>()

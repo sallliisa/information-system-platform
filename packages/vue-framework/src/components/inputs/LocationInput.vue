@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { GoogleMap, Marker } from 'vue3-google-map'
 import { ref, watch, type PropType } from 'vue'
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 import { commonProps } from './commonprops'
 import Popover from '../base/Popover.vue'
 import SearchBox from '../composites/SearchBox.vue'
 import BaseInput from './BaseInput.vue'
 import Form from '../composites/Form.vue'
-import config, { mode } from '@repo/vue-framework/adapters/defaults'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
-import Tooltip from '@repo/vue-framework/components/base/Tooltip.vue'
+import config, { mode } from '@southneuhof/is-vue-framework/adapters/defaults'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
+import Tooltip from '@southneuhof/is-vue-framework/components/base/Tooltip.vue'
 
 type Coordinate = {
   lat: number

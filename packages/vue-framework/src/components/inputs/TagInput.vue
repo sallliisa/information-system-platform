@@ -4,8 +4,8 @@ import TextInput from './TextInput.vue'
 import { commonProps } from './commonprops'
 import type { PropType } from 'vue'
 import BaseInput from './BaseInput.vue'
-import Chip from '@repo/vue-framework/components/base/Chip.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Chip from '@southneuhof/is-vue-framework/components/base/Chip.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   prefix: {

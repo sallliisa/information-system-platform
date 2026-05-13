@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
-import { buildFormConfig, type ModelConfig } from '@repo/model-meta'
+import { buildFormConfig, type ModelConfig } from '@southneuhof/is-data-model'
 import Form from '../Form.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { defaultFormConfig } from '@repo/vue-framework/adapters/defaults'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import { defaultFormConfig } from '@southneuhof/is-vue-framework/adapters/defaults'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const props = defineProps<{
   config: ModelConfig

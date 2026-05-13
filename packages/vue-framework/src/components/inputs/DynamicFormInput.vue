@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import RadioGroup from '@repo/vue-framework/components/inputs/RadioGroupInput.vue'
-import services from '@repo/vue-framework/adapters/services'
+import RadioGroup from '@southneuhof/is-vue-framework/components/inputs/RadioGroupInput.vue'
+import services from '@southneuhof/is-vue-framework/services'
 import { onMounted, ref, type PropType } from 'vue'
 
 const props = defineProps({

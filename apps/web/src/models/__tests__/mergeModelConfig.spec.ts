@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mergeModelConfig, type ModelConfig } from '@repo/model-meta'
+import { mergeModelConfig, type ModelConfig } from '@southneuhof/is-data-model'
 
 describe('mergeModelConfig', () => {
   it('deep merges nested objects and preserves untouched branches', () => {

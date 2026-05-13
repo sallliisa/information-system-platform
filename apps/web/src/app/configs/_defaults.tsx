@@ -1,5 +1,5 @@
 /* @jsxImportSource vue */
-import type { InputConfig } from '@repo/model-meta'
+import type { InputConfig } from '@southneuhof/is-data-model'
 import { z } from 'zod'
 
 export const defaultGlobalConfig: {

@@ -1,4 +1,4 @@
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 
 export async function defaultOnExport(detailConfig: any, id: number) {
   const base = detailConfig?.getAPI ? `${detailConfig.getAPI}` : ''

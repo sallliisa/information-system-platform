@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, type PropType } from 'vue'
 import TreeItem from './TreeItem.vue'
-import services from '@repo/vue-framework/adapters/services'
-import { defaultTableConfig } from '@repo/vue-framework/adapters/defaults'
-import { defaultTableGetData } from '@repo/vue-framework/behaviors/table'
-import { parse } from '@repo/vue-framework/utils/parse'
+import services from '@southneuhof/is-vue-framework/services'
+import { defaultTableConfig } from '@southneuhof/is-vue-framework/adapters/defaults'
+import { defaultTableGetData } from '@southneuhof/is-vue-framework/behaviors/table'
+import { parse } from '@southneuhof/is-vue-framework/utils/parse'
 
 const props = defineProps({
   fields: { type: Array as PropType<string[]>, required: true },

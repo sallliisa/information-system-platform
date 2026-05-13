@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defaultGetData, defaultGetDetail, defaultFieldsAlias, defaultDataFormatter } from '@repo/vue-framework/behaviors/lookup'
+import { defaultGetData, defaultGetDetail, defaultFieldsAlias, defaultDataFormatter } from '@southneuhof/is-vue-framework/behaviors/lookup'
 import { ref, type PropType, watch, computed, onMounted } from 'vue'
 import { commonProps } from './commonprops'
 import Radio from './Radio.vue'
@@ -12,11 +12,11 @@ import ConfirmationModal from '../composites/ConfirmationModal.vue'
 import Modal from '../base/Modal.vue'
 import Popover from '../base/Popover.vue'
 import Form from '../composites/Form.vue'
-import { keyManager } from '@repo/vue-framework/adapters/state'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Chip from '@repo/vue-framework/components/base/Chip.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import { keyManager } from '@southneuhof/is-vue-framework/adapters/state'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Chip from '@southneuhof/is-vue-framework/components/base/Chip.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   ...commonProps,

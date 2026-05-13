@@ -1,4 +1,4 @@
-import type { InputConfig } from '@repo/model-meta'
+import type { InputConfig } from '@southneuhof/is-data-model'
 
 export type DeepPartial<T> = T extends (...args: any[]) => any
   ? T

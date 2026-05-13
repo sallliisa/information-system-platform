@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import { buildDetailConfig, type ModelConfig } from '@repo/model-meta'
+import { buildDetailConfig, type ModelConfig } from '@southneuhof/is-data-model'
 import Detail from '../Detail.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { defaultOnExport } from '@repo/vue-framework/behaviors/crudDetail'
+import { defaultOnExport } from '@southneuhof/is-vue-framework/behaviors/crudDetail'
 import { useVueToPrint } from 'vue-to-print'
-import { parse } from '@repo/vue-framework/utils/parse'
-import { defaultDetailConfig } from '@repo/vue-framework/adapters/defaults'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import { parse } from '@southneuhof/is-vue-framework/utils/parse'
+import { defaultDetailConfig } from '@southneuhof/is-vue-framework/adapters/defaults'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const props = defineProps<{
   config: ModelConfig

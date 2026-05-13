@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Popover from '@repo/vue-framework/components/base/Popover.vue'
+import Popover from '@southneuhof/is-vue-framework/components/base/Popover.vue'
 import HKLogo from '@/assets/corporate/assets/hk-logo.svg'
 import _menu from '@/menu'
 import { storage } from '@/utils/storage'
@@ -9,15 +9,15 @@ import { useColorPreference } from '@/stores/colorpreference'
 import { useRoute } from 'vue-router'
 import { onClickOutside } from '@vueuse/core'
 import TopbarProfileMenu from './layouts/TopbarProfileMenu.vue'
-import Modal from '@repo/vue-framework/components/base/Modal.vue'
+import Modal from '@southneuhof/is-vue-framework/components/base/Modal.vue'
 import { keyManager } from '@/stores/keyManager'
 import { transformData } from '@/stores/modules'
-import Drawer from '@repo/vue-framework/components/base/Drawer.vue'
+import Drawer from '@southneuhof/is-vue-framework/components/base/Drawer.vue'
 import Notifications from './layouts/Notifications.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const menu = computed(() => transformData(_menu))
 

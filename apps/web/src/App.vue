@@ -7,11 +7,11 @@ import { useColorPreference } from './stores/colorpreference'
 import { Toaster } from 'vue-sonner'
 import { keyManager } from './stores/keyManager'
 import config from './config'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const error = ref<Error | null>(null)
 onErrorCaptured((err, instance, info) => {
-  console.error('Suspense error:', err, instance, info)
+  console.error('App error:', err, instance, info)
   error.value = err
   return true
 })
@@ -41,7 +41,6 @@ const currentLocation = computed(() => {
   const path = route.path.split('/')[1]
   return path && layoutMap[path] ? path : 'DEFAULT'
 })
-const routeViewKey = computed(() => route.path)
 </script>
 
 <template>
@@ -52,7 +51,7 @@ const routeViewKey = computed(() => route.path)
         <component :is="layoutMap[currentLocation]">
           <RouterView v-slot="{ Component }">
             <Transition name="vfade" mode="out-in" appear>
-              <div v-if="Component" :key="`${routeViewKey}${String(keyManager().value[String($route.name)])}`">
+              <div v-if="Component" :key="`${$route.path}${String(keyManager().value[String($route.name)])}`">
                 <Suspense :timeout="0">
                   <component :is="Component" />
                   <template #fallback>

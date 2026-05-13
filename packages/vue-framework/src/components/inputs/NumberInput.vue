@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
 import { twMerge } from 'tailwind-merge'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   suffix: {

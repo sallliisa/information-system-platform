@@ -1,4 +1,4 @@
-import type { Apostle, ApostleInit, ApostleResponseType } from '@repo/apostle'
+import type { Apostle, ApostleInit, ApostleResponseType } from '@southneuhof/apostle'
 
 export type ServiceRequestOptions = {
   bypassErrorToast?: boolean

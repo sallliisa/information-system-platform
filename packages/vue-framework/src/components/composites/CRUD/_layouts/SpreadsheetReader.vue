@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import UploadDropzone from '@repo/vue-framework/components/inputs/UploadDropzone.vue'
+import UploadDropzone from '@southneuhof/is-vue-framework/components/inputs/UploadDropzone.vue'
 import * as XLSX from 'xlsx'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   fields: {

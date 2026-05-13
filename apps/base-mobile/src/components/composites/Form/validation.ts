@@ -1,4 +1,4 @@
-import type { ModelFormField } from '@repo/model-meta'
+import type { ModelFormField } from '@southneuhof/is-data-model'
 import type { ZodTypeAny } from 'zod'
 
 export type ValidationContext = {

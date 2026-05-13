@@ -23,6 +23,7 @@ export const defaultFormConfig = {
 }
 
 const config = {
+  apiUrl: '',
   server: {},
 }
 

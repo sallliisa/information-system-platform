@@ -1,4 +1,4 @@
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 
 export async function defaultDetailGetData(getAPI: string, searchParameters?: Record<string, any>, getDataID?: string) {
   const { data } = await services.detail(getAPI, getDataID, searchParameters)

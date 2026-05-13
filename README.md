@@ -6,10 +6,11 @@ Current status:
 
 - `apps/web` is the active Vue 3 + Vite frontend.
 - `apps/api` is a placeholder for the future backend app.
-- `apps/mobile-v2` is the active Expo SDK 54 mobile baseline.
-- `apps/mobile` remains as the legacy mobile implementation.
+- `apps/base-mobile` is the active Expo mobile baseline.
 - `packages/contracts`, `packages/sdk`, and `packages/domain` are scaffolded package boundaries only.
-- `packages/model-meta` contains shared model config types and runtime helpers.
+- `packages/model-meta` contains shared model config types and runtime helpers, published as `@southneuhof/is-data-model`.
+- `packages/vue-framework` contains Vue components, services, and app patterns, published as `@southneuhof/is-vue-framework`.
+- `packages/apostle` contains HTTP helpers used by `vue-framework`, published as `@southneuhof/apostle`.
 - `packages/data-model` contains project-owned model definitions (base/web/mobile).
 
 ## Workspace Layout
@@ -17,14 +18,15 @@ Current status:
 ```txt
 apps/
   api/              # backend placeholder
-  mobile-v2/        # active Expo mobile app (Phase 1 baseline)
-  mobile/           # legacy Expo mobile app
+  base-mobile/      # active Expo mobile app
   web/              # active Vue frontend
 packages/
   contracts/        # future generated API contracts
   sdk/              # shared API client wrapper
   domain/           # future shared domain primitives
   model-meta/       # shared model metadata + runtime config builders
+  vue-framework/    # Vue framework components and patterns
+  apostle/          # HTTP helper package
   data-model/       # project-owned model definitions (base/web/mobile)
 ```
 
@@ -32,25 +34,27 @@ packages/
 
 The repository is standardized on `pnpm`.
 
-- `pnpm dev` - run the web app only
-- `pnpm dev:mobile` - run the active mobile app (`apps/mobile-v2`)
-- `pnpm dev:mobile:legacy` - run the legacy mobile app (`apps/mobile`)
-- `pnpm build` - build the web app only
-- `pnpm test` - run the web test suite only
-- `pnpm type-check` - type-check the web app only
-- `pnpm type-check:mobile` - type-check the active mobile app (`apps/mobile-v2`)
-- `pnpm lint` - lint the web app only
+- `pnpm dev` - run the Vue sandbox app with framework source aliases
+- `pnpm dev:mobile` - run the mobile app (`apps/base-mobile`)
+- `pnpm build` - build publishable framework packages and the web sandbox
+- `pnpm test` - run framework package and web sandbox tests
+- `pnpm type-check` - type-check workspace packages and apps
+- `pnpm type-check:mobile` - type-check the mobile app
+- `pnpm release:verify` - build, pack, and verify publishable package contents
+- `pnpm changeset` - create a Changesets release note
 
-## Current Baseline
+## Framework Package Flow
 
-From the relocated web app:
+Framework development is source-first. The sandbox web app resolves `@southneuhof/is-data-model`, `@southneuhof/is-vue-framework`, and `@southneuhof/apostle` directly to `packages/*/src` through Vite and TypeScript aliases, so framework edits work with normal Vite HMR.
 
-- unit tests pass
-- type-check passes
-- production build still fails because `src/assets/corporate/assets/logo-hka.png` is missing
+Published package consumption is build-first. The publishable packages emit to `dist`, expose only `package.json#exports`, and are configured for GitHub Packages under the `@southneuhof` scope.
 
-That build failure is a pre-existing web issue and is not introduced by the monorepo skeleton itself.
+Run `pnpm release:verify` before publishing or cutting a release PR. Generated `dist` output and local pack tarballs are not source artifacts.
+
+## GitHub Packages
+
+This repo includes `.npmrc` registry routing for `@southneuhof`. Local consumers still need a GitHub Packages token in their user-level npm config or environment. CI publishing is handled by `.github/workflows/release.yml` with Changesets.
 
 ## Web App
 
-See [apps/web/README.md](/Users/gamer/Documents/projects/base-frontend/apps/web/README.md) for frontend-specific setup and runtime notes.
+See [apps/web/README.md](apps/web/README.md) for frontend-specific setup and runtime notes.

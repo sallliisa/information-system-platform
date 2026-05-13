@@ -1,4 +1,4 @@
-import type { InputConfig } from '@repo/model-meta'
+import type { InputConfig } from '@southneuhof/is-data-model'
 import { createContext, useContext } from 'react'
 
 export type FormValidationContextValue = {

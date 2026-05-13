@@ -1,4 +1,4 @@
-# @repo/model-meta
+# @southneuhof/is-data-model
 
 Shared, platform-agnostic model configuration package.
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { hasRequiredValidation } from '@repo/vue-framework/behaviors/validations'
-import type { InputConfig } from '@repo/model-meta'
+import { hasRequiredValidation } from '@southneuhof/is-vue-framework/behaviors/validations'
+import type { InputConfig } from '@southneuhof/is-data-model'
 import { computed, inject, ref, type Ref } from 'vue'
 import { twMerge } from 'tailwind-merge'
 

@@ -1,1 +1,1 @@
-export * from '@repo/apostle'
+export * from '@southneuhof/apostle'

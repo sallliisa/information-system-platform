@@ -1,4 +1,4 @@
-import { Apostle, type ApostleInit, type ApostleResponseType } from '@repo/apostle'
+import { Apostle, type ApostleInit, type ApostleResponseType } from '@southneuhof/apostle'
 import { downloadBlob, parseFilenameFromContentDisposition } from './download'
 import { parseURL } from './path'
 import type { FrameworkServiceEndpoints, FrameworkServiceOptions, ServiceRequestOptions } from './types'
@@ -144,6 +144,10 @@ export class FrameworkService {
     return this.del(this.parseURL(path, '', this.endpoints.deleteSuffix), data, options)
   }
 
+  remove(path: string, data?: any, options?: ServiceRequestOptions): Promise<any> {
+    return this.delete(path, data, options)
+  }
+
   dataset(path: string, query?: Record<string, any>, options?: ServiceRequestOptions): Promise<any> {
     return this.get(this.parseURL(path, '', this.endpoints.datasetSuffix), query, options)
   }
@@ -197,6 +201,15 @@ export class FrameworkService {
       console.error(error)
       return { success: false }
     }
+  }
+
+  upload(
+    file: File,
+    directory: string = '',
+    onUploadProgress?: (progress: { loaded: number; total: number }) => void,
+    options?: ServiceRequestOptions
+  ): Promise<any> {
+    return this.fileUpload(file, directory, onUploadProgress, options)
   }
 
   fileUploadNoAuth(file: Blob, _onUploadProgress?: (progress: { loaded: number; total: number }) => void, options?: ServiceRequestOptions): Promise<any> {

@@ -63,7 +63,7 @@ export function buildLayoutRoutes(modules: FrameworkRouteModule[], options: Layo
         })
 
         baseRoute.meta = { ...baseRoute.meta, children: route.children }
-        baseRoute.children = children
+        ;(baseRoute as { children?: RouteRecordRaw[] }).children = children
       } else {
         baseRoute.meta = { ...baseRoute.meta, pages: route.routes || null }
       }

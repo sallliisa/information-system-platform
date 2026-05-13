@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { titleCase } from '@/utils/common'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   active: {

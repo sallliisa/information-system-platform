@@ -1,4 +1,4 @@
-import type { DetailConfig } from '@repo/model-meta'
+import type { DetailConfig } from '@southneuhof/is-data-model'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { api } from '../../lib/api'

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import services from '@repo/vue-framework/adapters/services'
+import services from '@southneuhof/is-vue-framework/services'
 import { ref, watch } from 'vue'
 import { toast } from 'vue-sonner'
-import ImagePreview from '@repo/vue-framework/components/base/ImagePreview.vue'
+import ImagePreview from '@southneuhof/is-vue-framework/components/base/ImagePreview.vue'
 import Draggable from 'vuedraggable'
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Chip from '@repo/vue-framework/components/base/Chip.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Spinner from '@repo/vue-framework/components/base/Spinner.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Chip from '@southneuhof/is-vue-framework/components/base/Chip.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Spinner from '@southneuhof/is-vue-framework/components/base/Spinner.vue'
 
 const props = defineProps({
   modelValue: {

@@ -1,4 +1,4 @@
-import { createParser } from '@repo/vue-framework/utils/parse'
+import { createParser } from '@southneuhof/is-vue-framework/utils/parse'
 import { formatCurrency, formatDate, formatDateTime, formatDelta, formatHour, formatLargeNumber, formatMonth, formatNumber, formatTime } from '@/utils/common'
 import _dictionary from '@/app/configs/_dictionary'
 

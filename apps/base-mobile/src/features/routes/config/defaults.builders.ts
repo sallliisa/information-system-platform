@@ -1,4 +1,4 @@
-import { buildDetailConfig, buildFormConfig, buildListConfig, type CreateConfig, type ListConfig, type UpdateConfig } from '@repo/model-meta'
+import { buildDetailConfig, buildFormConfig, buildListConfig, type CreateConfig, type ListConfig, type UpdateConfig } from '@southneuhof/is-data-model'
 import { defaultDetailConfig, defaultFormConfig, defaultTableConfig } from '../../../configs/_defaults'
 import type { MobileModelConfig } from '../catalog.types'
 

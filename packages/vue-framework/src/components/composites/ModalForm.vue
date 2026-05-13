@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Form from '@repo/vue-framework/components/composites/Form.vue'
-import type { InputConfig } from '@repo/model-meta'
+import Form from '@southneuhof/is-vue-framework/components/composites/Form.vue'
+import type { InputConfig } from '@southneuhof/is-data-model'
 import type { PropType } from 'vue'
-import { defaultFormGetData, defaultBeforeSubmit, defaultOnSubmit, defaultOnSuccess, defaultOnError } from '@repo/vue-framework/behaviors/form'
+import { defaultFormGetData, defaultBeforeSubmit, defaultOnSubmit, defaultOnSuccess, defaultOnError } from '@southneuhof/is-vue-framework/behaviors/form'
 import Modal from '../base/Modal.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
 // import ModalDeprecated from '../base/ModalDeprecated.vue';
 
 const props = defineProps({

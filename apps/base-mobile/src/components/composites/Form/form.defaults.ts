@@ -1,4 +1,4 @@
-import type { CreateConfig, InputConfig } from '@repo/model-meta'
+import type { CreateConfig, InputConfig } from '@southneuhof/is-data-model'
 import { defaultFormConfig } from '../../../configs/_defaults'
 import { api } from '../../../lib/api'
 import { LookupInput } from '../../inputs/LookupInput'

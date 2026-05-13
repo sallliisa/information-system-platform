@@ -1,5 +1,5 @@
 {
-  "name": "@repo/web",
+  "name": "@southneuhof/framework-web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -18,7 +18,7 @@
     "@fullcalendar/vue3": "^6.1.19",
     "@headlessui/tailwindcss": "^0.1.3",
     "@headlessui/vue": "^1.7.14",
-    "@repo/model-meta": "workspace:*",
+    "@southneuhof/is-data-model": "workspace:*",
     "@tanstack/vue-form": "1.29.1",
     "@tinymce/tinymce-vue": "^6.0.1",
     "@unhead/vue": "^1.11.7",
@@ -65,7 +65,7 @@
     "vuedraggable": "^4.1.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.0",
-    "@repo/vue-framework": "workspace:*",
+    "@southneuhof/is-vue-framework": "workspace:*",
     "@client/data-model": "workspace:*"
   },
   "devDependencies": {

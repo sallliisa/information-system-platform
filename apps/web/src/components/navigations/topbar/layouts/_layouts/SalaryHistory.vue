@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Table from '@repo/vue-framework/components/composites/Table.vue'
+import Table from '@southneuhof/is-vue-framework/components/composites/Table.vue'
 import { keyManager } from '@/stores/keyManager'
 import SalaryDetail from './_layouts/SalaryDetail.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
-import Modal from '@repo/vue-framework/components/base/Modal.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
+import Modal from '@southneuhof/is-vue-framework/components/base/Modal.vue'
 </script>
 
 <template>

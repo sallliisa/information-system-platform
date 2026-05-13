@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, type PropType, computed, provide } from 'vue'
-import type { ModelConfig } from '@repo/model-meta'
+import type { ModelConfig } from '@southneuhof/is-data-model'
 import { useRoute, useRouter } from 'vue-router'
 import CRUDList from './CRUD/CRUDList.vue'
 import CRUDDetail from './CRUD/CRUDDetail.vue'
 import CRUDCreate from './CRUD/CRUDCreate.vue'
 import CRUDUpdate from './CRUD/CRUDUpdate.vue'
-import { permissions } from '@repo/vue-framework/adapters/state'
+import { permissions } from '@southneuhof/is-vue-framework/adapters/state'
 import Spinner from '../base/Spinner.vue'
 
 const [router, route] = [useRouter(), useRoute()]

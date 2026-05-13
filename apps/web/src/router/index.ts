@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { buildLayoutRoutes, createLayoutViewResolver } from '@repo/vue-framework/router'
-import type { FrameworkRouteModule } from '@repo/vue-framework/router'
+import { buildLayoutRoutes, createLayoutViewResolver } from '@southneuhof/is-vue-framework/router'
+import type { FrameworkRouteModule } from '@southneuhof/is-vue-framework/router'
 import AuthenticatedLayout from '@/layouts/Authenticated.vue'
 import UnauthenticatedLayout from '@/layouts/Unauthenticated.vue'
 import menu from '@/menu'

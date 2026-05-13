@@ -6,7 +6,7 @@ import { useColorPreference } from '@/stores/colorpreference'
 import { permissions } from '@/stores/permissions'
 import { toast } from 'vue-sonner'
 import { getCurrentHashRouteForRedirect, savePostLoginRedirect } from './post-login-redirect'
-import { FrameworkService, type ServiceRequestOptions } from '@repo/vue-framework/services'
+import { FrameworkService, type ServiceRequestOptions } from '@southneuhof/is-vue-framework/services'
 
 function extractErrorMessage(error: any): string {
   return String(error?.message?.message || error?.message || error?.error || error?.statusText || 'Terjadi kesalahan')

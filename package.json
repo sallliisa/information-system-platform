@@ -4,16 +4,24 @@
   "version": "0.0.0",
   "packageManager": "pnpm@10.8.0",
   "scripts": {
-    "dev": "npm --prefix apps/web run dev",
-    "dev:mobile": "npm --prefix apps/mobile-v2 run dev",
-    "dev:mobile:legacy": "npm --prefix apps/mobile run dev",
-    "build": "npm --prefix apps/web run build",
-    "test": "npm --prefix apps/web run test",
-    "type-check": "npm --prefix apps/web run type-check",
-    "type-check:mobile": "npm --prefix apps/mobile-v2 run type-check",
-    "lint": "npm --prefix apps/web run lint"
+    "dev": "pnpm --filter @southneuhof/framework-web dev",
+    "dev:mobile": "pnpm --filter base-mobile start",
+    "dev:mobile:legacy": "pnpm --filter base-mobile start",
+    "build": "turbo run build",
+    "test": "turbo run test --filter=@southneuhof/is-data-model --filter=@southneuhof/apostle --filter=@southneuhof/is-vue-framework --filter=@southneuhof/framework-web",
+    "type-check": "turbo run type-check",
+    "type-check:mobile": "pnpm --filter base-mobile type-check",
+    "lint": "turbo run lint",
+    "release:pack": "turbo run build && pnpm --dir packages/model-meta pack && pnpm --dir packages/apostle pack && pnpm --dir packages/vue-framework pack",
+    "release:verify": "pnpm release:pack && node scripts/verify-package-contents.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "publish-packages": "changeset publish"
   },
   "devDependencies": {
-    "turbo": "^2.0.14"
+    "@changesets/cli": "^2.29.7",
+    "turbo": "^2.0.14",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.2.4"
   }
 }

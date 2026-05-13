@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import services from '@/utils/services'
 import { defineAsyncComponent, ref } from 'vue'
-import Card from '@repo/vue-framework/components/base/Card.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
 
 const { user: profile } = await services.get('me')
 

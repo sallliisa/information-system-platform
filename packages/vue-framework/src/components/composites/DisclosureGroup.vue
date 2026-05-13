@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Disclosure from '@repo/vue-framework/components/base/Disclosure.vue'
+import Disclosure from '@southneuhof/is-vue-framework/components/base/Disclosure.vue'
 import { ref, type PropType } from 'vue'
 
 const props = defineProps({

@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "./src",
+    "module": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@southneuhof/is-vue-framework": [
+        "./src/index.ts"
+      ],
+      "@southneuhof/is-vue-framework/*": [
+        "./src/*"
+      ],
+      "@southneuhof/is-data-model": [
+        "../model-meta/src/index.ts"
+      ],
+      "@southneuhof/is-data-model/*": [
+        "../model-meta/src/*"
+      ],
+      "@southneuhof/apostle": [
+        "../apostle/src/index.ts"
+      ],
+      "@southneuhof/apostle/*": [
+        "../apostle/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "env.d.ts"
+  ]
+}

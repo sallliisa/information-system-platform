@@ -7,7 +7,7 @@ import type {
   TransactionConfig,
   UpdateConfig,
   ViewConfig,
-} from '@repo/model-meta'
+} from '@southneuhof/is-data-model'
 
 export type MobileModelConfig = Omit<ModelConfig, 'view' | 'transaction'> & {
   icon?: string

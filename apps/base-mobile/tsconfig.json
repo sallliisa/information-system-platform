@@ -9,10 +9,10 @@
       "@client/data-model/*": [
         "../../packages/data-model/src/*"
       ],
-      "@repo/model-meta": [
+      "@southneuhof/is-data-model": [
         "../../packages/model-meta/src/index.ts"
       ],
-      "@repo/model-meta/*": [
+      "@southneuhof/is-data-model/*": [
         "../../packages/model-meta/src/*"
       ]
     }

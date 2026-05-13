@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Form from '@repo/vue-framework/components/composites/Form.vue'
+import Form from '@southneuhof/is-vue-framework/components/composites/Form.vue'
 import { keyManager } from '@/stores/keyManager'
 import { toast } from 'vue-sonner'
 import services from '@/utils/services'
-import Card from '@repo/vue-framework/components/base/Card.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Card from '@southneuhof/is-vue-framework/components/base/Card.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   profile: { type: Object, required: true },

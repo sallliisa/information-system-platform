@@ -5,7 +5,7 @@ import { modules } from '@/stores/modules'
 import Logo from '@/assets/corporate/common/Logo.vue'
 import { ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const sidebarexpand = ref<HTMLElement>()
 const sidebarState = ref<{index?: number, open: boolean}>({index: undefined, open: false})

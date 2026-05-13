@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@repo/model-meta": "workspace:*",
+    "@southneuhof/is-data-model": "workspace:*",
     "zod": "^3.25.0"
   },
   "exports": {

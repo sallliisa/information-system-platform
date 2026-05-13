@@ -23,10 +23,10 @@
       "@/*": [
         "./src/*"
       ],
-      "@repo/model-meta": [
+      "@southneuhof/is-data-model": [
         "../../packages/model-meta/src/index.ts"
       ],
-      "@repo/model-meta/*": [
+      "@southneuhof/is-data-model/*": [
         "../../packages/model-meta/src/*"
       ],
       "@repo/sdk": [
@@ -38,16 +38,16 @@
       "vue3-google-map": [
         "./node_modules/vue3-google-map/dist/types/index.d.ts"
       ],
-      "@repo/vue-framework": [
+      "@southneuhof/is-vue-framework": [
         "../../packages/vue-framework/src/index.ts"
       ],
-      "@repo/vue-framework/*": [
+      "@southneuhof/is-vue-framework/*": [
         "../../packages/vue-framework/src/*"
       ],
-      "@repo/apostle": [
+      "@southneuhof/apostle": [
         "../../packages/apostle/src/index.ts"
       ],
-      "@repo/apostle/*": [
+      "@southneuhof/apostle/*": [
         "../../packages/apostle/src/*"
       ],
       "@client/data-model/*": [

@@ -3,10 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "paths": {
-      "@repo/model-meta": [
+      "@southneuhof/is-data-model": [
         "../model-meta/src/index.ts"
       ],
-      "@repo/model-meta/*": [
+      "@southneuhof/is-data-model/*": [
         "../model-meta/src/*"
       ]
     }

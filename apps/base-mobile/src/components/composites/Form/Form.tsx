@@ -1,5 +1,5 @@
-import type { FieldDependency, InputConfig, ModelFormField } from '@repo/model-meta'
-import { evaluateFieldDependencies } from '@repo/model-meta'
+import type { FieldDependency, InputConfig, ModelFormField } from '@southneuhof/is-data-model'
+import { evaluateFieldDependencies } from '@southneuhof/is-data-model'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ActivityIndicator,

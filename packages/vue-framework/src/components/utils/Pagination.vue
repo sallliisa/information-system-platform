@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Select from '@repo/vue-framework/components/inputs/SelectInput.vue'
+import Select from '@southneuhof/is-vue-framework/components/inputs/SelectInput.vue'
 import { watch, type PropType, computed, ref } from 'vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({

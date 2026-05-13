@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { parse } from '@/utils/filter'
-import services from '@/utils/services'
+import { parse } from '@southneuhof/is-vue-framework/utils/parse'
+import services from '@southneuhof/is-vue-framework/services'
 import { ref, watch } from 'vue'
 import { useDropZone } from '@vueuse/core'
 import { ContextMenuContent, ContextMenuItem, ContextMenuPortal, ContextMenuTrigger, ContextMenuRoot } from 'radix-vue'
 import { toast } from 'vue-sonner'
-import ConfirmationModal from '@repo/vue-framework/components/composites/ConfirmationModal.vue'
-import config from '@/config'
-import ModalForm from '@repo/vue-framework/components/composites/ModalForm.vue'
-import Button from '@repo/vue-framework/components/base/Button.vue'
-import Icon from '@repo/vue-framework/components/base/Icon.vue'
+import ConfirmationModal from '@southneuhof/is-vue-framework/components/composites/ConfirmationModal.vue'
+import config from '@southneuhof/is-vue-framework/adapters/defaults'
+import ModalForm from '@southneuhof/is-vue-framework/components/composites/ModalForm.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
+import Icon from '@southneuhof/is-vue-framework/components/base/Icon.vue'
 
 const props = defineProps({
   item: {

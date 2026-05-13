@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { defaultDetailGetData, defaultOnDataLoaded, detailFieldTypes } from '@repo/vue-framework/behaviors/detail'
-import { parse } from '@repo/vue-framework/utils/parse'
+import { defaultDetailGetData, defaultOnDataLoaded, detailFieldTypes } from '@southneuhof/is-vue-framework/behaviors/detail'
+import { parse } from '@southneuhof/is-vue-framework/utils/parse'
 import { computed, onMounted, ref, type PropType } from 'vue'
 import { componentTypeMap, parsedTypes } from './common/properties'
-import { defaultDetailConfig } from '@repo/vue-framework/adapters/defaults'
+import { defaultDetailConfig } from '@southneuhof/is-vue-framework/adapters/defaults'
 
 const props = defineProps({
   fields: { type: Array as PropType<string[]>, required: true },

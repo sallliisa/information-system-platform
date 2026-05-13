@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseInput from './BaseInput.vue'
 import { commonProps } from './commonprops'
-import Button from '@repo/vue-framework/components/base/Button.vue'
+import Button from '@southneuhof/is-vue-framework/components/base/Button.vue'
 
 const props = defineProps({
   ...commonProps,

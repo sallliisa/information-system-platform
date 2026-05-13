@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FrameworkService } from '../FrameworkService'
-import { Apostle } from '@repo/apostle'
+import { Apostle } from '@southneuhof/apostle'
 
 class TestService extends FrameworkService {}
 

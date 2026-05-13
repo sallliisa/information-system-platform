@@ -1,4 +1,4 @@
-import type { ListConfig } from '@repo/model-meta'
+import type { ListConfig } from '@southneuhof/is-data-model'
 import {
   memo,
   useCallback,

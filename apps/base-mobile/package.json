@@ -21,7 +21,7 @@
     "@react-navigation/native": "^7.1.8",
     "@repo/config-meta": "workspace:*",
     "@repo/domain": "workspace:*",
-    "@repo/model-meta": "workspace:*",
+    "@southneuhof/is-data-model": "workspace:*",
     "@repo/sdk": "workspace:*",
     "expo": "~54.0.33",
     "expo-constants": "~18.0.13",

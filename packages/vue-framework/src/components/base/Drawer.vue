@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
-import { useColorPreference } from '@repo/vue-framework/adapters/state'
+import { useColorPreference } from '@southneuhof/is-vue-framework/adapters/state'
 import { DrawerContent, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTrigger } from 'vaul-vue'
 
 const emit = defineEmits(['update:isOpen'])

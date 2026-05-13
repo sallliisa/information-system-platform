@@ -1,4 +1,4 @@
-import type { InputConfig } from '@repo/model-meta'
+import type { InputConfig } from '@southneuhof/is-data-model'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native'
 import { z } from 'zod'
 import type { ReactNode } from 'react'
