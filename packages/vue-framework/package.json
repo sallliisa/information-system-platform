@@ -53,6 +53,11 @@
   },
   "files": [
     "dist",
+    "src",
+    "!dist/**/*.tsbuildinfo",
+    "!src/**/__tests__/**",
+    "!src/**/*.spec.*",
+    "!src/**/*.test.*",
     "README.md"
   ],
   "publishConfig": {

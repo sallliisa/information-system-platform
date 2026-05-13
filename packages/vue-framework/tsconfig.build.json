@@ -4,6 +4,8 @@
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,
+    "sourceMap": true,
+    "inlineSources": false,
     "jsx": "react",
     "outDir": "./dist",
     "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
