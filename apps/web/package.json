@@ -65,7 +65,8 @@
     "vuedraggable": "^4.1.0",
     "xlsx": "^0.18.5",
     "zod": "^3.25.0",
-    "@repo/vue-framework": "workspace:*"
+    "@repo/vue-framework": "workspace:*",
+    "@client/data-model": "workspace:*"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.0",

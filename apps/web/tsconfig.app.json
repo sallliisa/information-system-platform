@@ -5,6 +5,8 @@
     "src/**/*",
     "src/**/*.vue",
     "../../packages/model-meta/src/**/*",
+    "../../packages/data-model/src/models/base/**/*",
+    "../../packages/data-model/src/models/web/**/*",
     "../../packages/sdk/src/**/*",
     "../../packages/vue-framework/src/**/*",
     "../../packages/apostle/src/**/*"
@@ -12,7 +14,6 @@
   "exclude": [
     "src/**/__tests__/*",
     "../../packages/sdk/src/__tests__/*",
-    "../../packages/model-meta/src/__tests__/*",
     "../../packages/vue-framework/src/**/__tests__/*",
     "../../packages/apostle/src/**/__tests__/*"
   ],
@@ -48,6 +49,12 @@
       ],
       "@repo/apostle/*": [
         "../../packages/apostle/src/*"
+      ],
+      "@client/data-model/*": [
+        "../../packages/data-model/src/*"
+      ],
+      "@client/data-model/models/*": [
+        "../../packages/data-model/src/models/*"
       ]
     },
     "module": "esnext",

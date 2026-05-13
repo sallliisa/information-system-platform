@@ -20,8 +20,8 @@ export default defineConfig({
         replacement: fileURLToPath(new URL('./src', import.meta.url)),
       },
       {
-        find: '@repo/model-meta/models',
-        replacement: fileURLToPath(new URL('../../packages/model-meta/src/models', import.meta.url)),
+        find: '@client/data-model/',
+        replacement: fileURLToPath(new URL('../../packages/data-model/src/', import.meta.url)),
       },
       {
         find: /^@repo\/model-meta$/,

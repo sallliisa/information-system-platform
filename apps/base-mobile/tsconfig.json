@@ -5,6 +5,15 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@client/data-model/*": [
+        "../../packages/data-model/src/*"
+      ],
+      "@repo/model-meta": [
+        "../../packages/model-meta/src/index.ts"
+      ],
+      "@repo/model-meta/*": [
+        "../../packages/model-meta/src/*"
       ]
     }
   },

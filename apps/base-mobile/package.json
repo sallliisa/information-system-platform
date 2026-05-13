@@ -52,7 +52,8 @@
     "sonner-native": "^0.24.0",
     "tailwindcss": "^4.2.1",
     "uniwind": "^1.6.3",
-    "zod": "^3.25.0"
+    "zod": "^3.25.0",
+    "@client/data-model": "workspace:*"
   },
   "devDependencies": {
     "@testing-library/jest-native": "^5.4.3",

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import roles from '@repo/model-meta/models/roles.model'
+import roles from '@client/data-model/models/web/roles.model'
 import CRUDComposite from '@repo/vue-framework/components/composites/CRUDComposite.vue'
 import RolesDetailUnder from './_layouts/RolesDetailUnder.vue'
 import { keyManager } from '@/stores/keyManager'

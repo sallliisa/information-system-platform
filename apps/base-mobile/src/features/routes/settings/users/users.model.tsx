@@ -1,4 +1,4 @@
-import users from '@repo/model-meta/models/users.model'
+import users from '@client/data-model/models/mobile/users.model'
 import type { MobileModelConfig } from '../../catalog.types'
 
 const usersModel: MobileModelConfig = {

@@ -4,38 +4,55 @@ import { permissions } from './permissions'
 
 const value: Array<Module> = []
 
+function compactSeparators(routes: any[]): any[] {
+  const normalized = [...routes]
+
+  for (let i = 0; i < normalized.length - 1; i++) {
+    if (normalized[i].separator && normalized[i + 1].separator) {
+      normalized.splice(i, 1)
+      i--
+    }
+  }
+
+  if (normalized.length > 0 && normalized[normalized.length - 1].separator) {
+    normalized.splice(normalized.length - 1, 1)
+  }
+
+  return normalized
+}
+
 export const modules = defineStore('modules', () => {
   function build() {
-    const start = performance.now()
     clear()
     menu.forEach((item) => {
-      if (item.routes.length === 1) return permissions().has(`view-${item.permission || item.name}`) ? value.push(item) : null
+      if (item.routes.length === 1) {
+        if (permissions().has(`view-${item.permission || item.name}`)) {
+          value.push(item)
+        }
+        return
+      }
+
       const routes = (item.routes as any).filter((route: any) => {
         if (route.separator) return true
         if (route.name) {
-          // console.log('checking', `view-${route.permission || route.name}`, permissions().has(`view-${route.permission || route.name}`))
           return permissions().has(`view-${route.permission || route.name}`)
         }
+        return false
       })
-      console.log('final routes', routes)
-      for (let i = 0; i < routes.length - 1; i++) {
-        if (routes[i].separator && routes[i + 1].separator) {
-          routes.splice(i, 1)
-          i--
-        }
+
+      const cleanedRoutes = compactSeparators(routes)
+      if (cleanedRoutes.length !== 0) {
+        value.push({ ...item, routes: cleanedRoutes })
       }
-      if (routes.length > 0 && routes[routes.length - 1].separator) {
-        routes.splice(routes.length - 1, 1)
-      }
-      if (routes.length != 0) value.push({ ...item, routes })
     })
-    const end = performance.now()
-    console.log(`BUILT MODULES IN ${end - start}ms`, value)
+
     return true
   }
+
   function clear() {
     value.splice(0, value.length)
   }
+
   function rebuild() {
     clear()
     build()

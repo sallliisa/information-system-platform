@@ -1,0 +1,1 @@
+import type { ModelConfig } from "@repo/model-meta";

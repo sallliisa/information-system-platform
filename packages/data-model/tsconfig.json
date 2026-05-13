@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "paths": {
+      "@repo/model-meta": [
+        "../model-meta/src/index.ts"
+      ],
+      "@repo/model-meta/*": [
+        "../model-meta/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "../model-meta/src/**/*"
+  ]
+}

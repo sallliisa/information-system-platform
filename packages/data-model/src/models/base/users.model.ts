@@ -1,4 +1,4 @@
-import type { ModelConfig } from '../types'
+import type { ModelConfig } from '@repo/model-meta'
 import { z } from 'zod'
 
 const roleTypeOptions = [

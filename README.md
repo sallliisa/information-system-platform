@@ -9,7 +9,8 @@ Current status:
 - `apps/mobile-v2` is the active Expo SDK 54 mobile baseline.
 - `apps/mobile` remains as the legacy mobile implementation.
 - `packages/contracts`, `packages/sdk`, and `packages/domain` are scaffolded package boundaries only.
-- `packages/model-meta` contains shared model config types, merge/runtime utilities, and base models.
+- `packages/model-meta` contains shared model config types and runtime helpers.
+- `packages/data-model` contains project-owned model definitions (base/web/mobile).
 
 ## Workspace Layout
 
@@ -24,6 +25,7 @@ packages/
   sdk/              # shared API client wrapper
   domain/           # future shared domain primitives
   model-meta/       # shared model metadata + runtime config builders
+  data-model/       # project-owned model definitions (base/web/mobile)
 ```
 
 ## Commands
